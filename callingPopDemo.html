@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>来电弹屏</title>
+	<meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Pragma" content="no-cache"/> 
+	<meta http-equiv="Cache-Control" content="no-cache"/> 
+	<meta http-equiv="Expires" content="0"/> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<meta http-equiv="renderer" content="webkit|ie-comp|ie-stand" />
+	
+	<link rel="shortcut icon" href="favicon.ico"> <link href="Content/Hplus/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="Content/Hplus/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="Content/Hplus/css/animate.css" rel="stylesheet">
+    <link href="Content/Hplus/css/style.css?v=4.1.0" rel="stylesheet">
+    <script>
+        function OnOperationInCallComplete(){
+        	parent.OcxCore.DialogUtil.tipDialog('OnOperationInCallComplete', 3);
+        }
+    </script>
+  </head>
+  
+  <body class="gray-bg">
+    <div class="row wrapper wrapper-content animated fadeInRight" style="padding: 5px;">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>来去电弹屏信息</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <form class="form-horizontal">
+                    	<div class="form-group">
+                            <label class="col-sm-3 control-label">URL参数：</label>
+
+                            <div class="col-sm-8">
+                            	<p id="URLParam" class="form-control-static"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">主叫：</label>
+
+                            <div class="col-sm-8">
+                            	<p id="Caller" class="form-control-static"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">被叫：</label>
+
+                            <div class="col-sm-8">
+                                <p id="Called" class="form-control-static"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">呼叫ID：</label>
+
+                            <div class="col-sm-8">
+                                <p id="CallId" class="form-control-static"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">外呼营销数据ID：</label>
+
+                            <div class="col-sm-8">
+                                <p id="CustomId" class="form-control-static"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">技能组ID：</label>
+
+                            <div class="col-sm-8">
+                                <p id="GroupId" class="form-control-static"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">来电时间：</label>
+
+                            <div class="col-sm-8">
+                                <p id="CallTime" class="form-control-static"></p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">IVR最后一层路径：</label>
+
+                            <div class="col-sm-8">
+                                <p id="IVRPath" class="form-control-static"></p>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="col-sm-3 control-label">其他参数：</label>
+
+                            <div class="col-sm-8">
+                                <p id="OtherParams" class="form-control-static"></p>
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全局js -->
+    <script src="Content/Hplus/js/jquery.min.js?v=2.1.4"></script>
+    <script src="Content/Hplus/js/bootstrap.min.js?v=3.3.6"></script>
+
+
+
+    <!-- 自定义js -->
+    <script src="Content/Hplus/js/content.js?v=1.0.0"></script>
+
+
+<script type="text/javascript">
+$(function(){
+	var qStr = location.href.substring(location.href.indexOf('?')+1);
+	$("#URLParam").html(qStr);
+	
+	$("#Caller").html(GetQuery("Caller"));
+	$("#Called").html(GetQuery("Called"));
+	$("#CallId").html(GetQuery("CallId"));
+	$("#CustomId").html(GetQuery("CustomId"));
+	$("#GroupId").html(GetQuery("GroupId"));
+	$("#CallTime").html(GetQuery("CallTime"));
+	$("#IVRPath").html(GetQuery("IVRPath"));
+    $("#OtherParams").html(GetQuery("OtherParams"));
+    
+});
+
+
+/********
+接收地址栏参数
+**********/
+function GetQuery(key) {
+    var search = location.search.slice(1); //得到get方式提交的查询字符串
+    var arr = search.split("&");
+    for (var i = 0; i < arr.length; i++) {
+        var ar = arr[i].split("=");
+        if (ar[0] == key) {
+            if (unescape(ar[1]) == 'undefined') {
+                return "";
+            } else {
+                return unescape(ar[1]);
+            }
+        }
+    }
+    return "";
+};
+  </script>
+</body>
+</html>

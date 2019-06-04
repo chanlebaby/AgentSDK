@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<title>呼叫排队监控</title>
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Expires" CONTENT="0"> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width" />
+	<link href="../images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <!--框架必需start-->
+    <link href="../skins/CallCenterui-framework.css" rel="stylesheet" />
+    <script src="../plugins/jquery/jquery-1.8.2.min.js"></script>
+    <script src="../plugins/CallCenterui-framework.js"></script>
+    <!--框架必需end-->
+    <!--jqgrid表格组件start-->
+    <script src="../plugins/jqgrid/jquery-ui-custom.min.js"></script>
+    <script src="../plugins/jqgrid/grid.locale-cn.js"></script>
+    <link href="../plugins/jqgrid/css/jqgrid.css" rel="stylesheet" />
+    <script src="../plugins/jqgrid/jqGrid.js"></script>
+    <script src="../plugins/jqgrid/grid.setcolumns.js"></script>
+    <!--表格组件end-->
+    <!--树形组件start-->
+    <link href="../plugins/tree/tree.css" rel="stylesheet" />
+    <!--树形组件end-->
+    <!--框架工具JS组件start-->
+    <script src="../plugins/CallCenterui-utils.js"></script>
+    <!--框架工具JS组件end-->
+    <!--引入弹窗组件start-->
+    <link href="../plugins/artDialog4/skins/default.css?4.1.7" rel="stylesheet" />
+    <script src="../plugins/artDialog4/jquery.artDialog.source.js" type="text/javascript"></script>
+	<script src="../plugins/artDialog4/plugins/iframeTools.source.js" type="text/javascript"></script> 
+	<!--引入弹窗组件end-->
+    <!--右键菜单组件start-->
+    <script src="../plugins/jquery/jquery.contextmenu.r2.js"></script>
+    <!--右键菜单组件end-->
+    <!--布局组件start-->
+    <!-- <script src="../plugins/layout/splitter.js"></script> -->
+    <link href="../plugins/splitter/jquery.splitter.css" rel="stylesheet" />
+    <script src="../plugins/splitter/jquery.splitter.js" type="text/javascript"></script>
+    <!--布局组件end-->
+    <!-- CTI相关组件 start -->
+    <script type="text/javascript">
+    	window['_OcxCore_rootPath'] = (function() {
+    	    //var strFullPath = window.document.location.href;
+    	    var strPath = window.document.location.pathname;
+    	    /* var pos = strFullPath.indexOf(strPath);
+    	    var prePath = strFullPath.substring(0, pos);
+    	    var postPath = strPath.substring(0, strPath.substr(1).indexOf('/') + 1);
+    	    if(postPath != undefined && postPath != null && postPath.indexOf('/demoweb')>-1)
+    	    	return (prePath + postPath); //如果发布IIS，有虚假目录用用这句
+    	    else
+    	    	return (prePath);
+    	     */
+    	    strPath = strPath.replace(/\\/g, '/');
+    	    strPath = strPath.lastIndexOf('/') < 0 ? '.' : strPath.substring(0, strPath.lastIndexOf('/'));
+    	    strPath = strPath.lastIndexOf('/CTIAgentSDK') < 0 ? strPath : strPath.substring(0, strPath.lastIndexOf('/CTIAgentSDK'));
+    	    
+    	    return strPath;
+    	})();
+    	window['_OcxCore_path'] = window['_OcxCore_rootPath'];
+    </script>
+    <script src="../core/Common.js?version=2.0.0" type="text/javascript"></script>
+	<script src="../core/DialogUtil_artDialog4.js?version=2.0.0" type="text/javascript"></script>
+	
+	<script src="../core/model/CTIAgentModel.js?version=2.0.0" type="text/javascript"></script>
+	<script src="../core/ctimonitor/CtiMonitorMain.js?version=2.0.0" type="text/javascript"></script>
+	
+	<script type="text/javascript">
+		var artApi = art.dialog.open.api,openerW = window.opener;
+		var _QueueDatas = new OcxCore.Map();//队列列表
+		var _SeatDatas = new OcxCore.Map();//坐席列表
+		var _CallDatas = new OcxCore.Map();//呼叫数据列表
+		var _QueueHistoryDatas = new OcxCore.Map();//队列历史列表
+		var CompanyId = OcxCore.GetQuery("CompanyId");//公司ID
+    	var GroupName = "";  //当前选中的技能组名称
+	    $(document).ready(function () {
+	    	resizeU();
+	    	$(window).resize(resizeU);
+	        function resizeU() {
+	        	 var divkuangW = $(window).width();
+	        	 var divkuangH = $(window).height();
+	             
+	        	 $("#callDataGrid_Panel").height(divkuangH - 183);  
+	        }
+		    //加载呼叫明细表格
+			GetCallDataGrid();
+		  	//自应高度
+            $(window).resize(function () {
+            	var divkuangW = $(window).width();
+	        	 var divkuangH = $(window).height();
+	        	 $("#callDataGridTable").setGridHeight(divkuangH - 183);
+	             $("#callDataGridTable").setGridWidth(divkuangW-2);
+            });
+            $("#SeatGroupList li").live("click", function () {
+	            if (!$(this).attr('disabled')) {
+	                if (!!$(this).hasClass("selected")) {
+	                    $(this).removeClass("selected");
+	                    $(this).find('a').removeClass("a_selected");
+	                } else {
+	                    $(this).addClass("selected").siblings("li");
+	                    $(this).find('a').addClass("a_selected");
+	                }
+	            }
+	        });
+ 	        //自定义复选框 全选/反选
+	        $("#CheckButton").click(function () {
+	            if (!!$(this).hasClass("checkAllOff")) {
+	                $(this).attr('title', '反选');
+	                $(this).text('反选');
+	                $(this).attr('class', 'checkAllOn');
+	                $('.sys_spec_text li').addClass('selected');
+	                $('.sys_spec_text li a').addClass('a_selected');
+	            } else {
+	                $(this).attr('title', '全选');
+	                $(this).text('全选');
+	                $(this).attr('class', 'checkAllOff');
+	                $('.sys_spec_text li').removeClass('selected');
+	                $('.sys_spec_text li a').removeClass('a_selected');
+	            }
+	        });
+          //初始化OcxCore.Session会话事件绑定
+			InitCTISessionBind();
+	    });
+	    /**
+		*初始化OcxCore.Session会话事件绑定
+		*/
+		function InitCTISessionBind()
+		{
+	    	//debugger;
+			//添加置忙小状态标签
+	    	$("#divBusySubState").html("");
+			var BusySubStateList = openerW.OcxCore.Session.getBusySubStateList();
+			for(var i=0;i<BusySubStateList.size();i++)
+			{
+				$("#divBusySubState").append(BusySubStateList.get(i).getSubStateName()+"：<span id='lblState"+BusySubStateList.get(i).getSubState()+"' state='2' substate='"+BusySubStateList.get(i).getSubState()+"' style='color:blue;'>0</span>&nbsp;&nbsp;");
+			}
+			//加载队列列表和坐席列表
+    		windowload(true);
+		}
+		//加载效果
+		function Loading(bool, text,time)
+        {
+			OcxCore.DialogUtil.Loading(bool, text,time);
+        }
+		//加载呼叫明细表格
+	    function GetCallDataGrid() {
+	        $("#callDataGridTable").jqGrid({
+	        	datatype:"local",
+	            height: $(window).height() - 183,
+	            autowidth: true,
+	            colModel: [
+	                { label: "呼叫ID", name: "CallId", index: "CallId", hidden: true,key:true},
+	                { label: "来电时间", name: "StartTime", index: "StartTime", width: 130, hidden: true,formatter: CCUI.utils.dateTransfer},
+	                { label: "进队列时间", name: "EnQueueTime", index: "EnQueueTime", width: 120,formatter: CCUI.utils.dateTransfer},
+	                { label: "主叫号码", name: "Caller",index: "Caller", width: 100},
+	                { label: "被叫号码", name: "Called",index: "Called", width: 100},
+	                { label: "通道号", name: "Channel",index: "Channel", width: 70},
+	                { label: "排队时长", name: "ChangeStateDuration",index: "ChangeStateDuration", width: 100,align:"center",
+						formatter : function(cellvalue,options, rowObject) {
+							var sStr = "";
+							if(rowObject.ChangeStateDuration == 0 || rowObject.ChangeStateDuration != "")
+							{
+								//根据预警规则配置获取级别样式
+				        	    var levelClass = getLevelClassByWarningRule("40",cellvalue);
+								sStr += "<span item='40' class='label WarningItem40 "+levelClass+"' duration='"+rowObject.ChangeStateDuration+"' title='排队时长'  style='width:55px;'>" + CCUI.utils.timeTransfer(rowObject.ChangeStateDuration) + "</span>";
+				            }else
+				            {
+				            	sStr += "<span item='40' class='label WarningItem40 label-level0' duration='' title='排队时长'  style='width:55px;'>" + "--:--:--" + "</span>";
+				            }
+							return sStr;
+						}
+	                }
+	            ],
+	            viewrecords: true,
+	            rowNum: 1000,
+	            rowList: [30, 50, 100, 500],
+	            pager: false,
+	            sortname: 'StartTime',
+	            sortorder: 'asc',
+	            rownumbers: true,
+	            shrinkToFit: false,
+	            gridview: true
+	        });
+	        
+	        //$("#gview_queueGridTable .jqgridNotdata").width($(".centerPanel").width() - 19);
+	        
+	        $("#gview_callDataGridTable .jqgridNotdata").hide();
+	    }
+	    
+	    //选择队列
+	    function selectQueueClickHandler()
+	   	{
+	    	var selCount = 0;
+	    	$(".sys_spec_text").html("");
+	    	openerW._QueueDatas.each(function(key,grp,index){
+	    		var selStr = "";
+	    		var aSelStr = "";
+	    		if(_QueueDatas.containsKey(grp.groupId))
+	        	{
+    				var simpleGrp = _QueueDatas.get(grp.groupId);
+    				simpleGrp.groupName = grp.groupName;
+    				if(simpleGrp.selected)
+    	        	{
+    					selStr = grp.selected != undefined && grp.selected == true ? "selected":"";
+    		    		aSelStr = grp.selected != undefined && grp.selected == true ? "a_selected":"";
+    		    		selCount++;
+    	        	}
+	        	}
+	    		var grpHtml = "<li class='"+selStr+"'><a class='"+aSelStr+"' grpid='"+grp.groupId+"' grpname='"+grp.groupName+"' ><img src='../images/Icon16/group_gear.png'>"+grp.groupName+"</a><i></i></li>";
+   				$(".sys_spec_text").append(grpHtml);
+	        });
+	    	if(selCount > 0 && selCount == openerW._QueueDatas.size())
+	    	{
+	    		$("#CheckButton").attr('title', '反选');
+	    		$("#CheckButton").text('反选');
+	    		$("#CheckButton").attr('class', 'checkAllOn');
+	    	}
+	    	else
+	    	{
+	    		$("#CheckButton").attr('title', '全选');
+	    		$("#CheckButton").text('全选');
+	    		$("#CheckButton").attr('class', 'checkAllOff');
+	    	}
+	    	
+	    	var artApi = art.dialog({
+		        id: "dialog_selectQueue",
+		        width: 600,
+		        height: 375,
+		        max: false,
+		        lock: true,
+		        resize:false,
+		        opacity: 0.3,
+		        title: "选择队列",
+		        extendDrag: true,
+		        content:$("#divSelectQueue")[0],
+		        ok: function () {
+		        	//清空显示信息
+		    	    clearShowInfo();
+		    	    var postData = {};
+		    		postData.CompanyId = openerW.OcxCore.Session.getCompanyId();
+		    		postData.GroupIds = "";
+		            $('.sys_spec_text a').each(function () { 
+		            	var grpId = $(this).attr('grpid');
+		            	if($(this).hasClass("a_selected"))
+		            	{
+			            	if(_QueueDatas.containsKey(grpId))
+		    	        	{
+		            			var grpData = _QueueDatas.get(grpId);
+		            			grpData.selected = true;
+		            			//$("#queueGridTable").jqGrid("addRowData", grpData.groupId+"", grpData, "last");
+		            			
+		            			postData.GroupIds = postData.GroupIds+","+grpId;
+		    	        	}
+		            	}
+		            	else
+		            	{
+		            		if(_QueueDatas.containsKey(grpId))
+		    	        	{
+		            			var grpData = _QueueDatas.get(grpId);
+		            			grpData.selected = false;
+		    	        	}
+		            	}
+		            });
+		            if(postData.GroupIds.length>0) postData.GroupIds = postData.GroupIds.substr(1);
+		            //刷新队列统计信息
+			        refreshQueueCountInfo(); 
+			        //从队列监控主页获取坐席列表
+		    		var SeatData = loadSeatDataFromMasterWin();
+	                LoadSeatViewList(SeatData);
+			        //刷新坐席统计信息
+				    refreshSeatCountInfo();
+				    //加载呼叫排队数据
+		   			openerW.CtiMonitorCommandFun.CommonActionWS("CommonAction","CallDataMonitor", postData,function(data){
+			    		OcxCore.Utility.ShowLoading(false);
+			    		if(data.Result == true)
+			    		{
+			               //呼叫明细
+			               LoadCallDataViewList(data.CallData);
+			    		}
+			    	},function(ex){
+			    		OcxCore.Utility.ShowLoading(false);
+			    		if(ex.Message != undefined && ex.Message != "") OcxCore.Utility.ShowTip(ex.Message, 1);
+			    	});
+		            return true;
+		        },
+		        cancel: true
+		    });
+	   	}
+	  
+	    //搜索
+	    function btn_Search() {
+	        var keywords = $("#keywords").val();
+	        var seatState = $("#SeatState").val();
+	        if (keywords != "" || seatState != "") {
+	        	var showSeats = null;
+	        	if(keywords != "")
+	        	{
+	        		showSeats = $(".UserCard")
+                     .hide()
+                     .filter(":contains('" + (keywords) + "')");
+                     if(seatState != "")
+                     {
+                     	var stateName = openerW.OcxCore.Enums.GetName(openerW.OcxCore.Enums.CTIAgentStatusFlag,seatState);
+		        		showSeats = showSeats.filter(":contains('" + (stateName) + "')");
+                     }
+                     showSeats.show();
+	        	}else
+	        	{
+	        		var stateName = openerW.OcxCore.Enums.GetName(openerW.OcxCore.Enums.CTIAgentStatusFlag,seatState);
+	        		showSeats = $(".UserCard")
+                     .hide()
+                     .filter(":contains('" + (stateName) + "')")
+                     .show();
+	        	}
+                    
+            } else {
+                $(".UserCard").show();
+            }
+            
+            $("#grid_View .selected").removeClass("selected");
+	    }
+	       
+	    //刷新
+	    function windowload(selectAllGrp) {
+	    	if(openerW.OcxCore.Session.getCompanyId() == null || openerW.OcxCore.Session.getCompanyId() == "")
+			{
+				return;
+			}
+	    	window.setTimeout(function () {
+	    		//临时代码，默认监控第一个技能组
+	    		var postData = {};
+	    		postData.CompanyId = openerW.OcxCore.Session.getCompanyId();
+	    		postData.GroupIds = "";
+	    		//清空显示信息
+	    		clearShowInfo();
+        		//加载队列列表
+        		var newQueueDatas = new OcxCore.Map();//队列列表
+        		openerW._QueueDatas.each(function(grpId,grp,index){
+        			var simpleGrp = {};
+        			if(_QueueDatas.containsKey(grpId))
+    	        	{
+        				simpleGrp = _QueueDatas.get(grpId);
+        				simpleGrp.groupName = grp.groupName;
+    	        	}
+        			else
+        			{
+        				simpleGrp.groupId = grp.groupId;
+        				simpleGrp.groupName = grp.groupName;
+        				simpleGrp.selected = selectAllGrp != undefined && grp.selected == true ? true : false;
+        			}
+    				newQueueDatas.put(grpId+"", simpleGrp);
+    				
+    				if(simpleGrp.selected) postData.GroupIds = postData.GroupIds+","+grpId;
+    	        });
+        		_QueueDatas = newQueueDatas;
+        		if(postData.GroupIds.length>0) postData.GroupIds = postData.GroupIds.substr(1);
+        		//刷新队列统计信息
+        	    refreshQueueCountInfo();
+        		//从队列监控主页获取坐席列表
+	    		var SeatData = loadSeatDataFromMasterWin();
+                LoadSeatViewList(SeatData);
+        		
+                //加载呼叫排队数据
+	   			openerW.CtiMonitorCommandFun.CommonActionWS("CommonAction","CallDataMonitor", postData,function(data){
+		    		OcxCore.Utility.ShowLoading(false);
+		    		if(data.Result == true)
+		    		{
+		               //呼叫明细
+		               LoadCallDataViewList(data.CallData);
+		    		}
+		    	},function(ex){
+		    		OcxCore.Utility.ShowLoading(false);
+		    		if(ex.Message != undefined && ex.Message != "") OcxCore.Utility.ShowTip(ex.Message, 1);
+		    	});
+	        }, 200);
+	        
+	    	if(changeDurationInterval !=null) clearInterval(changeDurationInterval);
+        	changeDurationInterval = setInterval("changeDuration()", 1000);//1秒更新一次
+	    }
+	    var changeDurationInterval = null;
+	    function changeDuration()
+	    {
+	    	var showCallDatas = $("#callDataGrid_Panel").find(".WarningItem40");
+	    	showCallDatas.each(function(){
+	    		if($(this).attr("duration") != "")
+	            {
+	            	var dseconds = parseInt($(this).attr("duration"))+1;
+	            	$(this).attr("duration",dseconds).html(CCUI.utils.timeTransfer(dseconds));
+	            	//根据预警规则配置获取级别样式
+	        	    var levelClass = getLevelClassByWarningRule("40",dseconds);
+	        	    $(this).attr("class","label WarningItem40 "+levelClass);
+	            }else
+	            {
+	            	$(this).attr("class","label WarningItem40 label-level0").html('--:--:--');
+	            }
+	    	});
+	    	
+	    	var lblMaxWaitTime = $("#lbl_maxWaitTime");
+	    	if(lblMaxWaitTime.attr("duration") != "")
+            {
+            	var dseconds = parseInt(lblMaxWaitTime.attr("duration"))+1;
+            	lblMaxWaitTime.attr("duration",dseconds).html(CCUI.utils.timeTransfer(dseconds));
+            	
+            	//根据预警规则配置获取级别样式
+        	    var levelClass = getLevelClassByWarningRule("20",dseconds);
+        	    lblMaxWaitTime.attr("class","label WarningItem20 "+levelClass);
+            }
+    		else
+            {
+    			lblMaxWaitTime.attr("class","label WarningItem20 label-level0").html('--:--:--');
+            }
+	    }
+	    
+	  //根据预警规则配置获取级别样式
+	    function getLevelClassByWarningRule(warningItem,itemValue)
+	    {
+	    	var levelClass = "label-level0";
+	    	if(openerW.warningRuleData.containsKey(warningItem))
+        	{
+        		var curRuleDataArr = openerW.warningRuleData.get(warningItem);
+        		for(var i=0;i<curRuleDataArr.length;i++)
+        		{
+        			var ruleItem = curRuleDataArr[i];
+        			if(ruleItem.operation == "大于等于" && ruleItem.paramValue != "" && itemValue >= ruleItem.paramValue)
+        			{
+        				levelClass = "label-level"+ruleItem.warningLevel;
+        			}
+        			else if(ruleItem.operation == "小于等于" && ruleItem.paramValue != "" && itemValue <= ruleItem.paramValue)
+        			{
+        				levelClass = "label-level"+ruleItem.warningLevel;
+        			}
+        		}
+        	}
+	    	return levelClass;
+	    }
+	    /*视图begin=========================================================================*/
+	    //加载坐席视图
+	    function LoadSeatViewList(data) {
+	    	var selQueueIds = new Array();
+	        _QueueDatas.each(function(queueKey,queueItem,index){
+	        	if(queueItem.selected)
+	        	{
+	        		selQueueIds.push(queueItem.groupId);
+	        	}
+	        });
+	        if(selQueueIds.length>0)
+	        {
+		        for (var i = 0; i < data.length; i++) {
+		        	var isContainSeat = false;
+		        	var isInSelGroup = false;
+	        		for(var j=0;j<data[i].GroupIds.length;j++)
+	        		{
+	        			if(isInGroup(selQueueIds,data[i].GroupIds[j]))
+			        	{
+	        				isInSelGroup = true;
+	        				break;
+			        	}
+	        		}
+		        	if(_SeatDatas.containsKey(data[i].JobNum+""))
+		        	{
+		        		isContainSeat = true;
+		        		if(!isInSelGroup || data[i].State == OcxCore.Enums.CTIAgentStatusFlag.STATE_OFFLINE.getIndex())
+		        		{
+		        			_SeatDatas.remove(data[i].JobNum+"");
+		        			$("#seatGridTable").jqGrid("delRowData", data[i].JobNum+"");
+		        		}
+		        		else
+		        		{
+		        			_SeatDatas.put(data[i].JobNum+"", data[i]);
+			        		$("#seatGridTable").jqGrid("setRowData", data[i].JobNum+"", data[i]);
+		        		}
+		        	}else
+		        	{
+		        		if(!isInSelGroup) continue;
+		        		if(data[i].State != OcxCore.Enums.CTIAgentStatusFlag.STATE_OFFLINE.getIndex() && data[i].JobNum != null)
+		        		{
+							_SeatDatas.put(data[i].JobNum+"", data[i]);
+			        		
+		        			$("#seatGridTable").jqGrid("addRowData", data[i].JobNum+"", data[i], "last");
+		        		}
+		        	}
+		        }
+	        }
+	        //刷新坐席统计信息
+		    refreshSeatCountInfo();
+	        
+	        
+	        //btn_Search();
+	    }
+	    
+	    //加载呼叫明细视图
+	    function LoadCallDataViewList(data) {
+	    	var selQueueIds = new Array();
+	        _QueueDatas.each(function(queueKey,queueItem,index){
+	        	if(queueItem.selected)
+	        	{
+	        		selQueueIds.push(queueItem.groupId);
+	        	}
+	        });
+	        if(selQueueIds.length>0)
+	        {
+		        for (var i = 0; i < data.length; i++) {
+		        	var isInSelGroup = isInGroup(selQueueIds,data[i].GroupId);
+		        	if(_CallDatas.containsKey(data[i].CallId))
+		        	{
+		        		if(!isInSelGroup || data[i].State == 1)
+		        		{
+		        			_CallDatas.remove(data[i].CallId);
+		        			$("#callDataGridTable").jqGrid("delRowData", data[i].CallId);
+		        		}
+		        		else
+		        		{
+		        			_CallDatas.put(data[i].CallId, data[i]);
+			        		$("#callDataGridTable").jqGrid("setRowData", data[i].CallId, data[i]);
+		        		}
+		        	}else
+		        	{
+		        		if(!isInSelGroup) continue;
+		        		if(data[i].State == 0)
+		        		{
+		        			_CallDatas.put(data[i].CallId, data[i]);
+		        			
+		        			var rowData = $("#callDataGridTable").jqGrid("getRowData",data[i].CallId+"");
+		        			if(rowData != undefined && rowData != null && rowData.CallId != undefined)
+		        			{
+		        				$("#callDataGridTable").jqGrid("setRowData", data[i].CallId, data[i]);
+		        			}
+		        			else
+		        			{
+		        				$("#callDataGridTable").jqGrid("addRowData", data[i].CallId, data[i], "first");
+		        			}
+		        		}
+		        	}
+		        }
+	        }
+			//$("#lblQueueCount").text(_CallDatas.size());
+	        //$("#CenterTitle").html(GroupName);
+	        //$("#lblTotal").text($("#grid_View .UserCard").size());
+	        
+	        //btn_Search();
+	    }
+	    
+	    //刷新队列统计信息
+	    function refreshQueueCountInfo()
+	    {
+	    	var queueCount = 0;//选择队列数
+	        var enqueueCount = 0;//排队电话数
+	        var maxWaitTime = 0;//最大等待时长
+	        var avgTalkTime = 0;//平均通话时长
+	        var callInCount = 0;//进线量
+	        var answerCount = 0;//接听量
+	        var lostCallCount = 0;//呼损量
+	        var answerRate = "";//接听率
+	        var lostRate = "";//呼损率
+	        
+	        // 统计队列数据
+    		openerW._QueueDatas.each(function(grpId,grp,index){
+    			if(_QueueDatas.containsKey(grpId))
+	        	{
+    				var simpleGrp = _QueueDatas.get(grpId);
+    				simpleGrp.groupName = grp.groupName;
+    				if(simpleGrp.selected)
+    	        	{
+    	        		queueCount++;
+    	        		enqueueCount = enqueueCount + grp.enqueueCount;
+    	        		if(grp.maxWaitTime != null && grp.maxWaitTime != "" && grp.maxWaitTime > maxWaitTime)
+    	        		{
+    	        			maxWaitTime = grp.maxWaitTime;
+    	        		}
+    	        		callInCount = callInCount + grp.callInCount;
+    	        		answerCount = answerCount + grp.answerCount;
+    	        		lostCallCount = lostCallCount + grp.lostCallCount;
+    	        	}
+	        	}
+	        });
+    		//answerRate = (callInCount - enqueueCount) > 0 ? ((Math.round(answerCount / (callInCount - enqueueCount) * 10000) / 100.00).toFixed(2) + "%"):"0.00%";//接通率
+			//lostRate = (callInCount - enqueueCount) > 0 ? ((Math.round(lostCallCount / (callInCount - enqueueCount) * 10000) / 100.00).toFixed(2) + "%"):"0.00%";//呼损率
+			answerRate = (callInCount - enqueueCount) > 0 ? (Math.round(answerCount / (callInCount - enqueueCount) * 10000) / 10000.00):0;//接通率
+			lostRate = (callInCount - enqueueCount) > 0 ? (Math.round(lostCallCount / (callInCount - enqueueCount) * 10000) / 10000.00):0;//呼损率
+			
+			//$("#lblQueueCount").text(queueCount);
+        	
+        	//根据预警规则配置获取级别样式
+    	    var levelClass = getLevelClassByWarningRule("19",enqueueCount);
+    	    $("#lbl_enqueueCount").attr("class","label WarningItem WarningItem19 "+levelClass).html(enqueueCount);
+    	    if(maxWaitTime > 0)
+        	{
+        		//根据预警规则配置获取级别样式
+        	    var levelClass = getLevelClassByWarningRule("20",maxWaitTime);
+        		$("#lbl_maxWaitTime").attr("duration",maxWaitTime).attr("class","label WarningItem20 "+levelClass).html(CCUI.utils.timeTransfer(maxWaitTime));
+        	}
+        	else
+        	{
+        		$("#lbl_maxWaitTime").attr("duration","").attr("class","label WarningItem20 label-level0").html('--:--:--');
+        	}
+        	
+        	/* if(avgTalkTime > 0)
+        	{
+        		//根据预警规则配置获取级别样式
+        	    var levelClass = getLevelClassByWarningRule("21",avgTalkTime);
+        		$("#lbl_avgTalkTime").attr("class","label WarningItem21 "+levelClass).html(CCUI.utils.timeTransfer(avgTalkTime));
+        	}
+        	else
+        	{
+        		$("#lbl_avgTalkTime").attr("class","label WarningItem21 label-level0").html('--:--:--');
+        	} */
+        	levelClass = getLevelClassByWarningRule("22",callInCount);
+    	    $("#lbl_callInCount").attr("class","label WarningItem WarningItem22 "+levelClass).html(callInCount);
+        	levelClass = getLevelClassByWarningRule("23",answerCount);
+    	    $("#lbl_answerCount").attr("class","label WarningItem WarningItem23 "+levelClass).html(answerCount);
+        	levelClass = getLevelClassByWarningRule("24",lostCallCount);
+    	    $("#lbl_lostCallCount").attr("class","label WarningItem WarningItem24 "+levelClass).html(lostCallCount);
+    	    var answerRateStr = answerRate > 0 ? (answerRate*100).toFixed(2) + "%":"0.00%";//接通率
+    	    levelClass = getLevelClassByWarningRule("25",answerRate);
+    	    $("#lbl_answerRate").attr("class","label WarningItem WarningItem25 "+levelClass).html(answerRateStr);
+    	    var lostRateStr = lostRate > 0 ? (lostRate*100).toFixed(2) + "%":"0.00%";//接通率
+    	    levelClass = getLevelClassByWarningRule("26",lostRate);
+    	    $("#lbl_lostRate").attr("class","label WarningItem WarningItem26 "+levelClass).html(lostRateStr);
+	    }
+	    //刷新坐席统计信息
+	    function refreshSeatCountInfo()
+	    {
+	        var seatCount= 0;//签入坐席数
+	        var idleCount = 0;//空闲数
+	        var StateCount2 = 0;//忙碌数
+	        var StateCount5 = 0;
+	        var StateCount7 = 0;
+	        var SubStateCounts = new OcxCore.Map();//小状态统计列表
+	        var selQueueIds = new Array();
+	        _QueueDatas.each(function(queueKey,queueItem,index){
+	        	if(queueItem.selected)
+	        	{
+	        		selQueueIds.push(queueItem.groupId);
+	        	}
+	        });
+	        if(selQueueIds.length>0)
+	        {
+	        	openerW._SeatDatas.each(function(seatKey,seatItem,seatIndex){
+	        		var isInSelGroup = false;
+	        		for(var i=0;i<seatItem.GroupIds.length;i++)
+	        		{
+	        			if(isInGroup(selQueueIds,seatItem.GroupIds[i]))
+			        	{
+	        				isInSelGroup = true;
+	        				break;
+			        	}
+	        		}
+		        	if(isInSelGroup)
+		        	{
+		        		seatCount++;
+		        		if(seatItem.State == 1) idleCount++;
+		        		if(seatItem.State == 2 && seatItem.SubState < 200) StateCount2++;
+		        		if(seatItem.State == 5) StateCount5++;
+		        		if(seatItem.State == 7) StateCount7++;
+		        		if(seatItem.State == 2 && seatItem.SubState > 200)
+		        		{
+		        			if(SubStateCounts.containsKey(seatItem.SubState+""))
+		    	        	{
+		        				SubStateCounts.put(seatItem.SubState+"",SubStateCounts.get(seatItem.SubState+"")+1);
+		    	        	}
+		        			else
+		        			{
+		        				SubStateCounts.put(seatItem.SubState+"",1);
+		        			}
+		        		}
+		        	}
+		        });
+	        	
+	        	var BusySubStateList = openerW.OcxCore.Session.getBusySubStateList();
+		    	for(var i=0;i<BusySubStateList.size();i++)
+		    	{
+		    		var subState = BusySubStateList.get(i).getSubState();
+		    		var subStateCount = 0;
+		    		if(SubStateCounts.containsKey(subState+""))
+    	        	{
+		    			subStateCount = SubStateCounts.get(subState+"");
+    	        	}
+			        $("#lblState"+subState).text(subStateCount);
+		    	}
+	        }
+	        
+	        //空闲坐席数
+			var levelClass = getLevelClassByWarningRule("18",idleCount);
+    	    $("#lbl_idleCount").attr("class","label WarningItem WarningItem18 "+levelClass).html(idleCount);
+    	    levelClass = getLevelClassByWarningRule("41",seatCount);
+    	    $("#lbl_seatCount").attr("class","label WarningItem WarningItem41 "+levelClass).html(seatCount);
+			$("#lblSeatCount").text(seatCount);
+			
+			$("#lblState1").text(idleCount);
+	        $("#lblState2").text(StateCount2);
+	        $("#lblState7").text(StateCount7);
+	        $("#lblState5").text(StateCount5);
+	    }
+	    //清空显示信息
+	    function clearShowInfo()
+	    {
+    		_SeatDatas.clear();//坐席列表
+    		_CallDatas.clear();//呼叫数据列表
+    		_QueueHistoryDatas.clear();//队列历史列表
+    		
+    		$("#lblSeatCount").text("0");
+	        $("#lblState0").text("0");
+	        $("#lblState1").text("0");
+	        $("#lblState2").text("0");
+	        $("#lblState3").text("0");
+	        $("#lblState4").text("0");
+	        $("#lblState5").text("0");
+	        $("#lblState6").text("0");
+	        $("#lblState7").text("0");
+	        $("#lblState8").text("0");
+			$("#lblState10").text("0");
+	        
+        	$("#lbl_idleCount").attr("class","label WarningItem WarningItem18 label-level0").html("0");
+        	$("#lbl_enqueueCount").attr("class","label WarningItem WarningItem19 label-level0").html("0");
+        	//$("#lbl_maxWaitTime").html("");
+        	$("#lbl_maxWaitTime").attr("duration","").attr("class","label WarningItem WarningItem20 label-level0").html("--:--:--");
+        	//$("#lbl_avgTalkTime").attr("class","label WarningItem WarningItem21 label-level0").html("");
+        	$("#lbl_seatCount").attr("class","label WarningItem WarningItem41 label-level0").html("");
+        	$("#lbl_callInCount").attr("class","label WarningItem WarningItem22 label-level0").text("0");
+        	$("#lbl_answerCount").attr("class","label WarningItem WarningItem23 label-level0").text("0");
+        	$("#lbl_lostCallCount").attr("class","label WarningItem WarningItem24 label-level0").text("0");
+        	$("#lbl_answerRate").attr("class","label WarningItem WarningItem25 label-level0").text("");
+        	$("#lbl_lostRate").attr("class","label WarningItem WarningItem26 label-level0").text("");
+        	
+        	$("#callDataGridTable").jqGrid('clearGridData');//清空呼叫列表
+	    }
+	    //从队列监控主页获取坐席列表
+	    function loadSeatDataFromMasterWin()
+	    {
+	        var selQueueIds = new Array();
+	        var seatDatas = new Array();
+	        _QueueDatas.each(function(queueKey,queueItem,index){
+	        	if(queueItem.selected)
+	        	{
+	        		selQueueIds.push(queueItem.groupId);
+	        	}
+	        });
+	        if(selQueueIds.length>0)
+	        {
+	        	openerW._SeatDatas.each(function(seatKey,seatItem,seatIndex){
+	        		var isInSelGroup = false;
+	        		for(var i=0;i<seatItem.GroupIds.length;i++)
+	        		{
+	        			if(isInGroup(selQueueIds,seatItem.GroupIds[i]))
+			        	{
+	        				isInSelGroup = true;
+	        				break;
+			        	}
+	        		}
+		        	if(isInSelGroup)
+		        	{
+		        		seatDatas.push(seatItem);
+		        	}
+		        });
+	        }
+	        return seatDatas;
+	    }
+	    //是否包含指定队列
+	    function isInGroup(groupIds,groupId)
+	    {
+	    	var isHasGroupId = false;
+    		if(groupIds != undefined && groupIds.length>0)
+    		{
+    			for(var j=0;j<groupIds.length;j++)
+    			{
+    				if(groupIds[j] == groupId)
+    				{
+    					isHasGroupId = true;
+    					break;
+    				}
+    			}
+    		}
+    		return isHasGroupId;
+	    }
+	    
+	    /*视图end=========================================================================*/
+	    //通知
+    function Notify(cmd, data)
+	{
+    	if (cmd == "SEATSTATE_NOTIFY")//监控坐席状态通知
+        {
+            var seats = data.Data;//
+            LoadSeatViewList(seats);
+        }
+    	else if (cmd == "GROUPSTATE_NOTIFY")//监控技能组状态通知
+        {
+            //var groups = data.Data;
+            //LoadSingleGroupViewList(groups);
+          	//刷新队列统计信息
+    	    refreshQueueCountInfo();
+        }
+    	else if (cmd == "QUEUESTATE_NOTIFY")//呼叫明细状态通知
+        {
+            var callDatas = data.Data;
+            LoadCallDataViewList(callDatas);
+        }
+	}
+
+	
+	
+	//关闭监控窗口
+	function closeThisWindow()
+	{
+        window.close();//关闭登录窗口
+	}
+	</script>
+	<style type="text/css">
+		.form .formValue{ padding-left:3px;}
+		.ui-widget-content-altclass{background:#fff;}
+		.ui-jqgrid .ui-jqgrid-btable {border-right: 1px solid #ccc;}
+		.ui-jqgrid tr.jqgrow td {height: 32px;border-bottom:1px solid #ccc;border-right:none;}
+		.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight  {background: #e4e4e4;color: #000000;}
+		
+		.sys_spec_text li{height: 33px;}
+		.sys_spec_text li a{height: 29px;line-height: 29px;}
+		
+		.label {
+		    display: block;
+		    padding: .2em .6em .3em;
+		    font-size: 75%;
+		    /* font-weight: 700; */
+		    line-height: 1;
+		    /* color: #fff; */
+		    text-align: center;
+		    white-space: nowrap;
+		    vertical-align: baseline;
+		    border-radius: .25em;
+		}
+		.label-red {
+		    background: #D92D29;
+		    color: #fff;
+		}
+		.label-orange {
+		    background: #FF9702;
+		    color: #000;
+		}
+		.label-yellow {
+		    background: #FAF81D;
+		    color: #000;
+		}
+		.label-blue {
+		    background: #587ff1;
+		    color: #fff;
+		}
+		.label-normal {
+		    color: #000;
+		}
+		
+		.label-level4 {
+		    background: #D92D29;
+		    color: #fff;
+		}
+		.label-level3 {
+		    background: #FF9702;
+		    color: #000;
+		}
+		.label-level2 {
+		    background: #FAF81D;
+		    color: #000;
+		}
+		.label-level1 {
+		    background: #587ff1;
+		    color: #fff;
+		}
+		.label-level0 {
+		    color: #000;
+		}
+	</style>
+  </head>
+  <body>
+  	 <div class="tools_bar" style="border-top: none; margin-bottom: 0px;height:30px;">
+     	<div class="PartialButton" style="float:left;">
+      		<a title="刷新" class="tools_btn" id="cc-replace" onclick="windowload(false)"><span><b style='background: url("../images/Icon16/arrow_refresh.png") no-repeat 1px 4px;'>刷新</b></span></a>
+      		<a title="选择队列" class="tools_btn" id="cc-selectQueue" onclick="selectQueueClickHandler()"><span><b style='background: url("../images/Icon16/outlook_new_meeting.png") no-repeat 1px 4px;'>选择队列</b></span></a>
+     	</div>
+     	
+	</div>
+     <div id="queueTb_Panel">
+        <table id="queueTb" class="form">
+	        <tr>
+	            <th class="formTitle">空闲坐席数：</th>
+	            <td class="formValue">
+	                <span id="lbl_idleCount" class="label WarningItem WarningItem18 label-level0" style='width:45px;'>0</span>
+	            </td>
+	            <th class="formTitle">排队电话数：</th>
+	            <td class="formValue">
+	                <span id="lbl_enqueueCount" class="label WarningItem WarningItem19 label-level0" style='width:45px;'>0</span>
+	            </td>
+	            <th class="formTitle">最长等待时间：
+	            </th>
+	            <td class="formValue">
+	                <span id="lbl_maxWaitTime" class='label WarningItem WarningItem20 label-level0' duration=''  style='width:55px;'></span>
+	            </td>
+	        </tr>
+	        <tr>
+	            <!-- <th class="formTitle">平均通话时长：
+	            </th>
+	            <td class="formValue">
+	                <span id="lbl_avgTalkTime" class='label WarningItem WarningItem21 label-level0' duration=''  style='width:55px;'></span>
+	            </td> -->
+	            <th class="formTitle">签入坐席数：</th>
+	            <td class="formValue">
+	                <span id="lbl_seatCount" class="label WarningItem WarningItem41 label-level0" style='width:45px;'>0</span>
+	            </td>
+	            <th class="formTitle">进线量：</th>
+	            <td class="formValue">
+	                <span id="lbl_callInCount" class="label WarningItem WarningItem22 label-level0" style='width:45px;'>0</span>
+	            </td>
+	            <th class="formTitle">接听量：</th>
+	            <td class="formValue">
+	                <span id="lbl_answerCount" class="label WarningItem WarningItem23 label-level0" style='width:45px;'>0</span>
+	            </td>
+	        </tr>
+	        <tr>
+	            <th class="formTitle">呼损量：</th>
+	            <td class="formValue">
+	                <span id="lbl_lostCallCount" class="label WarningItem WarningItem24 label-level0" style='width:45px;'>0</span>
+	            </td>
+	            <th class="formTitle">接通率：</th>
+	            <td class="formValue">
+	                <span id="lbl_answerRate" class="label WarningItem WarningItem25 label-level0" style='width:45px;'></span>
+	            </td>
+	            <th class="formTitle">呼损率：</th>
+	            <td class="formValue">
+	                <span id="lbl_lostRate" class="label WarningItem WarningItem26 label-level0" style='width:45px;'></span>
+	            </td>
+	        </tr>
+	    </table>
+     </div>
+     <div class="btnbartitle">
+         <div style="float:left;">
+         	呼叫排队监控--
+         </div>
+         <div style="float:left;margin-left:1px;">
+             	签入坐席数：<span id="lblSeatCount" style="color:blue;">0</span>人&nbsp;&nbsp;&nbsp;
+             	空闲：<span id="lblState1" state="1" substate="0" style="color:blue;">0</span>&nbsp;&nbsp;
+             	忙碌：<span id="lblState2" state="2" substate="2" style="color:blue;">0</span>&nbsp;&nbsp;
+             	<div id="divBusySubState" style="display:inline;">
+             		<!-- 事后处理：<span id="lblState201" style="color:blue;">0</span>&nbsp;&nbsp;
+             		小休：<span id="lblState202" style="color:blue;">0</span>&nbsp;&nbsp;
+	             	开会：<span id="lblState203" style="color:blue;">0</span>&nbsp;&nbsp;
+	             	培训：<span id="lblState204" style="color:blue;">0</span>&nbsp;&nbsp;
+	             	督导：<span id="lblState205" style="color:blue;">0</span>&nbsp;&nbsp;
+					外呼营销：<span id="lblState206" style="color:blue;">0</span>&nbsp;&nbsp;
+	             	联系客户：<span id="lblState207" style="color:blue;">0</span>&nbsp;&nbsp;
+	             	其它：<span id="lblState208" style="color:blue;">0</span>&nbsp;&nbsp; -->
+             	</div>
+             	三方会议：<span id="lblState7" state="7" substate="0" style="color:blue;">0</span>&nbsp;&nbsp;
+             	通话：<span id="lblState5" state="5" substate="0" style="color:blue;">0</span>
+          </div>
+     </div>
+     <div id="callDataGrid_Panel">
+       <table id="callDataGridTable"></table>
+     </div>
+     <div style="display:none;">
+		<div id="divSelectQueue" class="border" style="margin: 1px;width:600px;height:375px;">
+		    <div class="btnbartitle">
+		        <div style="float: left">
+		        </div>
+		        <div style="float: right">
+		            <label id="CheckButton" class="checkAllOff" title="全选">全选</label>
+		        </div>
+		    </div>
+		    <div id="SeatGroupList" style="height: 345px;overflow: auto;">
+		        <ul class="sys_spec_text">
+		        	<!-- <li class="selected"><a class="a_selected" grpId="1" grpName="技能组1" ><img src="../images/Icon16/group_gear.png">技能组1</a><i></i></li>
+		        	<li class="selected"><a class="a_selected" grpId="2" grpName="技能组2" ><img src="../images/Icon16/group_gear.png">技能组2</a><i></i></li>
+		        	<li class=""><a class="" grpId="3" grpName="技能组3" ><img src="../images/Icon16/group_gear.png">技能组3</a><i></i></li> -->
+		        </ul>
+		    </div>
+		</div>
+	 </div>
+  </body>
+</html>

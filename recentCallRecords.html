@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>最近呼叫记录</title>
+	<!-- 公共头部引用 -->
+	<meta charset="utf-8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<!-- <meta http-equiv="X-UA-Compatible" content="IE=edge" /> -->
+	<meta http-equiv="pragma" content="no-cache" />
+	<meta http-equiv="Cache-Control" content="no-cache,no-store,must-revalidate" />
+	<meta http-equiv="expires" content="Wed,26 Feb 1997 08:21:57 GMT" />
+	<!-- <meta http-equiv="expires" content="0" /> -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="renderer" content="webkit|ie-comp|ie-stand" />
+
+	<link rel="shortcut icon" href="favicon.ico">
+	<!-- <link href="Content/Hplus/css/bootstrap.min.css?v=3.3.6" rel="stylesheet"> -->
+	<!-- ${staticctx} -->
+	<link href="Content/Hplus/css/bootstrap.css?v=3.3.6" rel="stylesheet">
+	<link href="Content/Hplus/css/font-awesome.css?v=4.4.0"  rel="stylesheet">
+
+	<!-- nice-validator css -->
+	<link href="Content/Hplus/js/plugins/nice-validator/css/jquery.validator.css"  rel="stylesheet">
+
+	<link href="Content/Hplus/css/animate.css" rel="stylesheet"/>
+	<link href="Content/Hplus/css/style.css?v=4.1.0" rel="stylesheet"/>
+	<link href="Content/Hplus/css/font-awesome.css?v=4.4.0"
+		  rel="stylesheet"/>
+
+	<!-- jqgrid-->
+	<!-- <link href="Content/Hplus/css/plugins/jqgrid/ui.jqgrid.css?1220" rel="stylesheet"/> -->
+	<link href="Content/Hplus/css/plugins/jqgrid/ui.jqgrid-bootstrap.css?1220" rel="stylesheet"/>
+
+	<link href="Content/Hplus/css/style-cct.css?v=4.1.0" rel="stylesheet"/>
+	<!-- iCheck-->
+	<link href="Content/Hplus/css/plugins/iCheck/custom.css" rel="stylesheet">
+	<!-- 全局js -->
+	<script src="Content/Hplus/js/jquery.min.js?v=2.1.4"></script>
+
+	<style type="text/css">
+		.row-margin-top {
+			margin-top: 20px;
+		}
+
+		.col-label- {
+			text-align: right;
+		}
+
+		#alertmod_table_list_2 {
+			top: 900px !important;
+		}
+
+
+		/*jqgrid set the size of the datepicker search control for Order Date*/
+		#ui-datepicker-div { font-size:11px; }
+
+		/* set the size of the autocomplete search control*/
+		.ui-menu-item {
+
+		}
+
+		.ui-autocomplete {
+			font-size: 11px;
+		}
+	</style>
+<style type="text/css">
+.ui-jqgrid .ui-jqgrid-bdiv{
+	overflow-x:hidden;
+}
+.ui-multiselect-menu ul{
+	list-style-type:none;
+	margin:0;
+	padding:0;
+}
+</style>
+</head>
+
+<body class="gray-bg">
+	<div class="wrapper wrapper-content  animated fadeInRight">
+		<div class="row">
+			<div class="col-sm-12">
+				<div class="ibox ibox-nobottom">
+					<div class="ibox-title">
+						<h5>最近呼叫记录</h5>
+						<div class="ibox-tools">
+							<div class="form-group" style="float:left;margin-bottom:0px;">
+								<label class="control-label"  style="float:left;padding-top:7px;">刷新频率:</label>
+								<select class="form-control input-sm" id=refreshFrequency name="refreshFrequency" style="width: 100px;margin-right:10px;">	
+									<option value="1">1秒</option>	
+									<option value="2">2秒</option>	
+									<option value="5" selected="selected">5秒</option>
+									<option value="10">10秒</option>
+									<option value="30">30秒</option>
+									<option value="60">1分钟</option>
+									<option value="300">5分钟</option>
+									<option value="600">10分钟</option>
+									<option value="">暂停</option>
+								</select>
+                            </div>
+                            <div class="btn-group">
+                            	<button class="btn btn-primary btn-outline btn-sm" type="button" onclick="refreshGridData()"><i class="fa fa-refresh"></i> 刷新</button>
+                           </div>
+                           <button id="btnQuickFilter" class="btn btn-primary btn-sm m-l-sm" type="button" ><i class="fa fa-search"></i> 快捷筛选</button>
+	                    </div>
+	                    <div class="ibox-title-subbar">
+							<ul>
+								<li class="first">已选中<span class="subbar-selsize">1</span> 项</li>
+								<li id="btn_clearSelection"><a class="btn btn-link btn-bitbucket cct-ftcolor-blue" title="取消选中的记录"  onclick="clearJqGridSelection()"><i class="fa fa-square-o"></i> 清除选择</a></li>
+								<li><a class="btn btn-link btn-bitbucket cct-ftcolor-green"  onclick="btn_ForceCheckOut()"><i class="fa fa-pencil-square-o"></i> 强制签出</a></li>
+							</ul>
+							<a class="btn btn-lg btn-link btn-bitbucket ibox-title-subbar-close" onclick="setIboxTitleSubbar(0)"><i class="fa fa-remove"></i></a>  
+						</div>
+					</div>
+					<div class="ibox-content ibox-content-np ibox-content-noborder">
+						<div class="jqGrid_wrapper">
+							<a class="edit_items" href="javascript:void(0);" onclick="javascript:jQuery('#gridTable').jqGrid('setColumns');" title="编辑隐藏字段"></a>
+							<table id="gridTable"></table>
+							<div id="gridPager"></div>
+						</div>
+					</div>
+						
+						
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<!-- 筛选条件 -->
+	<div class="cct-filter-container hide">
+		<div head="">
+			<h2>快捷筛选</h2>
+			<a close="" class="ui-cmp-iconbtn alpha pull-right">
+				<span class="fa fa-times exposure"></span>
+			</a>
+		</div>
+		<div content="">
+		<form class="" id="formFilterContainer">
+			<ul style="transition-timing-function: cubic-bezier(0.1, 0.57, 0.1, 1); transition-duration: 0ms; transform: translate(0px, 0px) translateZ(0px);">
+			<li class="">
+				<div item="">
+					<div left="">
+						<label>时间段</label>
+					</div>
+					<div right="">
+						<select class="form-control select-div" id="dateRangeField">
+							<option value="startTime">呼叫时间</option>
+							<option value="enqueueTime">进队列时间</option>
+						</select>
+					</div>
+				</div>
+			</li>
+			<li class="">
+				<div item="">
+					<div left="">
+						<!-- <label>时间段</label> -->
+					</div>
+					<div right="">
+						<select class="form-control select-div" id="dateRangeType">
+							<option value="today">今天</option>
+							<option value="yesterday">昨天</option>
+							<option value="thisweek">本周</option>
+							<option value="lastweek">上周</option>
+							<option value="thismonth">本月</option>
+							<option value="lastmonth">上月</option>
+							<option value="thisquarter">本季度</option>
+							<option value="customrange" selected="selected">指定时间</option>
+						</select>
+					</div>
+				</div>
+			</li><li class="split-line ">
+				<div item="">
+					<div></div>
+					<div id="datepicker" class="input-daterange input-group date-range">			
+						<input type="text" id="startDate" class="form-control laydate-icon" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" placeholder="开始时间" style="height:30px;">
+						<span class="input-group-addon">至</span>
+						<input type="text" id="endDate" class="form-control laydate-icon" onclick="laydate({istime: true, format: 'YYYY-MM-DD hh:mm:ss'})" placeholder="结束时间" style="height:30px;">
+					</div>
+				</div>
+			</li>
+			<li class="">
+				<div item="">
+					<div left="">
+						<label>队列状态</label>
+					</div>
+					<div right="">
+						<select class="form-control select-div" id="state" name="state">
+							<option value="">请选择状态</option>	
+							<option value="0" selected="selected">进队列</option>	
+							<option value="1">出队列</option>	
+						</select>
+					</div>
+				</div>
+			</li>
+			<li class="">
+				<div item="">
+					<div left="">
+						<label>呼叫类型</label>
+					</div>
+					<div right="">
+						<select class="form-control select-div" id="callType" name="callType">
+							<option value="">请选择</option>	
+							<option value="0" selected="selected"> 呼入</option>	
+							<option value="1">呼出</option>	
+							<option value="2">预测外呼</option>
+							<option value="3">自动外呼</option>
+							<option value="4">手动外呼</option>
+							<option value="5">下班转外线</option>
+							<option value="6">IVR转外线</option>
+							<option value="7">座席转外线</option>
+							<option value="8">遇忙转外线</option>
+						</select>
+					</div>
+				</div>
+			</li>
+			<li class="">
+				<div item="">
+					<div left="">
+						<label>所属公司</label>
+					</div>
+					<div right="">
+						<select class="form-control select-div" id="companyId" name="companyId">
+						<option value="">请选择</option>
+		                <option value="31b05701-60ef-405c-87ba-af47049e3f48">某某有限公司</option>
+		                <option value="20180803-1225-3415-86c2-3219a1739c3c">迅雷科技有限公司（测试）</option>
+						</select>
+					</div>
+				</div>
+			</li>
+			<li class="">
+				<div item="">
+					<div left="">
+						<label>所属公司(手工录入)</label>
+					</div>
+					<div right="">
+						<input type="text" class="form-control select-div" id="companyId2" name="companyId2" />
+					</div>
+				</div>
+			</li>
+			<li class="">
+				<div item="">
+					<div left="">
+						<label>技能ID</label>
+					</div>
+					<div right="">
+						<input type="text" class="form-control select-div" id="groupId" name="groupId" />
+					</div>
+				</div>
+			</li>
+			<li class="">
+				<div item="">
+					<div left="">
+						<label>主叫:</label>
+					</div>
+					<div right="">
+						<input type="text" class="form-control select-div" id="caller" name="caller" />
+					</div>
+				</div>
+			 </li>
+			 <li class="">
+				<div item="">
+					<div left="">
+						<label>被叫:</label>
+					</div>
+					<div right="">
+						<input type="text" class="form-control select-div" id="called" name="called" />
+					</div>
+				</div>
+			 </li>
+			<li class="">
+				<div item="">
+					<div left="">
+						<label>接听分机号:</label>
+					</div>
+					<div right="">
+						<input type="text" class="form-control select-div" id="seatNum" name="seatNum" />
+					</div>
+				</div>
+			 </li>
+			</ul>
+			</form>
+		</div>
+		<div foot="">
+			<span clean="" name="queryClean" onclick="btn_Reset()">清空筛选项</span>
+			<button query="" class="btn btn-sm btn-primary pull-right m-r-xs" type="button" onclick="btn_Search()">筛选查询</button>
+		</div>
+	</div>		
+	
+	<!-- 右侧弹出层 -->
+	<div class="cct-content-detail cct-sliding-content" style="display:none;">
+		<span id="cctCloseBtn" class="cctCloseBtn" onclick="showRightDetailContent('',false)"></span>
+		<div class="cct-content-loading">
+			<span class="cct-content-loading-img"></span>
+		</div>
+		<div class="cct-content-main">
+			<iframe class="cct-content-iframe" name="iframe_cct_content" width="100%" height="100%" src="" frameborder="0" seamless></iframe>
+		</div>
+	</div>
+	
+	<!-- 公共尾部引用 -->
+	<!-- 全局js -->
+	<script src="Content/Hplus/js/bootstrap.min.js?v=3.3.6"></script>
+	<!-- slimscroll -->
+	<script src="Content/Hplus/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+	<!-- Peity -->
+	<script src="Content/Hplus/js/plugins/peity/jquery.peity.min.js"></script>
+
+	<!-- jqGrid -->
+	<script src="Content/Hplus/js/plugins/jqgrid/i18n/grid.locale-cn.js?1220"></script>
+	<script src="Content/Hplus/js/plugins/jqgrid/jquery.jqGrid.min.js?1220"></script>
+
+	<!--弹框插件 layer -->
+	<script src="Content/Hplus/js/plugins/layer/layer.js"></script>
+
+	<!-- 自定义js -->
+	<script src="Content/Hplus/js/content.js?v=1.0.0"></script>
+
+	<!-- 自定义js -->
+	<script src="Content/Hplus/js/CCUI-framework.js"></script>
+	<script  src="" type="text/javascript">
+        _CallCenter_rootPath = "${ctx}";
+	</script>
+	<!--框架工具JS组件start-->
+	<script src="Content/Hplus/js/CCUI-utils.js"></script>
+	<!--框架工具JS组件end-->
+
+	<!--框架工具JS组件end-->
+	<!--自定义弹框工具JS -->
+	<script src="Content/Hplus/js/DialogUtil_layer3.js?version=1.0.0" type="text/javascript"></script>
+	<!-- laydate日期插件 -->
+	<script src="Content/Hplus/js/plugins/layer/laydate/laydate.js"></script>
+	<!-- iCheck -->
+	<script src="Content/Hplus/js/plugins/iCheck/icheck.min.js"></script>
+	<!-- nice-validator校验插件 -->
+	<script src="Content/Hplus/js/plugins/nice-validator/js/jquery.validator.min.js"></script>
+	<script src="Content/Hplus/js/plugins/nice-validator/local/zh-CN.js"></script>
+
+
+	<!--表单验证JS -->
+	<!-- <script src="Content/Hplus/js/plugins/validate/jquery.validate.min.js"></script>
+	<script src="Content/Hplus/js/plugins/validate/messages_zh.min.js"></script>
+	<script src="Content/Hplus/js/plugins/validate/form-validate-config.js"></script> -->
+
+	<!-- Page-Level Scripts -->
+	<script type="text/javascript">
+        $(document).ready(function () {
+            $.jgrid.defaults.width = 780;
+            $.jgrid.defaults.responsive = true;
+            $.jgrid.defaults.styleUI = 'Bootstrap';
+            //$.jgrid.styleUI.Bootstrap.colmenu.icon_menu = 'glyphicon-collapse-down';//glyphicon-collapse-down
+
+        });
+	</script>
+	<noscript>请开启 Javascript 才能正常打开应用</noscript>
+	<script src="Content/Hplus/js/plugins/jqgrid/plugins/grid.setfields.js"></script>
+	<link rel="stylesheet" type="text/css"	 href="Content/Scripts/jqueryMultiselect/jquery.multiselect.css" />
+	<link rel="stylesheet" type="text/css"  src="Content/Scripts/jqueryMultiselect/jquery-ui.css" />
+	<script type="text/javascript" src="Content/Scripts/jqueryMultiselect/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="Content/Scripts/jqueryMultiselect/jquery.multiselect.js"></script>
+	
+	<!-- 页面脚本  Scripts -->
+	<script type="text/javascript">
+        $(document).ready(function () {
+        	bindFunction();
+        	//快捷筛选事件绑定
+        	bindUserQuickfilter();
+            GetGrid();
+            
+         	// Add responsive to jqGrid
+            $(window).bind('resize', function () {
+            	resizeUI();
+            });
+            resizeUI();
+
+            refreshGridData();
+
+           setTimeout(function(){
+            	timingRefreshGridData();
+            },parseInt($("#refreshFrequency").val())*1000);//5秒更新一次
+        });
+        function timingRefreshGridData(){
+        	if($("#refreshFrequency").val() != "")
+        	{
+        		refreshGridData();
+        	}
+        	var refreshFrequency = 5;
+        	if($("#refreshFrequency").val() != "")
+        		refreshFrequency = parseInt($("#refreshFrequency").val());
+        	setTimeout(function(){
+            	timingRefreshGridData();
+            },refreshFrequency*1000);
+        }
+        
+        function resizeUI(){
+        	var width = $('.jqGrid_wrapper').width();
+            //$('#gridTable').setGridWidth(width-10);
+            $("#gridTable").setGridHeight($(window).height() - 149);
+            
+    	}
+      	//绑定事件
+        function bindFunction()
+        {
+	    	/* $("#state").multiselect({
+	        	height : 200,
+				minWidth : 200,
+				hide : [ "explode", 500 ],
+				checkAllText : "全选",
+				uncheckAllText : "取消",
+				noneSelectedText : "==请选择==",
+	    		selectedList: 3,//预设值最多显示10被选中项
+	    	    close: function(){
+	    	    	var values= $("#state").val();
+	    	    	$("#state").val(values);
+	    		}
+	        });
+	    	$(".ui-multiselect").addClass("input-div"); */
+        }
+      //快捷筛选事件绑定
+      	function bindUserQuickfilter()
+      	{
+  			//日期范围绑定
+	  		$("#dateRangeType").change(function(e){
+	  			var dateRangeStr = "";
+	  			switch($(this).val())
+	  			{
+	  			case "today"://今天
+	  				dateRangeStr = TodayStr();
+	  				break;
+	  			case "yesterday"://昨天
+	  				dateRangeStr = YesterdayStr();
+	  				break;
+	  			case "thisweek"://本周
+	  				dateRangeStr = ThisWeekStr();
+	  				break;
+	  			case "lastweek"://上周
+	  				dateRangeStr = LastWeekStr();
+	  				break;
+	  			case "thismonth"://本月
+	  				dateRangeStr = ThisMonthStr();
+	  				break;
+	  			case "lastmonth"://上月
+	  				dateRangeStr = LastMonthStr();
+	  				break;
+	  			case "thisquarter"://本季度
+	  				dateRangeStr = ThisQuarterStr();
+	  				break;
+	  			case "customrange"://指定时间
+	  				
+	  				break;
+	  			}
+	  			if(dateRangeStr != "")
+	  			{
+	  				var dArr =  dateRangeStr.split(",");
+	  				$("#startDate").val(dArr[0]);
+	  		  		$("#endDate").val(dArr[1]);
+	  			}
+	  			else
+	  			{
+	  				$("#startDate").val("");
+	  		  		$("#endDate").val("");
+	  			}
+	  		});
+  			
+	  		//默认当天
+      		//$("#dateRangeType").val("today");
+      		//$("#dateRangeType").trigger('change');
+  		
+      		$("#btnQuickFilter").click(function(e){
+      			if($(".cct-filter-container").hasClass("show"))
+      			{
+      				$(".cct-filter-container").removeClass("show").addClass("hide");
+      			}
+      			else
+      			{
+      				$(".cct-filter-container").addClass("show").removeClass("hide");
+      			}
+      			e ? e.stopPropagation() : e.cancelBubble = true;
+      		});
+      		
+      		$(".exposure").click(function(e){
+      			if($(".cct-filter-container").hasClass("show"))
+      			{
+      				$(".cct-filter-container").removeClass("show").addClass("hide");
+      			}
+      		});
+      	}
+      
+	  	//加载表格
+	    function GetGrid() {
+
+	    	//postData['accUserId'] = $("#userId").val();
+	  		$("#gridTable").jqGrid({
+                datatype:"local",
+                /* data:queueData, */
+	            styleUI:'Bootstrap',
+	            height: $(window).height() - 149,
+	            autowidth: true,
+	            colModel: [
+					{label: "呼叫编号", name: "CallId", index: "CallId", width: 200, hidden: false,key:true },
+					{
+					    label: "呼叫时间", name: 'CallTime', index: 'CallTime', width: 120, align: 'center',formatter: CCUI.utils.dateTransfer
+					},//
+					{label: "主叫", name: 'Caller', index: 'caller', width: 150,
+                        formatter: function (cellvalue, options, rowObject) {
+
+							return cellvalue + "&nbsp;&nbsp;<a class='btn btn-link btn-bitbucket cct-ftcolor-blue' title='外呼' onclick=\"top.OcxCore.Session.MakeCall('"+cellvalue+"','','',1,'',0,'','','','');\"><i class='fa fa-phone' style='font-size:18px;'></i></a>";
+                        }
+					},
+					{label: "被叫", name: 'Called', index: 'called', width: 150,
+                        formatter: function (cellvalue, options, rowObject) {
+
+                            return cellvalue + "&nbsp;&nbsp;<a class='btn btn-link btn-bitbucket cct-ftcolor-blue' title='外呼' onclick=\"top.OcxCore.Session.MakeCall('"+cellvalue+"','','',1,'',0,'','','','');\"><i class='fa fa-phone' style='font-size:18px;'></i></a>";
+                        }
+					},
+					{label: "呼叫类型", name: 'CallType', index: 'CallType', width: 80, align: 'center',
+	                    formatter: function (cellvalue, options, rowObject) {
+	                    	//呼叫类型 0 呼入 1 呼出 2 预测外呼 3 自动外呼 4 手动外呼 5 下班转外线 6 IVR转外线 7 座席转外线 8 遇忙转外线
+	                    	if(rowObject.CallType == 0){
+	                        	return "<span class='badge badge-success'>呼入</span>";
+	                        }
+	                    	else if(rowObject.CallType== 1){
+	                    		return "<span class='badge badge-danger'>呼出</span>";
+	                        }
+	                        else if(rowObject.CallType== 2){
+	                        	return "<span class='badge badge-danger'>预测外呼</span>";
+	                        }
+	                        else if(rowObject.CallType== 3){
+	                        	return "<span class='badge badge-danger'>自动外呼</span>";
+	                        }
+	                        else if(rowObject.CallType== 4){
+	                        	return "<span class='badge badge-danger'>手动外呼</span>";
+	                        }
+	                        else if(rowObject.state== 5){
+	                        	return "<span CallType='badge badge-danger'>下班转外线</span>";
+	                        }
+	                        else if(rowObject.CallType== 6){
+	                        	return "<span class='badge badge-danger'>IVR转外线 </span>";
+	                        }
+	                        else if(rowObject.CallType== 7){
+	                        	return "<span class='badge badge-danger'>座席转外线</span>";
+	                        }
+	                        else if(rowObject.CallType== 8){
+	                        	return "<span class='badge badge-danger'>遇忙转外线</span>";
+	                        }
+	                        else 
+	                        	return "";
+	                    }
+	                },
+	                {
+					    label: "接听时间", name: 'ReceiveStartTime', index: 'ReceiveStartTime', width: 120, align: 'center',formatter: CCUI.utils.dateTransfer
+					},
+					{
+					    label: "挂机时间", name: 'CallEndTime', index: 'CallEndTime', width: 120, align: 'center',formatter: CCUI.utils.dateTransfer
+					},
+                    {label: "通话时长", name: 'Duration', index: 'Duration', width: 80, align: 'center',
+                        formatter: function (cellvalue, options, rowObject) {
+                        	var duration = 0;//通话时长(秒)
+                            if(rowObject.ReceiveStartTime != null){//已接听
+                                var receiveStartTime = new Date(rowObject.ReceiveStartTime.replace(/-/g, "/"));
+                                var endTime = null;
+                                if(rowObject.CallEndTime != null){//已挂机
+                                    endTime = new Date(rowObject.CallEndTime.replace(/-/g, "/"));
+								}else{//通话中,拿当前时间
+                                    endTime = new Date();
+                                }
+                                var time = endTime.getTime()-receiveStartTime.getTime();
+                                duration = Math.round(time/1000);
+                            }
+							return CCUI.utils.timeTransfer(duration);//将秒转换成00:00:00
+                        }
+                    },
+					{label: '公司ID', name: 'CompanyId', index: 'CompanyId', width: 120, hidden: true},
+	            ],
+	            viewrecords: true,
+	            rowNum: 20,
+	            rowList: [10, 20, 30],
+	            pager: "#gridPager",
+	            sortname: 'CallId',
+	            sortorder: 'asc',
+	            rownumbers: true,
+	            multiselect: false, 
+	            shrinkToFit: true,  
+                autoScroll: true, 
+	            gridview: true,
+	            loadui:"disable",
+				onSelectRow: function (rowid, status) {
+					/* var selSize = 0;
+					var ids=$("#gridTable").jqGrid("getGridParam","selarrrow");
+					if(ids.length > 0)
+					{
+						selSize = ids.length;
+					}
+					else
+					{
+						ids=$("#gridTable").jqGrid("getGridParam","selrow");
+						if(ids)
+						{
+							selSize = 1;
+						}
+						else if(status)
+						{
+							selSize = 1;
+						}
+					}
+					//控制副菜单显示隐藏
+					setIboxTitleSubbar(selSize); */
+				},
+				gridComplete: function () {
+					$(".jqGrid_wrapper").find(".frozen-bdiv").css({ "top" : "37px" });
+					//控制副菜单显示隐藏
+					setIboxTitleSubbar(0);
+				},
+				onSelectAll: function (aRowids, status) {
+					/* var selSize = status ? aRowids.length:0;
+					//控制副菜单显示隐藏
+					setIboxTitleSubbar(selSize); */
+				}
+	        });
+	  		//$("#gridTable").jqGrid("setFrozenColumns");
+	  		
+	        //$("#gridTable").closest(".ui-jqgrid-bdiv").css({ "overflow-x" : "auto" });  
+	        //$("#gridTable").closest(".ui-jqgrid-bdiv").css({ "overflow-y" : "auto" });
+	  	}
+	  	
+	    //显示列表副菜单
+	    function setIboxTitleSubbar(selSize)
+	    {
+    		if (selSize == 0 && $('.ibox-title-subbar').hasClass('subbar-active')) {
+    			$(".ibox-title-subbar").removeClass("subbar-active");
+    			$(".ibox-title-subbar").fadeOut(200);
+            }
+    		else if (selSize > 0 && !$('.ibox-title-subbar').hasClass('subbar-active')) {
+    			$(".ibox-title-subbar").toggleClass("subbar-active");
+    			$(".ibox-title-subbar").fadeIn(200);
+            }
+	    	if(selSize > 0)
+	    	{
+	    		$(".subbar-selsize").text(selSize);
+	    	}
+	    	else
+	    	{
+	    		$(".subbar-selsize").text(0);
+	    	}
+	    }
+	    
+	    //清除表格选择
+	    function clearJqGridSelection(jqgrid){
+	    	jqgrid = jqgrid != undefined && jqgrid != "" ? jqgrid:"#gridTable";
+	    	$(jqgrid).resetSelection();
+	    	setIboxTitleSubbar(0);
+	    }
+	  	
+	  	//查询
+	    function btn_Search() {
+	    	//设置时间参数
+			var startDate = $("#startDate").val();
+			var endDate = $("#endDate").val();
+      		/* //表单验证
+      	  	$('#formFilterContainer').trigger("validate");
+      	  	//验证后通过提交表单内容
+      	  	if($('#formFilterContainer').isValid()){ */
+	      		//点击搜索时关闭快捷筛选页面 
+	      		if($(".cct-filter-container").hasClass("show"))
+	  			{
+	  				$(".cct-filter-container").removeClass("show").addClass("hide");
+	  			}
+	      		//获取搜索参数条件
+	      		var postData = GetWebControls("#formFilterContainer");
+	      		//
+	      		if(postData.companyId == "")
+	      		{
+	      			postData.companyId = $("#companyId2").val();
+	      		}
+		    	$("#gridTable").jqGrid('setGridParam', {postData: postData}).trigger("reloadGrid");
+      	  	//}
+	    }
+	  	
+	    //处理工单
+	    function btn_Proc(){
+	    	var id = $('#gridTable').jqGrid('getGridParam','selrow');
+	  		var rowData = $('#gridTable').jqGrid('getRowData',id);
+    		openTask(rowData.taskid,rowData.flowid,rowData.stepid,rowData.procinstanceid,'3',rowData.orderid);
+	    }
+	  
+	  //重置
+	  	function btn_Reset(){
+	  		$("#formFilterContainer")[0].reset();
+	  	}
+	    //打开任务
+	    function openTask(taskId,flowId,stepId,procinstanceId,busType,orderId)
+	    {
+	    	taskId = !!taskId ? taskId:"";
+    		flowId = !!flowId ? flowId:"";
+    		stepId = !!stepId ? stepId:"";
+    		procinstanceId = !!procinstanceId ? procinstanceId:"";
+    		
+    		var tabid = top.getActiveTabIframeId();
+    		var url = "${ctx}/WorkOrderModule/WorkOrder/ProcWorkOrderForm.do?flowid="+flowId+"&stepid="+stepId+"&instanceid="+procinstanceId+"&taskid="+taskId+"&btype="+busType+"&display=1&appid=&openFrom=WaitingProcIndex&openType=2&srctabid=" + tabid+"&orderId=" + orderId;
+    		showRightDetailContent(url,true);
+	    }
+	    //右侧显示详情
+	    function showDetailContent(taskId,flowId,stepId,procinstanceId,busType,orderId,isShow)
+	    {
+	    	if(isShow)
+	    	{
+	    		taskId = !!taskId ? taskId:"";
+	    		flowId = !!flowId ? flowId:"";
+	    		stepId = !!stepId ? stepId:"";
+	    		procinstanceId = !!procinstanceId ? procinstanceId:"";
+	    		
+	    		var tabid = top.getActiveTabIframeId();
+	    		var url = "${ctx}/WorkOrderModule/WorkOrder/ProcWorkOrderForm.do?flowid="+flowId+"&stepid="+stepId+"&instanceid="+procinstanceId+"&taskid="+taskId+"&btype="+busType+"&display=1&appid=&openFrom=WaitingProcIndex&openType=2&srctabid=" + tabid+"&orderId=" + orderId;
+	    		//var url = "${ctx}/CustomerModule/CustomerDemo/CustomerDetailForm.do?customerId=65462&srcTabId=tabs_iframe_1b5c81bd-cadd-4239-8ec2-96e2afd8920f&resizeIframeId=tabmenus_iframe_CustomerInfo&mobiles=135KPEB3023&openFrom=customerEditForm";
+	    		showRightDetailContent(url,isShow);
+	    	}
+	    	else
+	    	{
+	    		showRightDetailContent("",isShow);
+	    	}
+	    }
+	    function refreshGridData(){
+            var callDataList = parent.OcxCore.Session.GetCallDataListFromCache();
+	    	$("#gridTable").jqGrid('setGridParam', {page: 1,data:callDataList}).trigger("reloadGrid");
+	    }
+	    
+	   //流程处理后调用
+		function afterDoFlowSubmit(flowData)
+		{
+			refreshGridData();
+		}
+
+    </script>
+</body>
+</html>

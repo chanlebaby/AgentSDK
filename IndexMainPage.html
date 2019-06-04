@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta http-equiv="Pragma" content="no-cache"/> 
+	<meta http-equiv="Cache-Control" content="no-cache"/> 
+	<meta http-equiv="Expires" content="0"/> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<meta http-equiv="renderer" content="webkit|ie-comp|ie-stand" />
+
+    <title>首页</title>
+
+    <link rel="shortcut icon" href="favicon.ico"> <link href="Content/Hplus/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="Content/Hplus/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+
+    <link href="Content/Hplus/css/animate.css" rel="stylesheet">
+    <link href="Content/Hplus/css/style.css?v=4.1.0" rel="stylesheet">
+
+</head>
+
+<body class="gray-bg">
+    <div class="row wrapper wrapper-content animated fadeInRight" style="padding: 5px;">
+        <div class="col-sm-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>操作</h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="ibox-content">
+                    <p>
+                        <button type="button" class="btn btn-sm btn-info" onclick="parent.showLoginForm()">重新登录</button>
+                        <button type="button" class="btn btn-sm btn-info" onclick="parent.CallAlertingTest()">模拟呼入</button>
+                        <button type="button" class="btn btn-sm btn-info" onclick="parent.ReOpenPopScreen()">重新弹屏</button>
+                        <button type="button" class="btn btn-sm btn-info" onclick="parent.GetLastCallAudioFileTest()">最后通话录音文件</button>
+                        <button type="button" class="btn btn-sm btn-info" onclick="parent.showQueueListMonitor('')" style="display:none;">队列监控</button>
+                        <button type="button" class="btn btn-sm btn-info" onclick="parent.showRecentCallRecords()">最近100条通话记录</button>
+                    </p>
+				</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 全局js -->
+    <script src="Content/Hplus/js/jquery.min.js?v=2.1.4"></script>
+    <script src="Content/Hplus/js/bootstrap.min.js?v=3.3.6"></script>
+
+
+
+    <!-- 自定义js -->
+    <script src="Content/Hplus/js/content.js?v=1.0.0"></script>
+
+
+</body>
+
+</html>

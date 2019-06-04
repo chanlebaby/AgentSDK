@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>呼入测试测试</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="viewport" content="width=device-width" />
+	<script src="../plugins/jquery/jquery-1.8.2.min.js"></script>
+    <link href="../skins/CallCenterui-framework.css" rel="stylesheet" />
+    <!--引入弹窗组件start-->
+    <link href="../plugins/artDialog4/skins/default.css?4.1.7" rel="stylesheet" />
+    <script src="../plugins/artDialog4/jquery.artDialog.source.js" type="text/javascript"></script>
+	<script src="../plugins/artDialog4/plugins/iframeTools.source.js" type="text/javascript"></script> 
+	<!--引入弹窗组件end-->
+
+<script type="text/javascript">
+	var api = art.dialog.open.api,W = parent;
+		
+    $(function () {
+        BindCombobox();
+    });
+    //初始化绑定下拉框
+    function BindCombobox() {
+        
+    }
+    //保存事件 
+    function AcceptClick1() {
+        if (!CheckDataValid('#form1')) {
+            return false;
+        }
+        //Loading(true, "正在提交数据...");
+        	var postData = {
+				Action : $("#selAction").val(),
+				AppId : $("#CompanyId").val(),
+				SeatNum : $("#ExtNumber").val(),
+				Caller : $("#StartCaller").val(),
+				Called : $("#Called").val(),
+				CustomId : $("#CustomId").val(),
+				GrpId : $("#SeatGroupId").val(),
+				CallType: $("#CallType").val()
+			};
+			var serverIP = $("#ServerIP").val();
+			var ServerPort = $("#ServerPort").val();
+			var WebDomain = $("#WebDomain").val();
+			var params1 = "webDomain="+WebDomain+"&CTIServerType=ctiAgent&Action="+postData.Action+"&AppId="+postData.AppId+"&SeatNum="+postData.SeatNum+"&Caller="+postData.Caller+"&Called="+postData.Called+"&GrpId="+postData.GrpId+"&CustomId="+postData.CustomId+"&CallType="+postData.CallType+"&serverIP="+serverIP;
+			//	var width = 300;
+		    //var height = 200;
+		    //var left = ($(window).width() - width) / 2;
+		    //var top = ($(window).height() - height) / 2;
+		    var url = "http://"+serverIP+":"+ServerPort+"/CTIServerDemo/CTISrvAgentCommand.svt?"+params1;
+		    //window.open(url, "呼入测试", 'height=' + height + ', width=' + width + ', top=' + top + ', left=' + left + ', toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no, titlebar=yes, alwaysRaised=yes');
+			openD(url);
+    }
+    
+    //保存事件 
+    function AcceptClick() {
+        //Loading(true, "正在提交数据...");
+        	var postData = {
+				Action : "CallIn",
+				CompanyId : $("#CompanyId").val(),
+				ExtNumber : $("#ExtNumber").val(),
+				StartCaller : $("#StartCaller").val(),
+				EndCaller : $("#EndCaller").val(),
+				Called : $("#Called").val(),
+				CustomId : $("#CustomId").val(),
+				GroupId : $("#SeatGroupId").val(),
+				Flag: $("#selAction").val() == "CallIn1" ? 1:2,
+				IVRPath : $("#IVRPath").val()
+			};
+        if(postData.CompanyId == "")
+        {
+        	postData.CompanyId = $("#CompanyId2").val();
+        }
+        
+        W.OcxCommandFun.CallIn(postData.StartCaller,postData.EndCaller,postData.Called,postData.GroupId,postData.CustomId, postData.Flag, postData.ExtNumber, postData.CompanyId,postData.IVRPath);
+    
+        window.setTimeout(function () {
+        	closeThisWindow();
+   	    },200);
+    }
+    
+    function openD(url)
+    {
+    	var artApi = art.dialog.open(url,{
+	        id: "Formtuyrytsgfdsgfd",
+	        width: 420,
+	        height: 270,
+	        max: false,
+	        lock: true,
+	        opacity: 0.3,
+	        title: "测试",
+	        resize: true,
+	        extendDrag: true,
+	        //content: 'url:' + RootPath() + url,
+	        ok: true
+	    });
+	    
+	    window.setTimeout(function () {
+	    artApi.close();
+	    
+	    closeThisWindow();
+	    },200);
+    }
+    function actionChange()
+    {
+    	var t = $("#selAction").val();
+    	if(t == "CALLOUT_NOTIFY")
+    	{
+    		var caller =$("#Caller").val();
+    		$("#Caller").val($("#Called").val());
+    		$("#Called").val(caller);
+    		//$("#CustomId").val("");
+    		
+    		$("#CallType").val("1");
+    	}
+    	else
+    	{
+    		$("#CallType").val("0");
+    	}
+    }
+    
+   //关闭窗口
+	function closeThisWindow()
+	{
+		//如果是通过父页面Layer弹框插件弹出的窗口
+        if(W.layer != undefined)
+        {
+        	var index = W.layer.getFrameIndex(window.name); //获取窗口索引
+        	W.layer.close(index);
+        }
+        else //如果是通过父页面artDialog弹框插件弹出的窗口
+        {
+        	api.close();//关闭登录窗口
+        }
+	}
+</script>
+  </head>
+  <body>
+<form id="form1">
+    
+    <table class="form">
+    	<tr>
+            <th class="formTitle">动作：</th>
+            <td class="formValue">
+                <select id="selAction" class="txtselect required" datacol="yes" err="动作" checkexpession="NotNull" onchange="actionChange()">
+                	<!-- <option value="CALLALERTING_NOTIFY">呼入通知</option> -->
+                	<option value="CallIn1">模拟外线呼入</option>
+                	<option value="CallIn2">模拟内线呼入</option>
+                	<!-- <option value="CALLOUT_NOTIFY">呼出通知</option>
+                	<option value="TALKING_NOTIFY">通话通知</option>
+                	<option value="SEATCALLSEAT_NOTIFY">坐席呼坐席通知</option> -->
+                	<!-- <option value="VERIFYCODE_NOTIFY">CTI服务器验证码通知</option> -->
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th class="formTitle">所在公司：</th>
+            <td class="formValue">
+                <select class="txtselect" id="CompanyId" err="所在公司" datacol="yes">
+	                <option value="">==请选择==</option>
+	                <option selected="selected" value="31b05701-60ef-405c-87ba-af47049e3f48">某某有限公司</option>
+	                <option value="20180803-1225-3415-86c2-3219a1739c3c">迅雷科技有限公司（测试）</option>
+                </select>
+            </td>
+        </tr>
+        <tr>
+            <th class="formTitle">所在公司2：</th>
+            <td class="formValue">
+            	<input id="CompanyId2" type="text" class="txt" value="" />
+            </td>
+        </tr>
+        <tr>
+            <th class="formTitle">接听分机号码：
+            </th>
+            <td class="formValue">
+            	<input id="ExtNumber" type="text" class="txt" value="" />
+            </td>
+        </tr>
+        
+        <tr>
+            <th class="formTitle">主叫开始段：</th>
+            <td class="formValue">
+                <input id="StartCaller" type="text" class="txt" value="13800013800" />
+            </td>
+        </tr>
+        <tr>
+            <th class="formTitle">主叫结束段：</th>
+            <td class="formValue">
+                <input id="EndCaller" type="text" class="txt" value="" />
+            </td>
+        </tr>
+        <tr>
+            <th class="formTitle">被叫：</th>
+            <td class="formValue">
+                <input id="Called" type="text" class="txt" value="8859687"/>
+            </td>
+        </tr>
+        <tr>
+            <th class="formTitle">外呼任务清单ID：</th>
+            <td class="formValue">
+                <input id="CustomId" type="text" class="txt" />
+            </td>
+        </tr>
+        <tr>
+        <th class="formTitle">所属技能组<font style="color: red;" face="宋体">*</font>：
+            </th>
+            <td class="formValue">
+              <input id="SeatGroupId" type="text" class="txt" value="1" />
+              <!-- <select class="txtselect" id="SeatGroupId">
+                <option value="">==请选择=</option>
+                <option selected="selected" value="1">技能组[1]</option>
+                <option value="2">技能组[2]</option>
+                <option value="3">技能组[3]</option>
+                <option value="4">技能组[4]</option>
+                <option value="5">技能组[5]</option>
+                <option value="6">技能组[6]</option>
+                <option value="7">技能组[7]</option>
+                <option value="8">技能组[8]</option>
+                <option value="9">技能组[9]</option>
+                <option value="10">技能组[10]</option>
+                <option value="11">技能组[11]</option>
+                <option value="12">技能组[12]</option>
+                <option value="13">技能组[13]</option>
+                <option value="14">技能组[14]</option>
+                <option value="15">技能组[15]</option>
+                <option value="16">技能组[16]</option>
+                <option value="17">技能组[17]</option>
+                <option value="18">技能组[18]</option>
+                <option value="19">技能组[19]</option>
+                <option value="20">技能组[20]</option>
+                <option value="21">技能组[21]</option>
+                <option value="22">技能组[22]</option>
+                <option value="23">技能组[23]</option>
+                <option value="24">技能组[24]</option>
+                <option value="25">技能组[25]</option>
+             </select> -->
+            </td>
+        </tr>
+        <tr>
+            <th class="formTitle">IVR最后一层节点：</th>
+            <td class="formValue">
+                <input id="IVRPath" type="text" class="txt" value="" />
+            </td>
+        </tr>
+        <tr style="display:none;">
+            <th class="formTitle">CTI模拟器IP：</th>
+            <td class="formValue">
+                <input id="ServerIP" type="text" class="txt" value="192.168.5.129" />
+            </td>
+        </tr>
+        <tr style="display:none;">
+            <th class="formTitle">CTI模拟器端口：</th>
+            <td class="formValue">
+                <input id="ServerPort" type="text" class="txt" value="8080" />
+            </td>
+        </tr>
+        <tr style="display:none;">
+            <th class="formTitle">呼叫中心网站项目名：</th>
+            <td class="formValue">
+                <input id="WebDomain" type="text" class="txt" value="demoweb" />
+            </td>
+        </tr>
+    </table>
+    <div class="nui_buttons" style="text-align:center;margin-top:5px;">
+   		<button id="btnOK" class="nui_state_highlight" type="button"  onclick="AcceptClick();">确定</button>
+	</div>
+</form>
+</body>
+</html>

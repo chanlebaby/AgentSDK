@@ -1,0 +1,155 @@
+<html>
+
+<head>
+    <link href="https://cdn.bootcss.com/twitter-bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.slim.min.js"></script>
+    <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+    <script>
+        var ws;
+        if ("WebSocket" in window) {
+            // 打开一个 web socket
+            ws = new WebSocket("ws://125.71.214.70:9033");
+
+            ws.onopen = function () {
+                console.log("WebSocket连接成功...");
+            };
+
+            ws.onmessage = function (evt) {
+                var received_msg = evt.data;
+                console.log("WebSocket接收到数据:" + received_msg);
+            };
+
+            ws.onclose = function () {
+                // 关闭 websocket
+                console.log("WebSocket连接已关闭...");
+            };
+        }
+        else {
+            // 浏览器不支持 WebSocket
+            console.error("您的浏览器不支持 WebSocket!");
+        }
+
+        $(function () {
+            $("#ocxBtnCheckin").click(function () {
+                var msg = {};
+                msg.Action = "ReqAgentLogin";
+                msg.Param = new Object();
+                msg.Param.JobNum = $("#txtJobNum").val();
+                msg.Param.Name = $("#txtName").val();
+                msg.Param.Extension = $("#txtExtension").val();
+                msg.Param.SkillId = $("#txtSkillId").val();
+                msg.Param.Level = $("#txtLevel").val();
+                msg.Param.Role = "1";
+                msg.Param.GroupName = $("#txtSkillId option:selected").text();
+                msg.Param.OrgId = $("#txtOrgId").val();
+                console.log(JSON.stringify(msg));
+                ws.send(JSON.stringify(msg));
+            });
+
+            $("#ocxBtnCheckout").click(function () {
+                var msg = {};
+                msg.Action = "ReqAgentLogout";
+                msg.Param = new Object();
+                msg.Param.Extension = $("#txtExtension").val();
+                console.log(JSON.stringify(msg));
+                ws.send(JSON.stringify(msg));
+            });
+        });
+    </script>
+</head>
+
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 order-md-1">
+                <h4 class="mb-3">服务器信息</h4>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label for="txtServer">服务器IP</label>
+                        <input id="txtServer" type="text" class="form-control" placeholder="" value="125.71.214.70" required="">
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label for="txtPort">端口</label>
+                        <input type="text" class="form-control" id="txtPort" placeholder="" value="9033" required="">
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 order-md-1">
+                <h4 class="mb-3">登录信息</h4>
+                <form>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="txtJobNum">工号</label>
+                            <input id="txtJobNum" type="text" class="form-control" placeholder="" value="1001"
+                                required="">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="txtName">姓名</label>
+                            <input type="text" class="form-control" id="txtName" placeholder="" value="Chanle"
+                                required="">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="txtExtension">分机号</label>
+                            <input type="text" class="form-control" id="txtExtension" placeholder="" value="1001"
+                                required="">
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="txtSkillId">技能组</label>
+                            <select class="custom-select" id="txtSkillId" required="">
+                                <option value="1">技能组1</option>
+                                <option value="2">技能组2</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="txtLevel">接续等级</label>
+                            <input type="text" class="form-control" id="txtLevel" placeholder="" value="1" required="">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="txtOrgId">组织ID</label>
+                            <input type="text" class="form-control" id="txtOrgId" placeholder="" value="100"
+                                required="">
+                        </div>
+                    </div>
+
+                </form>
+            </div>
+
+        </div>
+        <div class="row">
+            <button id="ocxBtnAnswer" keyid="Answer" title="接听" type="button" onclick="" disabled="disabled">接听</button>
+            <button id="ocxBtnHugeUp" keyid="Hangup" title="挂机" type="button" onclick="" disabled="disabled">挂机</button>
+            <!-- <button id="ocxBtnStopEndProc" keyid="StopEndProc" title="停止事后整理" type="button"  onclick="" disabled="disabled">停止整理</button> -->
+            <button id="ocxBtnBusy1" keyid="SetBusy1" title="示忙" type="button" onclick=""
+                disabled="disabled">示忙</button>
+            <button id="ocxBtnFree" keyid="SetIdle" title="示闲" type="button" onclick="" onclick=""
+                disabled="disabled">示闲</button>
+            <button id="ocxBtnConsult" keyid="Consult" title="咨询" type="button" onclick=""
+                disabled="disabled">咨询</button>
+            <button id="ocxBtnTransfer" keyid="Transfer" title="转移" type="button" onclick=""
+                disabled="disabled">转移</button>
+            <button id="ocxBtnGetBack" keyid="Return" title="找回" type="button" onclick=""
+                disabled="disabled">找回</button>
+            <button id="ocxBtnHold" keyid="Keep" title="保持" type="button" onclick="" disabled="disabled">保持</button>
+            <button id="ocxBtnConf" keyid="Conference" title="三方会议" type="button" onclick=""
+                disabled="disabled">三方会议</button>
+            <!-- <button id="ocxBtnSatisfaction" keyid="Satisfaction" title="开始满意度调查" type="button"  onclick="" disabled="disabled">满意度调查</button> -->
+            <button id="ocxBtnFreeAfter" keyid="SetEndidle" title="事后闲" type="button" onclick=""
+                disabled="disabled">事后闲</button>
+            <button id="ocxBtnBusyAfter" keyid="SetEndbusy" title="事后忙" type="button" onclick=""
+                disabled="disabled">事后忙</button>
+            <!-- <button id="ocxBtnIntercept" keyid="Intercept" title="拦截" type="button"  onclick="" disabled="disabled" style="display:none;">拦截</button> -->
+            <button id="ocxBtnMonitor" keyid="Monitor" title="监控" type="button" onclick=""
+                disabled="disabled">监控</button>
+            <!-- <button id="ocxBtnLeaveMode" keyid="LeaveMode" title="离开" type="button"  onclick="" disabled="disabled">离开</button>
+            <button id="ocxBtnNormalMode" keyid="NormalMode" title="恢复" type="button"  onclick="" disabled="disabled">恢复</button> -->
+            <button id="ocxBtnCheckin" keyid="Checkin" title="签入" type="button" onclick="">签入</button>
+            <button id="ocxBtnCheckout" keyid="Checkout" title="签出" type="button" onclick="">签出</button>
+        </div>
+    </div>
+</body>
+
+</html>

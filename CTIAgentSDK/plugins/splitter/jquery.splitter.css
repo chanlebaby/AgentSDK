@@ -1,0 +1,81 @@
+.splitter_panel {
+	position: relative;
+}
+.splitter_panel .vsplitter {
+	width: 2px; z-index: 900; cursor: col-resize; background-color: #bbb;
+}
+.splitter_panel .hsplitter {
+	height: 2px; z-index: 800; cursor: row-resize; background-color: #bbb;
+}
+.splitter_panel .splitter-invisible.vsplitter {
+	background: none;
+}
+.splitter_panel .splitter-invisible.hsplitter {
+	background: none;
+}
+.splitter_panel .vsplitter {
+	overflow: auto; position: absolute;
+}
+.splitter_panel .left_panel {
+	overflow: auto; position: absolute;
+}
+.splitter_panel .right_panel {
+	overflow: auto; position: absolute;
+}
+.splitter_panel .hsplitter {
+	overflow: auto; position: absolute;
+}
+.splitter_panel .top_panel {
+	overflow: auto; position: absolute;
+}
+.splitter_panel .bottom_panel {
+	overflow: auto; position: absolute;
+}
+.splitter_panel .vsplitter {
+	height: 100%;
+}
+.splitter_panel .left_panel {
+	height: 100%;
+}
+.splitter_panel .right_panel {
+	height: 100%;
+}
+.splitter_panel .hsplitter {
+	width: 100%;
+}
+.splitter_panel .top_panel {
+	width: 100%;
+}
+.splitter_panel .bottom_panel {
+	width: 100%;
+}
+.splitter_panel .top_panel {
+	top: 0px;
+}
+.splitter_panel .left_panel {
+	top: 0px;
+}
+.splitter_panel .vsplitter {
+	top: 0px;
+}
+.splitter_panel .top_panel {
+	left: 0px;
+}
+.splitter_panel .bottom_panel {
+	left: 0px;
+}
+.splitter_panel .left_panel {
+	left: 0px;
+}
+.splitter_panel .hsplitter {
+	left: 0px;
+}
+.splitter_panel .bottom_panel {
+	bottom: 0px;
+}
+.splitter_panel .right_panel {
+	right: 0px;
+}
+.splitterMask {
+	left: 0px; top: 0px; right: 0px; bottom: 0px; position: absolute; z-index: 1000;
+}

@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<title>坐席监控</title>
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Expires" CONTENT="0"> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width" />
+    <!--框架必需start-->
+    <link href="../skins/CallCenterui-framework.css" rel="stylesheet" />
+    <script src="../plugins/jquery/jquery-1.8.2.min.js"></script>
+    <script src="../plugins/CallCenterui-framework.js"></script>
+    <!--框架必需end-->
+    <!--布局组件start-->
+    <script src="../plugins/layout/splitter.js"></script>
+    <!--布局组件end-->
+    <!--框架工具JS组件start-->
+    <script src="../plugins/CallCenterui-utils.js"></script>
+    <!--框架工具JS组件end-->
+    <!--引入弹窗组件start-->
+    <link href="../plugins/artDialog4/skins/default.css?4.1.7" rel="stylesheet" />
+    <script src="../plugins/artDialog4/jquery.artDialog.source.js" type="text/javascript"></script>
+	<script src="../plugins/artDialog4/plugins/iframeTools.source.js" type="text/javascript"></script>  
+	<!--引入弹窗组件end-->
+    <!--右键菜单组件start-->
+    <script src="../plugins/jquery/jquery.contextmenu.r2.js"></script>
+    <!--右键菜单组件end-->
+	<script type="text/javascript">
+	    $(document).ready(function () {
+	    	windowload();
+			//Notify("GRPINFO_NOTIFY", []);
+	        //Notify("MONITORSTATE_NOTIFY", []);
+	        $("#grid_View .UserCard").live("click", function() {
+	        	var seatExtNum = $(this).attr("id").toString().replace("seat_","");
+	        	if(!parent.OcxCore.Session.IsCheckin())
+	        	{
+	        		
+	        	}
+	        	else if(parent.OcxCore.Session.getCTIAgentData().getCTIMonitorStatus() == parent.OcxCore.Enums.CTIMonitorStatusFlag.INITSYSTEM.getIndex())
+	        	{
+	        		if (!!$(this).hasClass("selected")) {
+	                    $(this).removeClass("selected");
+	                } else {
+	                	$("#grid_View .selected").removeClass("selected");
+	                    $(this).addClass("selected");
+	                }
+	        	}
+	        	else if (seatExtNum == parent.OcxCore.Session.getCTIAgentData().getCTIMonitorExtNumber())
+	        	{
+	        		if (!$(this).hasClass("selected")) {
+	                    $("#grid_View .selected").removeClass("selected");
+	                    $(this).addClass("selected");
+	                }
+	        	}
+			});
+			
+			//if(changeDurationInterval !=null) clearInterval(changeDurationInterval);
+        	//changeDurationInterval = setInterval("changeDuration()", 1000);//1秒更新一次
+	    });
+	    //右键菜单处理
+	    function rightmenuClickHandler(cmd)
+	    {
+	    	var selectedSeat =  $("#grid_View .selected");
+			if(selectedSeat.size() != 1)
+			{
+				parent.OcxCore.Utility.ShowTip("请选择坐席", 3);
+				return;
+			}
+			if(cmd == undefined || cmd == "")
+			{
+				parent.OcxCore.Utility.ShowTip("操作无效", 3);
+				return;
+			}
+			var seatExtNum = selectedSeat.attr("id").toString().replace("seat_","");
+			var atentState = selectedSeat.attr("atentState").toString();
+			var monitorData = {
+        		AgentDest:seatExtNum,
+        		AtentState:atentState
+        	};
+        	if(cmd == "SendTipMsg")
+        	{
+        		sendMsg(seatExtNum);
+        	}
+        	else if(cmd == "ForceCheckOut")
+        	{
+        		top.OcxCore.DialogUtil.confirmDialog("系统提示", "确定要强制注销所选坐席吗！", function (r) {
+			        if(r)
+			        {
+			        	parent.OcxCore.Utility.ShowLoading(true,"处理中...",5);
+			        	//发送相关监控命令
+			   			parent.OcxCommandFun.CTIAgentCommonAction(cmd, monitorData,function(data){
+							parent.OcxCore.Utility.ShowLoading(false);
+						},function(ex){
+							parent.OcxCore.Utility.ShowLoading(false);
+							if(ex.Message != undefined && ex.Message != "") parent.OcxCore.Utility.ShowTip(ex.Message, 1);
+						});
+			        }
+			    });
+        	}
+        	else
+        	{
+        		parent.OcxCore.Utility.ShowLoading(true,"处理中...",5);
+	        	//发送相关监控命令
+	   			parent.OcxCommandFun.CTIAgentCommonAction(cmd, monitorData,function(data){
+					//parent.OcxCore.Utility.ShowLoading(false);
+				},function(ex){
+					parent.OcxCore.Utility.ShowLoading(false);
+					if(ex.Message != undefined && ex.Message != "") parent.OcxCore.Utility.ShowTip(ex.Message, 1);
+				});
+        	}
+	    }
+/* 	    var GroupId = "";//技能组ID
+    	var GroupName = "";  //技能组名称
+	    //加载技能组信息
+	    function GetTree(treedata) {
+	        //var treedata = [{"id":"1","text":"售前组","value":"1","IsTree":"0","img":"../images/Icon16/chart_organisation.png","parentnodes":"0","showcheck":false,"isexpand":true,"complete":true,"hasChildren":false,"ChildNodes":[]},{"id":"2","text":"售后组","value":"2","IsTree":"0","img":"../images/Icon16/chart_organisation.png","parentnodes":"0","showcheck":false,"isexpand":true,"complete":true,"hasChildren":false,"ChildNodes":[]},{"id":"27","text":"tett","value":"27","IsTree":"0","img":"../images/Icon16/chart_organisation.png","parentnodes":"0","showcheck":false,"isexpand":true,"complete":true,"hasChildren":false,"ChildNodes":[]}];
+	        
+	        var itemtree = {
+	            onnodeclick: function (item) {
+	            	GroupId = item.id;//技能组ID
+	    			GroupName = item.text;  //技能组名称
+	                $("#CenterTitle").html(item.text + " - " + $('.' + item.id).length + "人");
+	                $('.UserCard').hide();
+	                $('.' + item.id).show();
+	            }
+	        };
+	        itemtree.data = treedata;
+	        $("#ItemsTree").treeview(itemtree);
+	    } */
+	    //搜索
+	    function btn_Search() {
+	        var keywords = $("#keywords").val();
+	        var seatState = $("#SeatState").val();
+	        if (keywords != "" || seatState != "") {
+	        	var showSeats = null;
+	        	if(keywords != "")
+	        	{
+	        		showSeats = $(".UserCard")
+                     .hide()
+                     .filter(":contains('" + (keywords) + "')");
+                     if(seatState != "")
+                     {
+                     	var stateName = parent.OcxCore.Enums.GetName(parent.OcxCore.Enums.CTIAgentStatusFlag,seatState);
+		        		showSeats = showSeats.filter(":contains('" + (stateName) + "')");
+                     }
+                     showSeats.show();
+	        	}else
+	        	{
+	        		var stateName = parent.OcxCore.Enums.GetName(parent.OcxCore.Enums.CTIAgentStatusFlag,seatState);
+	        		showSeats = $(".UserCard")
+                     .hide()
+                     .filter(":contains('" + (stateName) + "')")
+                     .show();
+	        	}
+                    
+            } else {
+                $(".UserCard").show();
+            }
+            
+            $("#grid_View .selected").removeClass("selected");
+	    }
+	       
+	    //刷新
+	    function windowload() {
+	    	window.setTimeout(function () {
+	    		//临时代码，默认监控第一个技能组
+	    		var postData = {};
+	    		var seatGroups = parent.OcxCore.Session.getCTIAgentData().getSeatGroups();
+	    		if(seatGroups.size()>0)
+	    		{
+	    			postData.GroupId = seatGroups.keySet()[0];
+	    		}
+	           //监控窗口加载完成后发送开始监控命令
+	   			parent.OcxCommandFun.CTIAgentCommonAction("BeginMonitor", postData,function(data){
+					
+				},function(ex){
+					parent.OcxCore.Utility.ShowLoading(false);
+					if(ex.Message != undefined && ex.Message != "") parent.OcxCore.Utility.ShowTip(ex.Message, 1);
+				}); 
+	        }, 200);
+	        
+	    }
+	    var changeDurationInterval = null;
+	    function changeDuration()
+	    {
+	    	var showSeats = $(".UserCard").find(".ChangeStateDuration");
+	    	showSeats.each(function(){
+	    		if($(this).attr("duration") != "")
+	            {
+	            	var dseconds = parseInt($(this).attr("duration"))+1;
+	            	$(this).attr("duration",dseconds).text(top.OcxCore.FormatSeconds(dseconds));
+	            }else
+	            {
+	            	$(this).text('--:--:--');
+	            }
+	    	});
+	    }
+	    /*视图begin=========================================================================*/
+	    var _SeatDatas = new CCUI.utils.Map();
+	    //加载视图
+	    function LoadViewList(data) {
+	        var showSeats = $("#grid_View").find(".UserCard");
+	        for (var i = 0; i < data.length; i++) {
+	        	var isContainSeat = false;
+	        	if(_SeatDatas.containsKey(data[i].Seat+""))
+	        	{
+	        		isContainSeat = true;
+	        		_SeatDatas.put(data[i].Seat+"", data[i]);
+	        		var seatObj = $("#"+"seat_"+data[i].Seat);
+	        		var stateStyle = "state"+data[i].State;
+        			var oldSate = seatObj.attr("state");
+        			seatObj.attr("state",data[i].State);
+        			seatObj.attr("atentState",data[i].AtentState);
+        			seatObj.find(".seatName").text(data[i].Name);
+        			seatObj.find(".seatJobNum").text(data[i].JobNum);
+        			seatObj.find(".seatExtNum").text(data[i].Seat);
+        			var stateName = parent.OcxCore.Enums.GetName(parent.OcxCore.Enums.CTIAgentStatusFlag,data[i].State);
+        			if(data[i].OnLine != undefined)
+        			{
+        				stateName = data[i].OnLine || stateName == "离线" ? stateName : stateName+"(离线)";
+        			}
+        			seatObj.find(".currentState").text(stateName);
+        			/* if((data[i].ChangeStateDuration+"") != "")
+		            {
+		            	seatObj.find(".ChangeStateDuration").attr("duration",data[i].ChangeStateDuration).text(top.OcxCore.FormatSeconds(data[i].ChangeStateDuration));
+		            }else
+		            {
+		            	seatObj.find(".ChangeStateDuration").attr("duration","").text("--:--:--");
+		            } */
+		            //var Genderimg = "Cardphoto";
+		            //if (data[i].Gender == "男") {
+		            //    Genderimg = "CardphotoA";
+		            //}.removeClass("CardphotoA").removeClass("Cardphoto").addClass(Genderimg)
+		            var Photograph = "";
+		            if (data[i].Gender == "男") {
+		                Photograph = "../images/headPhoto/male.png";
+		            }else
+		            {
+		            	Photograph = "../images/headPhoto/female.png";
+		            }
+        			seatObj.find(".Genderimg").removeClass("state"+oldSate).addClass(stateStyle);
+        			seatObj.find(".CardPhoto").attr("src",Photograph);
+        			//自动关闭右键菜单
+        			if(seatObj.hasClass("selected"))
+        			{
+        				$(document).trigger("click");
+        			}
+	        	}else
+	        	{
+	        		_SeatDatas.put(data[i].Seat+"", data[i]);
+	        		var html = "";
+	        		var Genderimg = "";
+		            //var Genderimg = "Cardphoto";
+		            //if (data[i].Gender == "男") {
+		            //    Genderimg = "CardphotoA";
+		            //}
+		            var Photograph = "";
+		            if (data[i].Gender == "男") {
+		                Photograph = "../images/headPhoto/male.png";
+		            }else
+		            {
+		            	Photograph = "../images/headPhoto/female.png";
+		            }
+		            var stateName = parent.OcxCore.Enums.GetName(parent.OcxCore.Enums.CTIAgentStatusFlag,data[i].State);
+		            if(data[i].OnLine != undefined)
+        			{
+        				stateName = data[i].OnLine || stateName == "离线" ? stateName : stateName+"(离线)";
+        			}
+		            var stateStyle = "state"+data[i].State;
+		            html += ' <div class="UserCard " id="seat_' + data[i].Seat + '" state="' + data[i].State + '" atentState="' + data[i].AtentState + '">';
+		            html += '<div class="Cardhead">';
+		            html += '     <div style="float: left">姓名：<span class="seatName">' + data[i].Name + '</span></div>';
+		            html += '     <div style="float: right">工号：<span class="seatJobNum">' + data[i].JobNum + '</span></div>';
+		            html += '</div>';
+		            html += '<div>';
+		            html += '    <div class="Genderimg '+stateStyle+' ' + Genderimg + '"><img class="CardPhoto" src="'+Photograph+'" /></div>';
+		            html += '    <div class="CardInfo">';
+		            html += '       分机：<span class="seatExtNum">' + data[i].Seat + '</span><br />';
+		            //if((data[i].ChangeStateDuration+"") != "")
+		            //{
+		            //	html += '       时长：<span class="ChangeStateDuration" duration="'+data[i].ChangeStateDuration+'">' + top.OcxCore.FormatSeconds(data[i].ChangeStateDuration) + '</span><br />';
+		            //}else
+		            //{
+		            //	html += '       时长：<span class="ChangeStateDuration" duration="">' + '--:--:--' + '</span><br />';
+		            //}
+		            html += '       状态：<span class="currentState">' + stateName + '</span><br />';
+		            html += '   </div>';
+		            html += '</div>';
+		            html += '</div>';
+		            
+		            var itmJqObj = $(html);
+		            $("#grid_View").append(itmJqObj);
+	        		if(parent.OcxCore.Session.IsCheckin() && data[i].Seat+"" == parent.OcxCore.Session.getCTIAgentData().getCTIMonitorExtNumber() && parent.OcxCore.Session.getCTIAgentData().getCTIMonitorStatus() != parent.OcxCore.Enums.CTIMonitorStatusFlag.INITSYSTEM.getIndex())
+		            {
+	                    $("#grid_View .selected").removeClass("selected");
+	                    $("#seat_" + data[i].Seat).addClass("selected");
+		            }
+		            
+		            itmJqObj.contextMenu("monitorMenu",
+                        {
+                            zIndex: '10000',
+                            bindings: {
+                                'btnListen': function(t, target) {
+                                      //监听
+                                    rightmenuClickHandler("Listen");
+                                },
+                                'btnStopListen': function(t, target) {
+                                      //停止监听
+                                    rightmenuClickHandler("StopListen");
+                                },
+                                'btnForceEnter': function(t, target) {
+                                      //强插
+                                    rightmenuClickHandler("ForceEnter");
+                                },
+                                'btnForceRemove': function(t, target) {
+                                      //强拆
+                                    rightmenuClickHandler("ForceRemove");
+                                },
+                                'btnForceSetIdle': function(t, target) {
+                                      //强制示闲
+                                    rightmenuClickHandler("ForceSetIdle");
+                                },
+                                'btnForceSetBusy': function(t, target) {
+                                      //强制示忙
+                                    rightmenuClickHandler("ForceSetBusy");
+                                },
+                                'btnMoniterConf': function(t, target) {
+                                      //监控会议
+                                    rightmenuClickHandler("MoniterConf");
+                                },
+                                'btnStopMonitorConf': function(t, target) {
+                                      //停止监控会议
+                                    rightmenuClickHandler("StopMonitorConf");
+                                },
+                                'btnSendTipMsg': function(t, target) {
+                                      //消息
+                                    rightmenuClickHandler("SendTipMsg");
+                                },
+                                'btnForceCheckOut': function(t, target) {
+                                      //强制注销
+                                    rightmenuClickHandler("ForceCheckOut");
+                                }
+                            },
+                            onShowMenu: function(ev, menu1) {
+                            	var currentSeatObj = $(ev.currentTarget);
+                                var seatExtNum = currentSeatObj.attr("id").toString().replace("seat_","");
+					        	if(!parent.OcxCore.Session.IsCheckin())
+					        	{
+					        		changeRightMenuState(null,null,menu1);
+					        	}
+					        	else
+					        	{
+					                changeRightMenuState(currentSeatObj,_SeatDatas.get(seatExtNum),menu1);
+					        	}
+					        	if($("li", menu1).size()==0)
+					        		menu1.html("");
+					        		
+                                return menu1;
+                            },
+                            onContextMenu: function(ev) {
+                                var currentSeatObj = $(ev.currentTarget);
+                                var seatExtNum = currentSeatObj.attr("id").toString().replace("seat_","");
+					        	if(!parent.OcxCore.Session.IsCheckin())
+					        	{
+					        		return false;
+					        	}
+					        	if(parent.OcxCore.Session.getCTIAgentData().getCTIMonitorStatus() == parent.OcxCore.Enums.CTIMonitorStatusFlag.INITSYSTEM.getIndex())
+					        	{
+					                $("#grid_View .selected").removeClass("selected");
+					                currentSeatObj.addClass("selected");
+					        	}
+					        	else if (seatExtNum == parent.OcxCore.Session.getCTIAgentData().getCTIMonitorExtNumber())
+					        	{
+					        		if (!currentSeatObj.hasClass("selected")) {
+					                    $("#grid_View .selected").removeClass("selected");
+					                    currentSeatObj.addClass("selected");
+					                }
+					            }
+					            return true;
+                            }
+                        });
+	        	}
+	        }
+	        //$("#CenterTitle").html(GroupName);
+	        $("#lblTotal").text($("#grid_View .UserCard").size());
+	        $("#lblState0").text($("#grid_View .state0").size());
+	        $("#lblState1").text($("#grid_View .state1").size());
+	        $("#lblState2").text($("#grid_View .state2").size());
+	        $("#lblState3").text($("#grid_View .state3").size());
+	        $("#lblState4").text($("#grid_View .state4").size());
+	        $("#lblState5").text($("#grid_View .state5").size());
+	        $("#lblState6").text($("#grid_View .state6").size());
+	        $("#lblState7").text($("#grid_View .state7").size());
+	        $("#lblState8").text($("#grid_View .state8").size());
+	        
+	        //btn_Search();
+	    }
+	    /*视图end=========================================================================*/
+	    //通知
+    function Notify(cmd, data)
+	{
+/* 		MONITORSTATE_NOTIFY，CONSULTSTATE_NOTIFY：数组表示
+		【{Seat：分机号，State：状态，JobNum：工号，Name：姓名}，{Seat：分机号，State：状态，JobNum：工号，Name：姓名}】
+		MONITORSTATE_NOTIFY：
+		【{Seat：分机号，State：状态，JobNum：工号，Name：姓名}】
+		GRPINFO_NOTIFY：
+		GrpInfo：组号 */
+		
+/* 		//技能组信息
+		if (cmd == "GRPINFO_NOTIFY")
+        {
+        	var grps = [{"GrpId":1,"GrpName":"售前组"},{"GrpId":2,"GrpName":"售后组"},{"GrpId":27,"GrpName":"tett"}];
+        	var treedata= new Array();
+        	for(var i=0;i<grps.length;i++)
+        	{
+        		if(i==0)
+        		{
+        			GroupId = grps[i].GrpId;//技能组ID
+    				GroupName = grps[i].GrpName;  //技能组名称
+        		}
+        		treedata.push({"id":grps[i].GrpId+"","text":grps[i].GrpName,"value":grps[i].GrpId,"IsTree":"0","img":"/CTIAgentSDK2/images/Icon16/chart_organisation.png","parentnodes":"0","showcheck":false,"isexpand":true,"complete":true,"hasChildren":false,"ChildNodes":[]});
+        	}
+        	GetTree(treedata);
+        	if(changeDurationInterval !=null) clearInterval(changeDurationInterval);
+        	changeDurationInterval = setInterval("changeDuration()", 1000);//1秒更新一次
+        }
+        else  */
+        if (cmd == "MONITORSTATE_NOTIFY")//监控坐席状态通知
+        {
+            var seats = data.Data;//[{"Seat":1001,"State":1,"JobNum":"10000","Name":"宾客","Gender":"男","ChangeStateDuration":600},{"Seat":1002,"State":2,"JobNum":"10001","Name":"吴珏妹","Gender":"女","ChangeStateDuration":800},{"Seat":1003,"State":3,"JobNum":"10002","Name":"徐晓悦","Gender":"男","ChangeStateDuration":""}];
+        	LoadViewList(seats);
+        }else if(cmd == "CurrentUserStateChanged")
+        {
+        	if(!parent.OcxCore.Session.IsCheckin())
+        	{
+        		$("#grid_View").html("");
+        		_SeatDatas.clear();
+        		closeDialog();
+        	}
+/*         	else if(parent.OcxCore.Session.GetUserInfo() != null && parent.OcxCore.Session.GetUserInfo().CTIMonitorStatus == parent.OcxCore.Enums.CTIMonitorStatusFlag.INITSYSTEM.getIndex())
+        	{
+        		if (!!$(this).hasClass("selected")) {
+                    $(this).removeClass("selected");
+                } else {
+                	$("#grid_View .selected").removeClass("selected");
+                    $(this).addClass("selected");
+                }
+                var seatExtNum = $(this).attr("id").toString().replace("seat_","");
+                changeButtonState($(this),_SeatDatas.get(seatExtNum));
+        	}else
+        	{
+        		var seatExtNum = $(this).attr("id").toString().replace("seat_","");
+                changeButtonState($(this),_SeatDatas.get(seatExtNum));
+        	} */
+        }else if(cmd == "MonitorOptionRes")
+        {
+        	parent.OcxCore.Utility.ShowLoading(false);
+        	if(data.Result == true)
+        	{
+        		parent.OcxCore.Session.getCTIAgentData().setCTIMonitorStatus(data.CTIMonitorStatus);
+        		var seat = _SeatDatas.get(data.CTIMonitorExtNumber);
+        		seat.MonitorButton = data.MonitorButton;
+        		_SeatDatas.put(data.CTIMonitorExtNumber+"", seat);
+      			var seatObj = $("#"+"seat_"+data.CTIMonitorExtNumber);
+     			if(parent.OcxCore.Session.getCTIAgentData().getCTIMonitorStatus() == parent.OcxCore.Enums.CTIMonitorStatusFlag.INITSYSTEM.getIndex())
+     			{
+     				parent.OcxCore.Session.getCTIAgentData().setCTIMonitorExtNumber("");
+     			}else
+     			{
+     				parent.OcxCore.Session.getCTIAgentData().setCTIMonitorExtNumber(data.CTIMonitorExtNumber);
+     			}
+     			
+     			if(data.CloseMonitorDialog != undefined && data.CloseMonitorDialog == true)
+     			{
+     				closeDialog();
+     			}
+        	}
+        }
+	}
+
+	function changeRightMenuState(seat,currSeatData,menu1)
+	{
+		if(seat != null && !!seat.hasClass("selected"))
+		{
+			var seatExtNum = seat.attr("id").toString().replace("seat_","");
+			var seatState = seat.attr("state").toString();
+			if(currSeatData != null && currSeatData.MonitorButton != undefined)
+			{
+				for (var i in currSeatData.MonitorButton)
+				{
+					if(currSeatData.MonitorButton[i] == false)
+					{
+						$("li[cmd='"+i+"']", menu1).remove();
+					}
+				}
+			}else
+			{
+				$("li", menu1).remove();
+			}
+		}else
+		{
+			$("li", menu1).remove();
+		}
+	}
+	
+	function sendMsg(seatExtNum)
+	{
+		$("#txtSendMsgContent").val("");
+		art.dialog({
+            	title:'发送消息',
+            	width: 400,
+    			//height: 200,
+			    id: 'SendMsgDialog',
+			    lock: true,
+			    content: document.getElementById("tbSendMsgContent"),
+			    ok: function () {
+					var param = {
+						AgentDest:seatExtNum,
+						Message:$("#txtSendMsgContent").val()
+					};
+					
+					parent.OcxCore.Utility.ShowLoading(true,"发送中...",5);
+		        	//发送相关监控命令
+		   			parent.OcxCommandFun.CTIAgentCommonAction("SendTipMsg", param,function(data){
+						parent.OcxCore.Utility.ShowLoading(false);
+						parent.OcxCore.Utility.ShowTip("发送成功", 1);
+					},function(ex){
+						parent.OcxCore.Utility.ShowLoading(false);
+						if(ex.Message != undefined && ex.Message != "") parent.OcxCore.Utility.ShowTip(ex.Message, 1);
+					});
+		            return true;
+		        },
+		        cancel: true
+		});
+	}
+	</script>
+	<style type="text/css">
+	.nui_buttons button{margin-left:10px;}
+	.UserCard{width:160px}
+	.UserCard span{color:rgba(0, 0, 255, 1);}
+	#grid_View .selected{background-color:rgba(243, 156, 18, 0.68);color:rgba(51, 129, 0, 1);}
+	#grid_View .state0{background-color:rgba(139, 192, 33, 0.54);color:rgba(51, 129, 0, 1);}
+	#grid_View .state1{background-color:rgba(189, 45, 20, 0.49);color:rgba(51, 129, 0, 1);}
+	#grid_View .state2{background-color:rgba(151, 89, 105, 0.38);color:rgba(51, 129, 0, 1);}
+	#grid_View .state3{background-color:rgba(170, 167, 167, 0.77);color:rgba(51, 129, 0, 1);}
+	#grid_View .state4{background-color:rgba(170, 68, 171, 0.45);color:rgba(51, 129, 0, 1);}
+	#grid_View .state5{background-color:rgba(28, 105, 156, 0.65);color:rgba(51, 129, 0, 1);}
+	#grid_View .state6{background-color:rgba(143, 88, 0, 0.41);color:rgba(51, 129, 0, 1);}
+	#grid_View .state7{background-color:rgba(78, 137, 193, 0.27);color:rgba(51, 129, 0, 1);}
+	#grid_View .state8{background-color:rgba(53, 46, 189, 0.59);color:rgba(51, 129, 0, 1);}
+	
+	.contextMenu{display:none;}
+	</style>
+  </head>
+  <body>
+  	<div class="contextMenu" id="monitorMenu">
+        <ul>
+            <li id="btnListen" cmd="Listen"><img src="../images/Icon16/monitor_window_flow.png" width="16" height="16" />监听</li>
+            <li id="btnStopListen" cmd="StopListen"><img src="../images/Icon16/monitor_window_flow.png" width="16" height="16" />停止监听</li>
+            <li id="btnForceEnter" cmd="ForceEnter"><img src="../images/Icon16/table_insert.png" width="16" height="16" />强插</li>
+            <li id="btnForceRemove" cmd="ForceRemove"><img src="../images/Icon16/delete.png" width="16" height="16" />强拆</li>
+            <li id="btnForceSetIdle" cmd="ForceSetIdle"><img src="../images/Icon16/monitor_window_flow.png" width="16" height="16" />强制示闲</li>
+            <li id="btnForceSetBusy" cmd="ForceSetBusy"><img src="../images/Icon16/monitor_window_flow.png" width="16" height="16" />强制示忙</li>
+            <li id="btnMoniterConf" cmd="MoniterConf"><img src="../images/Icon16/outlook_new_meeting.png" width="16" height="16" />监控会议</li>
+            <li id="btnStopMonitorConf" cmd="StopMonitorConf"><img src="../images/Icon16/outlook_new_meeting.png" width="16" height="16" />停止监控会议</li>
+            <li id="btnSendTipMsg" cmd="SendTipMsg"><img src="../images/Icon16/comments.png" width="16" height="16" />消息</li>
+            <li id="btnForceCheckOut" cmd="ForceCheckOut"><img src="../images/Icon16/broom.png" width="16" height="16" />强制注销</li>
+        </ul>
+    </div>
+    <!-- <div id="layout" class="layout"> -->
+	    <!--左边-->
+<!-- 	    <div class="layoutPanel layout-west">
+	        <div class="btnbartitle">
+	            <div>
+					技能组
+	            </div>
+	        </div>
+	        <div class="ScrollBar" id="ItemsTree"></div>
+	    </div> -->
+	    <!--中间-->
+	    <div class="layoutPanel layout-center">
+	        <div class="btnbartitle">
+	            <div>
+	               	 坐席列表 <span id="CenterTitle"></span>--总共<span id="lblTotal" style="color:blue;">0</span>人&nbsp;&nbsp;&nbsp;
+	               	空闲：<span id="lblState1" style="color:blue;">0</span>&nbsp;&nbsp;
+	               	示忙：<span id="lblState2" style="color:blue;">0</span>&nbsp;&nbsp;
+	               	呼入：<span id="lblState3" style="color:blue;">0</span>&nbsp;&nbsp;
+	               	呼出：<span id="lblState4" style="color:blue;">0</span>&nbsp;&nbsp;
+	               	通话：<span id="lblState5" style="color:blue;">0</span>&nbsp;&nbsp;
+	               	咨询：<span id="lblState6" style="color:blue;">0</span>&nbsp;&nbsp;
+	               	会议：<span id="lblState7" style="color:blue;">0</span>&nbsp;&nbsp;
+	               	其他：<span id="lblState8" style="color:blue;">0</span>&nbsp;&nbsp;
+	               	离线：<span id="lblState0" style="color:blue;">0</span>
+	            </div>
+	        </div>
+	        <div id="searchPanel" class="bottomline QueryArea" style="margin: 1px; margin-top: 0px; margin-bottom: 0px;">
+                <table border="0" class="form-find" style="height: 45px;">
+                    <tr>
+                        <th>关键字：
+                        </th>
+                        <td>
+                            <input id="keywords" type="text" class="txt" style="width: 200px" />
+                        </td>
+                        <th>坐席状态：
+                        </th>
+                        <td>
+                        	<select id="SeatState" class="select" style="width: 100px">
+                        		<option value="">==全部==</option>
+	                            <option value="1">空闲</option>
+	                            <option value="2">示忙</option>
+	                            <option value="3">呼入</option>
+	                            <option value="4">呼出</option>
+	                            <option value="5">通话</option>
+	                            <option value="6">咨询</option>
+	                            <option value="7">会议</option>
+	                            <option value="8">其他</option>
+	                            <option value="0">离线</option>
+	                      </select>
+                        </td>
+                        <td>
+                            <input id="btnSearch" type="button" class="btnSearch" value="搜 索" onclick="btn_Search()" />
+                            <input id="btnRefresh" type="button" class="btnSearch" value="刷 新" onclick="windowload()" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <!--工具栏-->
+            <!-- <div class="nui_buttons bottomline" style="text-align:left;">
+            	<button id="btnListen" cmd="Listen" class="nui_state_highlight" type="button" disabled="disabled" onclick="">监听</button>
+			    <button id="btnStopListen" cmd="StopListen" class="nui_state_highlight" type="button" disabled="disabled" onclick="">停止监听</button>
+			    <button id="btnForceEnter" cmd="ForceEnter" class="nui_state_highlight" type="button" disabled="disabled" onclick="">强插</button>
+			    <button id="btnForceRemove" cmd="ForceRemove" class="nui_state_highlight" type="button" disabled="disabled" onclick="">强拆</button>
+			    <button id="btnForceSetIdle" cmd="ForceSetIdle" class="nui_state_highlight" type="button" disabled="disabled" onclick="">强制示闲</button>
+			    <button id="btnForceSetBusy" cmd="ForceSetBusy" class="nui_state_highlight" type="button" disabled="disabled" onclick="">强制示忙</button>
+			    <button id="btnMoniterConf" cmd="MoniterConf" class="nui_state_highlight" type="button" disabled="disabled" onclick="">监控会议</button>
+			    <button id="btnStopMonitorConf" cmd="StopMonitorConf" class="nui_state_highlight" type="button" disabled="disabled" onclick="">停止监控会议</button>
+			    <button id="btnStopConference" cmd="StopConference" class="nui_state_highlight" type="button" disabled="disabled" onclick="">退出会议</button>
+			    <button id="btnSendTipMsg" cmd="SendTipMsg" class="nui_state_highlight" type="button" disabled="disabled" onclick="">消息</button>
+			    <button id="btnForceCheckOut" cmd="ForceCheckOut" class="nui_state_highlight" type="button" disabled="disabled" onclick="">强制注销</button>
+		    </div> -->
+	        <!--视图-->
+	        <div id="grid_View" class="ScrollBar">
+	        </div>
+	    </div>
+	<!-- </div> -->
+	<div style="display:none">
+       	<table id="tbSendMsgContent" class="form" style="width:400px;">
+       		<tr>
+	            <th class="formTitle" style="width:60px;">消息 ：</th>
+	            <td class="formValue">
+	                 <textarea  class="txtArea" rows="8" id="txtSendMsgContent" style="width:320px;"></textarea>
+	            </td>
+	        </tr>   
+       	</table>
+     </div>
+  </body>
+</html>

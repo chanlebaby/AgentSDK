@@ -1,0 +1,200 @@
+/* 工单中心 样式 */
+
+.cctui-layout-content {
+    position: relative;
+}
+.cctui-side {
+    position: absolute;
+}
+.cctui-side-scroll{
+	background-color: #fff;
+	padding: 15px;
+}
+.ibox{
+	height: 100%;
+}
+.ibox-title {
+    border-bottom: 1px solid #e7eaec;
+}
+.cctui-layout-content .cctui-body {
+    background-color: transparent;
+    padding: 10px 10px 50px 2px;
+    /* z-index:3; */
+}
+.cctui-layout-content .cctui-bg-black {
+    border-right: 1px solid #e7eaec;
+}
+.main-content{
+	height: calc(100% - 50px);
+	background-color: transparent;
+	padding: 0px;
+}
+.form-group label{
+	font-weight: normal;
+}
+.cctui-side-scroll form>fieldset {
+    border-bottom: 1px solid #E2EAEC;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    padding-right: 10px;
+    padding-left: 10px;
+}
+.cctui-side-scroll form>fieldset:last-child {
+    border-bottom: none;
+}
+/*将弃用*/
+#bottom-bar{
+	background: rgba(255,255,255,.95);
+    position: fixed;bottom: 0px;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 60px 10px 280px;
+    z-index: 3;
+    box-shadow: 0 -1px 3px rgba(0,0,0,.15);
+    height: 55px;
+}
+
+.bottom-bar{
+	background: rgba(255,255,255,.95);
+    position: fixed;bottom: 0px;
+    left: 0;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 10px 60px 10px 280px;
+    z-index: 3;
+    box-shadow: 0 -1px 3px rgba(0,0,0,.15);
+    height: 55px;
+}
+
+.note-editor {
+    /* min-height: 260px; */
+}
+
+
+
+
+.ticket-header {
+    position: relative;
+    border-bottom: 1px solid #eff4f5;
+    margin-bottom: 15px;
+}
+.ticket-header .ticket_channel {
+    height: 48px;
+    width: 48px;
+    border-radius: 3px;
+    border: 1px solid #ced6d8;
+    font-size: 26px;
+    color: #8C8C8C;
+    float: left;
+    position: relative;
+    text-align: center;
+    line-height: 48px;
+}
+.ticket-header .info {
+    padding-right: 175px;
+    padding-left: 55px;
+    max-width: 800px;
+}
+
+.ticket-header h3, .ticket-header h3 input {
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 700;
+}
+.ticket-header h3 {
+    padding-left: 10px;
+}
+
+input.modify {
+    background: #fff;
+    width: 100%;
+    -webkit-transition: all ease .4s;
+    -moz-transition: all ease .4s;
+    -o-transition: all ease .4s;
+    transition: all ease .4s;
+    border: 1px solid #fff;
+    border-radius: 3px;
+}
+
+.ticket-header h3, .ticket-header h3 input {
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 700;
+}
+
+.ticket-header h3 input {
+    padding: 0 10px;
+    box-sizing: border-box;
+    margin-left: -10px;
+}
+
+.ticket-header h3+p {
+    font-size: 12px;
+    color: #9B9B9B;
+    margin-top: 2px;
+    padding-left: 10px;
+}
+.ticket-header h3+p span {
+    margin: 0 5px;
+}
+
+.ticket-inner {
+    padding-bottom: 5px;
+    border-bottom: 1px solid #eff4f5;
+    box-sizing: border-box;
+    margin-bottom: 20px;
+}
+.ticket-inner .radio-box {
+    margin-bottom: 10px;
+}
+
+
+.ticket-comment {
+    margin-bottom: 80px;
+}
+/*将弃用*/
+#bottom-bar .ticket-submit .dropdown-menu li .badge {
+    margin: 0 0 0 5px;
+}
+/*将弃用*/
+#bottom-bar .btn-group {
+    margin-left:10px;
+}
+.f-l{
+	float:left;
+}
+.f-r{
+	float:right;
+}
+/*将弃用*/
+#bottom-bar .f-l > .dropdown-menu {
+    left: 0;
+    right: auto;
+}
+
+.bottom-bar .ticket-submit .dropdown-menu li .badge {
+    margin: 0 0 0 5px;
+}
+
+.bottom-bar .btn-group {
+    margin-left:10px;
+}
+.bottom-bar .f-l > .dropdown-menu {
+    left: 0;
+    right: auto;
+}
+
+
+/*qq上传插件样式调整*/
+.qq-gallery.qq-uploader {
+    position: relative;
+    min-height: 80px;
+    max-height: 490px;
+    overflow-y: hidden;
+    width: inherit;
+    border-radius: 6px;
+    border: 1px dashed #CCC;
+    background-color: #FAFAFA;
+    padding: 15px 10px;
+}

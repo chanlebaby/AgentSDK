@@ -1,0 +1,1910 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<meta charset="utf-8" />
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Cache-Control" content="no-cache" />
+	<meta http-equiv="Expires" content="0" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<meta http-equiv="renderer" content="webkit|ie-comp|ie-stand" />
+	<title>电话工具条Demo V2.1.2(国际化)</title>
+	<!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+	<link href="Content/Images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+	<style type="text/css">
+		body {
+			line-height: 1.4285;
+		}
+	</style>
+	<link href="Content/Hplus/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+
+	<link href="Content/Hplus/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+	<link href="Content/Hplus/css/animate.css" rel="stylesheet">
+	<link href="Content/Hplus/css/style.css?v=4.1.0" rel="stylesheet">
+
+	<style type="text/css">
+		/* WRAPPERS */
+		#wrapper {
+			background-color: #f3f3f4;
+		}
+
+		body.fixed-sidebar .navbar-static-side,
+		body.canvas-menu .navbar-static-side {
+			width: 200px;
+			z-index: 100;
+		}
+
+		.navbar-static-side {
+			width: 200px;
+			z-index: 100;
+			/* background: #f7f7f7; */
+		}
+
+		body.fixed-sidebar.mini-navbar .navbar-static-side {
+			width: 50px;
+		}
+
+		body.fixed-sidebar.mini-navbar #page-wrapper {
+			margin: 0 0 0 58px;
+		}
+
+		#page-wrapper {
+			margin: 0 0 0 58px;
+		}
+
+		/* margin: 0 0 0 200px; */
+		.nav-header {
+			padding: 1px 0px 0px 25px;
+			background: #1E90FF;
+		}
+
+		.nav-header .text-muted {
+			color: #393a4e;
+		}
+
+		body.mini-navbar .nav-header {
+			background-color: #1E90FF;
+		}
+
+		.navbar-fixed-top,
+		.navbar-static-top {
+			/* background: #559ae0; */
+			background-image: -webkit-linear-gradient(right, #00c89d 0, #1E90FF 100%) !important;
+		}
+
+		.nav-header-dropdown {
+			float: left;
+			width: 180px;
+			left: -55px;
+			background: #1f95f6;
+			padding-left: 10px;
+		}
+
+		.nav.navbar-right {
+			position: absolute;
+			right: 0px;
+		}
+
+		.nav.navbar-right>li>a {
+			color: #ffffff;
+		}
+
+		.nav>li.active {
+			border-left: 0px;
+		}
+
+		body.mini-navbar .navbar-default .nav>li>a {
+			padding: 12px 20px 12px 15px;
+			font-size: 20px;
+		}
+
+		.img-circle {
+			float: left;
+			width: 60px;
+			height: 60px;
+		}
+
+		.dropdown-toggle {
+			padding-top: 20px;
+		}
+
+		.navbar-minimalize2 a {
+			padding: 7px 20px 6px 25px;
+		}
+
+		/*CONTENTTABS*/
+		.content-tabs {
+			height: 32px;
+			line-height: 30px;
+			border-bottom: solid 2px #d6d6d6;
+			margin-left: -20px;
+		}
+
+		.content-tabs .roll-nav,
+		.page-tabs-list {
+			height: 30px;
+			color: #464242;
+		}
+
+		.content-tabs button {
+			height: 30px;
+		}
+
+		nav.page-tabs {
+			height: 30px;
+		}
+
+		.page-tabs a {
+			color: #464242;
+			position: relative;
+		}
+
+		.page-tabs a i {
+			position: relative;
+			right: -10px;
+		}
+
+		.roll-right.J_tabExit {
+			height: 30px;
+		}
+
+		#content-main {
+			height: calc(100% - 95px);
+			padding: 5px 5px 5px 0px;
+		}
+
+		/*130px*/
+
+		/*主题1-上蓝左黑*/
+		/*头部*/
+		.nav-header-dropdown {
+			background: #1f95f6;
+		}
+
+		/*头部-左边*/
+		.nav-header {
+			background: #1E90FF;
+		}
+
+		body.mini-navbar .nav-header {
+			background-color: #1E90FF;
+		}
+
+		.navbar-fixed-top,
+		.navbar-static-top {
+			background: #1f95f6;
+			background-image: -webkit-linear-gradient(right, #00c89d 0, #1E90FF 100%) !important;
+			background-image: -moz-linear-gradient(right, #00c89d 0, #1E90FF 100%) !important;
+		}
+
+		/*左边菜单栏*/
+		.navbar-static-side {
+			background: #2f4050;
+		}
+
+		.nav>li>a {
+			color: #a7b1c2;
+			font-weight: normal;
+		}
+
+		.nav>li.active {
+			background: #293846;
+		}
+
+		.navbar-default .nav>li>a:hover,
+		.navbar-default .nav>li>a:focus {
+			background-color: #293846;
+			color: white;
+		}
+
+		.page-tabs a.active {
+			background: #2f4050;
+			color: #a7b1c2;
+		}
+
+
+		/*主题2-上深蓝左蓝*/
+		/*头部*/
+		.nav-header-dropdown {
+			background: #30a5e9;
+		}
+
+		/*头部-左边*/
+		.nav-header {
+			background: #2575b4;
+		}
+
+		body.mini-navbar .nav-header {
+			background-color: #2575b4;
+		}
+
+		.navbar-fixed-top,
+		.navbar-static-top {
+			background: #30a5e9;
+			background-image: -webkit-linear-gradient(right, #00c89d 0, #32a4ef 100%) !important;
+			background-image: -moz-linear-gradient(right, #00c89d 0, #32a4ef 100%) !important;
+		}
+
+		/*左边菜单栏*/
+		.navbar-static-side {
+			background: #3e8ecd;
+		}
+
+		.nav>li>a {
+			color: #fff;
+			font-weight: normal;
+		}
+
+		.nav>li.active {
+			background: #437abd;
+		}
+
+		.navbar-default .nav>li>a:hover,
+		.navbar-default .nav>li>a:focus {
+			background-color: #5596E5;
+			color: white;
+		}
+
+		.navbar-default .nav>li.active>ul>li>a:hover {
+			background-color: #4283D7;
+			color: white;
+		}
+
+		.page-tabs a.active {
+			background: #3271a7;
+			color: #fff;
+		}
+	</style>
+</head>
+
+<body class="fixed-sidebar full-height-layout gray-bg mini-navbar" style="overflow:hidden">
+	<div id="wrapper">
+		<!--左侧导航开始-->
+		<nav class="navbar-default navbar-static-side" role="navigation">
+			<div class="nav-close"><i class="fa fa-times-circle"></i>
+			</div>
+			<div class="sidebar-collapse">
+				<ul class="nav" id="side-menu">
+					<li class="nav-header">
+						<div class="logo-element" style="display:block;">CCT
+						</div>
+					</li>
+					<!-- <li style="background:#344d5a;display:none;">
+                        <a class="J_menuItem J_menuItem_open_custom navbar-minimalize2" style="padding:5px 20px 5px 15px;"><i class="fa"></i> <span class="nav-label">fa-columns 收缩菜单</span></a>
+                    </li> -->
+					<li title="首页"><a class="J_menuItem" data-id="IndexMainPage" href="IndexMainPage.html"><i
+								class="fa fa-home"></i><span class="nav-label">首页</span></a>
+					</li>
+					<!-- <li title="界面模板"><a href="#"><i class="fa fa-desktop"></i> <span
+							class="nav-label">界面模板</span><span class="fa arrow"></span></a>
+						<ul class="nav nav-second-level">
+							<li title="列表模板"><a href="#">列表模板<span class="fa arrow"></span></a>
+							<ul class="nav nav-third-level">
+								<li title="列表模板v1.0"><a class="J_menuItem" data-id="CustomerDemo_Index_v1.0"
+								href="#">菜单1</a></li>
+							</ul></li>
+							<li title="新增编辑模板"><a href="#">新增编辑模板<span class="fa arrow"></span></a>
+							<ul class="nav nav-third-level">
+								
+							</ul></li>
+						</ul></li> -->
+				</ul>
+			</div>
+		</nav>
+		<!--左侧导航结束-->
+		<!--右侧部分开始-->
+		<div id="page-wrapper" class="gray-bg dashbard-1">
+			<div class="row border-bottom">
+				<nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+					<div class="dengguang"></div>
+					<div class="dropdown nav-header-dropdown">
+						<span><img alt="image" class="img-circle" src="Content/Hplus/img/profile_small.jpg" /></span>
+						<a data-toggle="dropdown" class="dropdown-toggle" href="#">
+							<span class="clear" style="padding:10px 0px 10px 6px;">
+								<span class="block m-t-xs" style="color:#fff;"><strong id="ocxlblUserRealName"
+										class="font-bold"></strong></span>
+								<span class="text-muted text-xs block" style="color:#353333;">超级管理员<b
+										class="caret"></b></span>
+							</span>
+						</a>
+						<ul class="dropdown-menu animated fadeInRight m-t-xs">
+							<li><a class="J_menuItem" data-id="form_avatar" href="form_avatar.html">修改头像</a>
+							</li>
+							<li><a class="J_menuItem" data-id="profile" href="profile.html">个人资料</a>
+							</li>
+							<li><a class="J_menuItem" data-id="contacts" href="contacts.html">联系我们</a>
+							</li>
+							<li><a class="J_menuItem" data-id="mailbox" href="mailbox.html">信箱</a>
+							</li>
+							<li class="divider"></li>
+							<li><a href="javascript:IndexOut();">安全退出</a>
+							</li>
+						</ul>
+					</div>
+					<div class="navbar-header" style="float:left;position:relative;left:-50px;"><a
+							class="navbar-minimalize minimalize-styl-2 btn btn-primary " href="#"
+							style="display:none;"><i class="fa fa-bars"></i> </a>
+
+						<!-- 电话工具条样式和html内容  开始 -->
+						<style type="text/css">
+							.ocxDialToolBar {
+								height: 61px;
+							}
+
+							.ocxDialToolBar ul {
+								margin-bottom: 0px;
+							}
+
+							.ocxDialTool {
+								list-style: none;
+								padding: 0px;
+								margin-top: 1px;
+								height: 30px;
+								/* line-height:34px; */
+								border: none;
+							}
+
+							.ocxDialTool li {
+								display: block;
+								float: left;
+								height: 30px;
+								margin-right: 5px;
+								font-size: 14px;
+								color: #666666;
+							}
+
+							.ocxDialTool li span {
+								font-size: 14px;
+							}
+
+							.ocxDialTool .spancolor {
+								color: #0a43ca;
+								font-weight: bold;
+								line-height: 25px;
+								font-size: 15px;
+							}
+
+							.ocxDialTool a {
+								color: #ffffff;
+							}
+
+							.ocxDialTool a:hover {
+								color: #ffffff;
+								text-decoration: underline;
+							}
+
+							.CallInfoContent {
+								min-width: 160px;
+								margin-right: 8px;
+								border: solid 1px #7cf3db;
+								border-radius: 5px;
+								padding: 1px 5px;
+								background: #efedeb;
+							}
+
+							.ocxDialToolBar .ocxLoginInfo .SetSeatInfoBtn {
+								padding-left: 16px;
+								margin-left: 2px;
+								background: url(CTIAgentSDK/images/Icon16/cog.png) no-repeat;
+								text-decoration: none;
+							}
+
+							/*电话条操作按钮样式*/
+							.ocxDialTool button {
+								/* font-weight:bold; */
+								margin-left: 7px;
+								margin-right: 7px;
+								padding: 6px 8px;
+								float: left;
+								cursor: pointer;
+								display: inline-block;
+								text-align: center;
+								line-height: 1;
+								*padding: 4px 10px;
+								*height: 2em;
+								letter-spacing: 2px;
+								font-family: Tahoma, Arial/9 !important;
+								width: auto;
+								overflow: visible;
+								*width: 1;
+								color: #333;
+								border: solid 1px #7cf3db;
+								border-radius: 5px;
+								background: #DDD;
+								/* box-shadow: 0 1px 0 rgba(255, 255, 255, .7),  0 -1px 0 rgba(0, 0, 0, .09); -moz-transition:-moz-box-shadow linear .2s; -webkit-transition: -webkit-box-shadow linear .2s; transition: box-shadow linear .2s; */
+							}
+
+							.ocxDialTool button::-moz-focus-inner {
+								border: 0;
+								padding: 0;
+								margin: 0;
+							}
+
+							.ocxDialTool button img {
+								vertical-align: middle;
+							}
+
+							.ocxDialTool button:focus {
+								outline: none 0;
+								border-color: #426DC9;
+								box-shadow: 0 0 8px rgba(66, 109, 201, .9);
+							}
+
+							.ocxDialTool button:hover {
+								border-color: #666;
+							}
+
+							.ocxDialTool button:active {
+								border-color: #666;
+								box-shadow: inset 0 1px 5px rgba(66, 109, 201, .9), inset 0 1px 1em rgba(0, 0, 0, .3);
+							}
+
+							.ocxDialTool button[disabled] {
+								cursor: default;
+								color: #666;
+								background: #DDD;
+								border: solid 1px #999;
+								filter: alpha(opacity=50);
+								opacity: .5;
+								box-shadow: none;
+							}
+
+							/* .ocxDialTool button.ocxbtn_highlight { color: #FFF; border: solid 1px #7cf3db; background: #1AB395;} */
+							.ocxDialTool button.ocxbtn_highlight {
+								color: #FFF;
+								border: solid 1px #f9f9f9;
+								background: #65a3e3;
+							}
+
+							.ocxDialTool button.ocxbtn_red {
+								color: #FFF;
+								border: solid 1px #ED5464;
+								background: #ED5464;
+							}
+
+							.ocxDialTool button.btnHover {
+								background: #95b9de;
+							}
+
+							/*电话条忙碌小状态样式*/
+							.ocxState-dropdownData .state_0 {
+								background: url(CTIAgentSDK/skins/simple/images/state_offline.png) 0px 0px no-repeat;
+							}
+
+							.ocxState-dropdownData .state_1 {
+								background: url(CTIAgentSDK/skins/simple/images/state_free.png) 0px 0px no-repeat;
+							}
+
+							.ocxState-dropdownData .state_2 {
+								background: url(CTIAgentSDK/images/substate/manglu.png) 0px 0px no-repeat;
+							}
+
+							.ocxState-dropdownData .state_8 {
+								background: url(CTIAgentSDK/skins/simple/images/state_away.png) 0px 0px no-repeat;
+							}
+
+							.ocxState-dropdownData .state_99 {
+								background: url(CTIAgentSDK/skins/simple/images/state_free.png) 0px 0px no-repeat;
+							}
+
+							.ocxState-dropdownData {
+								position: fixed;
+								z-index: 4000;
+								text-align: left;
+								border: 1px solid #999;
+								background: #fff;
+								display: none;
+							}
+
+							.ocxState-dropdownData-item {
+								height: 25px;
+								line-height: 22px;
+								cursor: pointer;
+								padding: 0 18px;
+								font-size: 14px;
+							}
+
+							.ocxState-dropdownData-item:hover {
+								background-color: #4A5B79;
+								color: #fff;
+							}
+
+
+							/*电话条拨号框样式*/
+							.ocxDialTool .DialNumberTxt {
+								width: 160px;
+								height: 28px;
+								padding: 0px 2px;
+								border: 1px #ccc solid;
+								line-height: 19px;
+								font-size: 15px;
+								font-weight: bold;
+								-moz-border-radius: 5px;
+								-webkit-border-radius: 5px;
+								border-radius: 5px;
+							}
+
+							/*电话条信息栏样式*/
+							.ocxLoginInfo {
+								list-style: none;
+								padding: 0px;
+								height: 25px;
+								line-height: 25px;
+								border: none;
+							}
+
+							.ocxLoginInfo li {
+								display: block;
+								float: left;
+								height: 25px;
+								margin-right: 5px;
+								font-size: 14px;
+								color: #ffffff;
+							}
+
+							.ocxLoginInfo li span {
+								font-size: 14px;
+							}
+
+							.ocxLoginInfo .spancolor {
+								color: #f9ff00;
+							}
+
+							.ocxLoginInfo a {
+								color: #ffffff;
+							}
+
+							.ocxLoginInfo a:hover {
+								color: #ffffff;
+								text-decoration: underline;
+							}
+
+							/*电话条来电提醒框样式*/
+							.CallAlertMain {
+								width: 387px;
+								right: 10px;
+								bottom: -300px;
+								position: fixed;
+								z-index: 99999;
+								background-color: rgba(128, 128, 128, 0.62);
+							}
+
+							.CallAlertMain .mainbg {
+								background: url(CTIAgentSDK/skins/default/images/bg02_275px.png) repeat-x;
+								margin: 8px;
+							}
+
+							.CallAlertMain .headTitle {
+								width: 367px;
+								height: 50px;
+								padding-top: 10px;
+							}
+
+							.CallAlertMain .headTitle .headTitleImg {
+								width: 105px;
+								height: 29px;
+								margin-left: 3px;
+								background: url(CTIAgentSDK/skins/default/images/02_wenzi_10.png) no-repeat;
+							}
+
+							.CallAlertMain .mainContent {
+								width: 367px;
+								height: 150px;
+							}
+
+							.CallAlertPhoto {
+								width: 110px;
+								height: 132px;
+								float: left;
+								margin-left: 10px;
+								margin-top: 3px;
+							}
+
+							.CallAlertPhoto img {
+								width: 110px;
+								height: 132px;
+								background: url(CTIAgentSDK/skins/default/images/02_img.png) no-repeat;
+							}
+
+							.CallAlertMain .rightInfoContent {
+								width: 230px;
+								height: 85px;
+								padding: 0px 0px 0px 15px;
+								margin-top: 22px;
+								float: left;
+							}
+
+							.CallAlertMain .rightInfoContent th {
+								height: 32px;
+								font-size: 14px;
+								text-align: right;
+							}
+
+							.CallAlertMain .rightInfoContent td span {
+								font-size: 14px;
+							}
+
+							.CallAlertMain .btnbar {
+								text-align: center;
+								margin-top: 10px;
+								padding-bottom: 5px;
+							}
+
+							.CallAlertMain .btnbar .btnAnswer1 {
+								background: url(CTIAgentSDK/skins/default/images/01_answer_01.png) no-repeat;
+								width: 132px;
+								height: 40px;
+								border: none;
+							}
+
+							.CallAlertMain .btnbar .btnAnswer1:hover {
+								background: url(CTIAgentSDK/skins/default/images/01_answer_02.png) no-repeat;
+							}
+
+							.CallAlertMain .btnbar .btnHugeUp1 {
+								background: url(CTIAgentSDK/skins/default/images/01_res_01.png) no-repeat;
+								width: 132px;
+								height: 40px;
+								margin-left: 20px;
+								border: none;
+							}
+
+							.CallAlertMain .btnbar .btnHugeUp1:hover {
+								background: url(CTIAgentSDK/skins/default/images/01_res_02.png) no-repeat;
+							}
+						</style>
+						<div class="ocxDialToolBar">
+							<div style="height:25px;">
+								<ul class="ocxLoginInfo">
+									<!-- <li style="min-width:60px;margin-right:5px;">姓名：<span id="ocxlblUserRealName" keyid="userRealName" class="spancolor"></span></li> -->
+									<li style="min-width:60px;margin-right:5px;"><span data-lang="dialToolBar.loginInfo.jobNum">工号</span>：<span id="ocxlblUserName" keyid="username" class="spancolor"></span></li>
+									<li style="min-width:60px;margin-right:5px;"><span data-lang="dialToolBar.loginInfo.extNum">分机</span>：<span id="ocxlblExtNumber" keyid="extnumber" class="spancolor"></span></li>
+									<li style="min-width:30px;margin-right:10px;"><span data-lang="dialToolBar.loginInfo.status">状态</span>：<span id="ocxlblCurrentStatus" keyid="currentStatus" class="spancolor" data-lang="CTIAgentStatus.STATE_OFFLINE">离线</span></li>
+									<li style="min-width:55px;margin-right: 8px;"><span id="lblStatusName" keyid="stateDurationName" data-lang="dialToolBar.loginInfo.status">状态</span><span data-lang="dialToolBar.loginInfo.durationTime">时长</span>：<span id="ocxlblStateDuration" keyid="stateDuration" duration="" countType="1" class="spancolor">--:--:--</span></li>
+									<li style="min-width:30px;margin-right:5px;"><span data-lang="dialToolBar.loginInfo.connectState">CTI连接</span>：<span id="ocxlblCTIConnectState" keyid="CTIConnectState" class="spancolor" data-lang="CTIConnectState.disconnect">断开</span></li>
+									<li style="min-width:20px;margin-right:5px;"><span data-lang="dialToolBar.loginInfo.waitCount">排队数</span>：<span id="ocxlblWaitCount" keyid="waitCount" class="spancolor">0</span></li>
+									<!-- <li style="min-width:20px;margin-right:5px;"><a id="ocxBtnSetSeatInfo"
+											class="SetSeatInfoBtn" title="坐席信息配置" onclick="">配置</a></li> -->
+									<li style="min-width:20px;margin-right:5px;padding-left: 5px;margin-left: 2px;text-decoration:none;display:block;"> <a id="ocxBtnReOpenPopScreen" class="CallTestBtn" title="重新弹屏" onclick="ReOpenPopScreen()">重新弹屏</a></li>
+								</ul>
+							</div>
+							<div
+								style="height:30px;width:100%;clear:both;/* background:#F5F5F5; *//* border:1px #ccc solid; */">
+								<ul class="ocxDialTool">
+									<li class="CallInfoContent" style="display:none;">
+										<span id="ocxlblCallType" keyid="callType"
+											style="font-size: 14px;line-height:  25px;">Make Call</span>：<span
+											id="ocxlblCallNumber" keyid="callNumber" class="spancolor"></span>
+									</li>
+									<li class="DialNumberContent" style="padding-right:5px;display:none;">
+										<input type="text" id="ocxTxtDialNumber" class="DialNumberTxt" />
+									</li>
+									<li>
+										<button id="ocxBtnOutCall" keyid="MakeCall" class="ocxbtn_highlight" 
+											type="button" onclick="" style="display: none;" data-lang="dialToolBar.button.MakeCall">呼叫</button>
+										<button id="ocxBtnAnswer" keyid="Answer" class="ocxbtn_highlight" data-lang="dialToolBar.button.Answer"
+											type="button" onclick="" style="display: none;">接听</button>
+										<button id="ocxBtnHugeUp" keyid="Hangup" class="ocxbtn_red" data-lang="dialToolBar.button.Hangup"
+											type="button" onclick="" style="display: none;">
+											<!-- <img src="CTIAgentSDK/skins/simple/btnimg/phone_03.png" width="14" height="10" align="middle" />&nbsp; -->挂机</button>
+										<button id="ocxBtnStopEndProc" keyid="StopEndProc" class="ocxbtn_highlight"
+											data-lang="dialToolBar.button.StopACW" type="button" onclick="" style="display: none;">停止整理</button>
+										<!-- <button id="ocxBtnBusy" keyid="SetBusy" class="ocxbtn_highlight" title="忙碌" type="button"  onclick="" style="display: none;">忙碌</button> -->
+										<button id="ocxBtnBusy" keyid="SetBusy" class="ocxbtn_highlight" data-lang="dialToolBar.button.SetBusy"
+											type="button" onclick="" style="display: none;">置忙</button>
+										<button id="ocxBtnOperationInCall" keyid="OperationInCall"
+											class="ocxbtn_highlight" data-lang="dialToolBar.button.TransferIVR"  type="button" onclick=""
+											style="display: none;">转IVR</button>
+										<button id="ocxBtnSetBusyApply" keyid="SetBusyApply" class="ocxbtn_highlight"
+											data-lang="dialToolBar.button.SetBusyApply" type="button" onclick="" style="display: none;">示忙申请</button>
+										<button id="ocxBtnFree" keyid="SetIdle" class="ocxbtn_highlight" data-lang="dialToolBar.button.SetIdle"
+											type="button" onclick="" onclick="" style="display: none;">示闲</button>
+										<button id="ocxBtnConsult" keyid="Consult" class="ocxbtn_highlight" data-lang="dialToolBar.button.Consult"
+											type="button" onclick="" style="display: none;">咨询</button>
+										<button id="ocxBtnTransfer" keyid="Transfer" class="ocxbtn_highlight"  data-lang="dialToolBar.button.Transfer"
+											type="button" onclick="" style="display: none;">转移</button>
+										<button id="ocxBtnGetBack" keyid="Return" class="ocxbtn_highlight"  data-lang="dialToolBar.button.Retrieve"
+											type="button" onclick="" style="display: none;">找回</button>
+										<button id="ocxBtnHold" keyid="Keep" class="ocxbtn_highlight" data-lang="dialToolBar.button.Hold"
+											type="button" onclick="" style="display: none;">保持</button>
+										<button id="ocxBtnConf" keyid="Conference" class="ocxbtn_highlight" data-lang="dialToolBar.button.Conference"
+											type="button" onclick="" style="display: none;">三方会议</button>
+
+										<!-- <button id="ocxBtnStartEndProc" keyid="StartEndProc" class="ocxbtn_highlight" title="开始事后整理" type="button"  onclick="" style="display: none;">事后整理</button> -->
+										<button id="ocxBtnSatisfaction" keyid="Satisfaction" class="ocxbtn_highlight"
+											data-lang="dialToolBar.button.Satisfaction" type="button" onclick=""
+											style="display: none;">满意度调查</button>
+
+										<button id="ocxBtnFreeAfter" keyid="SetEndidle" class="ocxbtn_highlight"
+										data-lang="dialToolBar.button.SetEndidle" type="button" onclick="" style="display: none;">事后闲</button>
+										<button id="ocxBtnBusyAfter" keyid="SetEndbusy" class="ocxbtn_highlight"
+										data-lang="dialToolBar.button.SetEndbusy" type="button" onclick="" style="display: none;">事后忙</button>
+										<button id="ocxBtnIntercept" keyid="Intercept" class="ocxbtn_highlight"
+										data-lang="dialToolBar.button.Satisfaction" type="button" onclick="" style="display: none;">拦截</button>
+										<button id="ocxBtnMonitor" keyid="Monitor" class="ocxbtn_highlight" data-lang="dialToolBar.button.Monitor"
+											type="button" onclick="" style="display: none;">监控</button>
+										<button id="ocxBtnLeaveMode" keyid="LeaveMode" class="ocxbtn_highlight"
+										data-lang="dialToolBar.button.LeaveMode" type="button" onclick="" style="display: none;">离开</button>
+										<button id="ocxBtnNormalMode" keyid="NormalMode" class="ocxbtn_highlight"
+										data-lang="dialToolBar.button.NormalMode" type="button" onclick="" style="display: none;">恢复</button>
+										<button id="ocxBtnCheckin" keyid="Checkin" class="ocxbtn_highlight" data-lang="dialToolBar.button.Checkin"
+											type="button" onclick="" style="display: none;">签入</button>
+										<button id="ocxBtnCheckout" keyid="Checkout" class="ocxbtn_highlight" data-lang="dialToolBar.button.Checkout"
+											type="button" onclick="" style="display: none;">签出</button>
+									</li>
+								</ul>
+
+							</div>
+							<!-- 示忙小状态按钮操作栏 -->
+							<!-- <div class="ocxState-dropdownData">
+								<div id="ocxBtnBusy" keyid="SetBusy" state="2" substate="2"
+									class="ocxState-dropdownData-item state_2" style="display: none;">忙碌</div>
+								<div id="ocxBtnBusySubState">
+								</div>
+							</div> -->
+						</div>
+						<!-- 电话工具条样式和html内容  结束 -->
+
+
+					</div>
+					<ul class="nav navbar-top-links navbar-right">
+
+
+					</ul>
+				</nav>
+			</div>
+			<div class="row content-tabs">
+				<button class="roll-nav roll-left J_tabLeft"><i class="fa fa-backward"></i>
+				</button>
+				<nav class="page-tabs J_menuTabs">
+					<div class="page-tabs-content">
+						<a href="javascript:;" class="active J_menuTab" data-id="IndexMainPage">首页</a>
+					</div>
+				</nav>
+				<button class="roll-nav roll-right J_tabRight"><i class="fa fa-forward"></i>
+				</button>
+				<div class="btn-group roll-nav roll-right">
+					<button class="dropdown J_tabClose" data-toggle="dropdown">关闭操作<span class="caret"></span>
+
+					</button>
+					<ul role="menu" class="dropdown-menu dropdown-menu-right">
+						<li class="J_tabShowActive"><a>定位当前选项卡</a>
+						</li>
+						<li class="divider"></li>
+						<li class="J_tabCloseAll"><a>关闭全部选项卡</a>
+						</li>
+						<li class="J_tabCloseOther"><a>关闭其他选项卡</a>
+						</li>
+					</ul>
+				</div>
+				<a href="javascript:IndexOut();" class="roll-nav roll-right J_tabExit"><i class="fa fa fa-sign-out"></i>
+					退出</a>
+			</div>
+			<div class="row J_mainContent" id="content-main">
+				<iframe class="J_iframe" name="iframe_IndexMainPage" width="100%" height="100%" src="IndexMainPage.html"
+					frameborder="0" data-id="IndexMainPage" seamless></iframe>
+			</div>
+			<div class="footer" style="display:none;">
+				<div class="pull-right">&copy; 2010-2018 <a href="http://www.baidu.com/"
+						target="_blank">某某公司</a>&nbsp;&nbsp;&nbsp;版本：1.0
+				</div>
+			</div>
+		</div>
+		<!--右侧部分结束-->
+	</div>
+
+	<!-- 全局js -->
+	<script src="Content/Hplus/js/jquery.min.js?v=2.1.4"></script>
+	<!-- <script src="Content/Hplus/js/jquery-1.9.1.min.js?v=1.9.1"></script> -->
+
+	<script src="Content/Hplus/js/bootstrap.min.js?v=3.3.6"></script>
+	<script src="Content/Hplus/js/plugins/metisMenu/jquery.metisMenu.js"></script>
+	<script src="Content/Hplus/js/plugins/slimscroll/jquery.slimscroll.min.js"></script>
+
+	<!-- 自定义js -->
+	<script src="Content/Hplus/js/hplus.js?v=4.1.0"></script>
+	<script src="Content/Hplus/js/contabs.js" type="text/javascript"></script>
+
+
+	<!-- 第三方插件 -->
+	<script src="Content/Hplus/js/plugins/pace/pace.min.js"></script>
+
+	<!-- 自定义js -->
+	<script src="Content/Hplus/js/DialogUtil_layer3.js" type="text/javascript"></script>
+	<script src="Content/Hplus/js/CCUI-framework.js"></script>
+	<!--框架工具JS组件start-->
+	<script src="Content/Hplus/js/CCUI-utils.js"></script>
+	<!--框架工具JS组件end-->
+
+
+
+	<!-- 座席电话工具条相关 -->
+	<!-- 座席电话工具条样式 -->
+	<!-- <link href="CTIAgentSDK/skins/simple/AgentOcxCss.css" rel="stylesheet" type="text/css"  /> -->
+	<!-- 座席电话工具条相关基础脚本 start -->
+	<script src="CTIAgentSDK2/plugins/layer/layer.js?version=3.1.1" type="text/javascript"></script>
+	<script src="CTIAgentSDK2/core/SDKLanguage.js?version=2.1.8" type="text/javascript"></script>
+	<script src="CTIAgentSDK2/core/zh.webphone.js?version=2.1.8" type="text/javascript"></script>
+	<script src="CTIAgentSDK2/core/en.webphone.js?version=2.1.8" type="text/javascript"></script>
+	<script type="text/javascript">
+        //测试国际化
+        //OcxCore.lang.setLang("zh");//中文
+        //console.error("测试国际化："+OcxCore.lang.t("test.test2"));
+        OcxCore.lang.setLang("en");//英文
+        console.error("测试国际化："+OcxCore.lang.t("test.test2"));
+	</script>
+	<script src="CTIAgentSDK2/core/Common.js?version=2.1.8" type="text/javascript"></script>
+	<script src="CTIAgentSDK2/core/DialogUtil_layer3.js?version=2.1.8" type="text/javascript"></script>
+	<script src="CTIAgentSDK2/core/model/CTIAgentModel.js?version=2.1.8" type="text/javascript"></script>
+	<script src="CTIAgentSDK2/core/cti/Command_CH.js?version=2.1.8" type="text/javascript"></script>
+	<script src="CTIAgentSDK2/core/cti/CTISrvCommandProcess.js?version=2.1.8" type="text/javascript"></script>
+	<script src="CTIAgentSDK2/core/cti/CTIServerImpl.js?version=2.1.8" type="text/javascript"></script>
+	<script src="CTIAgentSDK2/core/CTIMain.js?version=2.1.8" type="text/javascript"></script>
+	<script src="CTIAgentSDK2/core/ToolUI_simple.js?version=2.1.8" type="text/javascript"></script>
+	<!-- 座席电话工具条相关基础脚本 end -->
+
+
+	<style>
+		/*===============layUI 弹窗 begin=============*/
+		.layer_skin .layui-layer-btn a {
+			background-color: #fff;
+			border: 0px;
+			color: #9C9C9C;
+			margin-left: -12px;
+			margin-top: 23px;
+		}
+
+		.layer_skin .layui-layer-content a {
+			margin-left: 28px;
+		}
+
+		.layer_skin .layui-layer-title {
+			background-color: #66CDAA;
+			height: 35px;
+		}
+
+		.layer_skin .layui-layer-title span {
+			font-size: 13px;
+			font-weight: bold;
+			margin-left: -8px;
+		}
+
+		/*===============layUI 弹窗 end=============*/
+	</style>
+	//电话条国际化
+	<script type="text/javascript">
+		$("body").OcxCoreLang();
+	</script>
+	<script type="text/javascript">
+		var OperationInCallData;
+		$(function () {
+
+			//初始化OcxCore.Session会话事件绑定
+			InitCTISessionBind();
+
+			//浏览器关闭
+			$(window).bind('beforeunload', function (e) {
+				e = e || event;
+				try {
+					//自动签出
+					OcxCore.Session.Checkout();
+				}
+				catch (e2) {
+
+				}
+			});
+
+			showLoginForm();//显示登录窗口
+
+			OperationInCall_Click();
+
+			// //测试国际化
+            // OcxCore.lang.setLang("zh");
+            // console.error("测试国际化："+OcxCore.lang.translate("test.test2"));
+            // OcxCore.lang.setLang("en");
+            // console.error("测试国际化："+OcxCore.lang.translate("test.test2"));
+			//
+			//
+            // OcxCore.lang.setLang("zh");
+            // OcxCore.lang.loadLangDataByUrl("zh","CTIAgentSDK2/core/zh.webphone.json");
+            // console.error("测试国际化："+OcxCore.lang.translate("test.test2"));
+            // console.error("测试国际化："+OcxCore.lang.t("test.test2"));
+            // OcxCore.lang.setLang("en");
+            // OcxCore.lang.loadLangDataByUrl("en","CTIAgentSDK2/core/en.webphone.json");
+            // console.error("测试国际化："+OcxCore.lang.translate("test.test2"));
+		});
+
+		function OperationInCall_Click(Operation) {
+			Operation = Operation == undefined ? "VerifyPassword" : Operation;
+			//按钮初始化
+			OcxBtnInit_Common("#ocxBtnOperationInCall", "OperationInCall", function (btn) {
+				OcxCommandFun.OperationInCall("VerifyPassword", OperationInCallData);
+			});
+		}
+
+
+		/**
+		 * 按钮初始化(公共)
+		 * */
+		function OcxBtnInit_Common(btnControlId, btnId, clickCallback) {
+			var jqObj = $(btnControlId);//按钮jq对象
+			var ocxBtn = OcxCore.OcxButtonbar.GetButton(btnId);//按钮实体
+			if (clickCallback != undefined && clickCallback != null) {
+				ocxBtn.OnClick.Attach(clickCallback);
+			}
+			else {
+				ocxBtn.OnClick.Attach(function (btn) {
+					OcxCore.Utility.ShowLoading(true, "处理中...", 5);
+					OcxCommandFun.CTIAgentButtonClick(btn.GetId(), {}, function (data) {
+						OcxCore.Utility.ShowLoading(false);
+					}, function (ex) {
+						OcxCore.Utility.ShowLoading(false);
+						if (ex.Message != undefined && ex.Message != "") OcxCore.Utility.ShowTip(ex.Message, 1);
+					});
+				});
+			}
+
+			//按钮状态改变事件
+			ocxBtn.OnStateChange.Attach(function (btn) {
+				if (btn.GetVisible() && btn.IsCanUsed())
+					jqObj.show();
+				else
+					jqObj.hide();
+				if (btn.IsCanUsed())
+					jqObj.removeClass("btnHover").removeClass("btnDisable").addClass("btnEnable");
+				else
+					jqObj.removeClass("btnHover").removeClass("btnEnable").addClass("btnDisable");
+			});
+			//按钮绑定点击事件
+			jqObj.click(function (e) {
+				ocxBtn.Click(e);
+			});
+			//鼠标悬浮于按钮时加亮显示
+			jqObj.hover(function () {
+				if (ocxBtn.IsCanUsed()) {
+					$(this).addClass("btnHover");
+				}
+			}, function () {
+				if (ocxBtn.IsCanUsed()) {
+					$(this).removeClass("btnHover");
+				}
+			});
+		}
+
+		/**
+		*初始化OcxCore.Session会话事件绑定
+		*/
+		function InitCTISessionBind() {
+			//服务停止后回调函数
+			OcxCore.Session.bind("onStopService", function (stopType, data) {
+				if (stopType == "LoginExpired") {
+					OcxCore.Log.debug("调用了服务停止后回调函数:" + stopType);
+					//自动签出
+					OcxCore.Session.Checkout();
+
+				}
+			});
+
+			/**
+			 * 解绑事件
+			 * 
+			 * @param evt 事件名
+			 * @param fun 回调函数，如果为空则解绑此事件所有回调函数
+			 * */
+			OcxCore.Session.unbind("onCTIStateChange");
+
+			//客户端CTI状态变化响应回调函数
+			OcxCore.Session.bind("onCTIStateChange", function (CTIAgentStatus, CTIConnected, data) {
+				var stateStr = "";
+				if (CTIAgentStatus == OcxCore.Enums.CTIAgentStatusFlag.STATE_BUSY.getIndex()) {
+					var state1 = CTIAgentStatus;
+					if (state1 == OcxCore.Enums.CTIAgentStatusFlag.STATE_BUSY.getIndex()) {
+						state1 = OcxCore.Session.getCTIAgentSubStatus();
+					}
+					if (OcxCore.Session.getCTIAgentSubStatus() > 200) {
+						var subStatusObj = OcxCore.Session.getBusySubStateById(OcxCore.Session.getCTIAgentSubStatus());
+						stateStr = subStatusObj != null ? subStatusObj.getSubStateName() : "忙碌";
+					}
+					else {
+						stateStr = "忙碌";
+					}
+				}
+				else {
+					stateStr = OcxCore.Enums.GetName(OcxCore.Enums.CTIAgentStatusFlag, CTIAgentStatus);
+				}
+				OcxCore.Log.debug("调用了客户端CTI状态变化响应回调函数,坐席状态:" + stateStr + ",CTIConnected:" + CTIConnected);
+				var postData = {
+					UserCode: OcxCore.Session.getUserCode(),
+					Account: OcxCore.Session.getUserName(),
+					ExtNumber: OcxCore.Session.getExtNumber(),
+					CTIAgentStatus: CTIAgentStatus,
+					CTIAgentSubStatus: OcxCore.Session.getCTIAgentSubStatus(),
+					CompanyId: OcxCore.Session.getCompanyId()
+				};
+
+			});
+
+			//客户端显示信息和按钮状态变化后回调函数
+			OcxCore.Session.bind("onRefleshShowInfo", function (CTIAgentStatus, CTIConnected, data) {
+				var stateStr = "";
+				if (CTIAgentStatus == OcxCore.Enums.CTIAgentStatusFlag.STATE_BUSY.getIndex()) {
+					var state1 = CTIAgentStatus;
+					if (state1 == OcxCore.Enums.CTIAgentStatusFlag.STATE_BUSY.getIndex()) {
+						state1 = OcxCore.Session.getCTIAgentSubStatus();
+					}
+					if (OcxCore.Session.getCTIAgentSubStatus() > 200) {
+						var subStatusObj = OcxCore.Session.getBusySubStateById(OcxCore.Session.getCTIAgentSubStatus());
+						stateStr = subStatusObj != null ? subStatusObj.getSubStateName() : "忙碌";
+					}
+					else {
+						stateStr = "忙碌";
+					}
+				}
+				else {
+					stateStr = OcxCore.Enums.GetName(OcxCore.Enums.CTIAgentStatusFlag, CTIAgentStatus);
+				}
+				OcxCore.Log.debug("调用了客户端显示信息和按钮状态变化后回调函数   当前状态：" + stateStr);
+			});
+			//签入之前回调函数（可用于切换CTI连接IP和端口）
+			OcxCore.Session.bind("onBeforeCheckIn", function (data) {
+				OcxCore.Log.debug("调用了签入之前回调函数");
+				var postData = {
+
+				};
+				var issuccess = false;
+				/* OcxCore.AjaxJson("CTI/GetCTILinkSrvInfo.do", {}, function (data1) {
+					issuccess = true;
+					OcxCore.Session.setCTIServerIP(data1.CTIServerIP);//CTI服务器IP
+					OcxCore.Session.setCTIServerPort(data1.CTIServerPort);//CTI服务器端口
+					OcxCore.Session.setCTIServerType(data1.CTIServerType);//CTI服务器类型 cti CTI服务器  ctiAgent CTI模拟器
+					
+					OcxCore.Log.debug("调用了签入之前回调函数后获取的IP："+data1.CTIServerIP+",端口："+data1.CTIServerPort);
+				}); */
+				issuccess = true;
+				//OcxCore.Session.setCTIServerIP("192.168.5.129");//CTI服务器IP
+				//OcxCore.Session.setCTIServerPort("8080");//CTI服务器端口
+				//OcxCore.Session.setCTIServerType("ctiAgent");//CTI服务器类型 cti CTI服务器  ctiAgent CTI模拟器
+				return issuccess;
+			});
+
+			//客户端与CTI连接之前回调函数（可用于切换CTI连接IP和端口）
+			OcxCore.Session.bind("onBeforeCTIConnect", function (ConnectState, wsObj, data) {
+				OcxCore.Log.debug("调用了客户端与CTI连接之前回调函数");
+				var postData = {
+
+				};
+				var issuccess = false;
+				if (ConnectState == 2) {
+  				/* OcxCore.AjaxJson("CTI/GetCTILinkSrvInfo.do", {}, function (data1) {
+					issuccess = true;
+					OcxCore.Session.setCTIServerIP(data1.CTIServerIP);//CTI服务器IP
+					OcxCore.Session.setCTIServerPort(data1.CTIServerPort);//CTI服务器端口
+					OcxCore.Session.setCTIServerType(data1.CTIServerType);//CTI服务器类型 cti CTI服务器  ctiAgent CTI模拟器
+					
+					OcxCore.Log.debug("调用了签入之前回调函数后获取的IP："+data1.CTIServerIP+",端口："+data1.CTIServerPort);
+		        }); */
+					issuccess = true;
+					//OcxCore.Session.setCTIServerIP("192.168.5.129");//CTI服务器IP
+					//OcxCore.Session.setCTIServerPort("8080");//CTI服务器端口
+					//OcxCore.Session.setCTIServerType("ctiAgent");//CTI服务器类型 cti CTI服务器  ctiAgent CTI模拟器
+				}
+				else {
+					issuccess = true;
+				}
+				return issuccess;
+			});
+			//客户端与CTI连接状态变化回调函数
+			OcxCore.Session.bind("onCTIConnectStateChange", function (ConnectState, wsObj) {
+				//ConnectState 0 连接关闭 1已连接 2重连中     , wsObj 心跳连接对象
+				var ConnectStateStr = ConnectState == 1 ? "已连接" : ConnectState == 2 ? "重连中" : "连接关闭";
+				OcxCore.Log.debug("调用了客户端与CTI连接状态变化回调函数,连接状态:" + ConnectStateStr);
+			});
+
+			//呼入通知（呼入弹屏）回调函数
+			OcxCore.Session.bind("onCallAlerting", function (Caller, Called, CallId, CustomId, GroupId, CallTime, PopTabId, isShowNotice, callData) {
+				//Caller：主叫   Called：被叫  CallId：呼叫ID  CustomId：客户ID  GroupId:队列ID（技能组ID） CallTime:来电时间   PopTabId:弹屏页面ID isShowNotice:是否显示来电提醒
+				OcxCore.Log.debug("调用了呼入通知（呼入弹屏）回调函数,呼叫ID：" + CallId + ",来电时间：" + CallTime);
+				var postData = {
+					caller: Caller,
+					called: Called,
+					callGuid: CallId,
+					callType: 0,
+					customId: CustomId,
+					groupId: GroupId,
+					callDirection: 0,
+					callTime: CallTime,
+					popTabId: PopTabId
+				};
+				if (callData != undefined && callData.IVRPath != undefined) postData["IVRPath"] = callData.IVRPath;
+				if (callData != undefined && callData.Data != undefined && callData.Data.BankCardNumber != undefined) {
+					postData["HXCardNo"] = callData.Data.BankCardNumber;
+					OperationInCallData = new Object();
+					OperationInCallData.BankCardNumber = callData.Data.BankCardNumber;
+				}
+
+				var Rand = Math.random();
+				/* OcxCore.AjaxJson("CallBusModule/Call/FindPopURL.do?r="+Rand, postData, function(data) {
+					if(data.Code ==1)
+					{ */
+				var popURL = "callingPopDemo.html?Caller=" + Caller + "&Called=" + Called + "&CallId=" + CallId + "&CustomId="
+					+ CustomId + "&GroupId=" + GroupId + "&CallTime=" + CallTime + "&PopTabId=" + PopTabId + "&IVRPath=" + callData.IVRPath;
+				//模拟测试代码
+				var data = {
+					phoneType: 1,
+					customPhone: Caller,
+					localProvince: "广东",
+					localCity: "深圳市",
+					popTitle: Caller + "来电",
+					popURL: popURL,
+					popTabId: PopTabId
+				};
+				//显示来电提醒
+				if (isShowNotice && OcxCore.Session.getCTIAgentStatus() == OcxCore.Enums.CTIAgentStatusFlag.STATE_CALLIN.getIndex()) {
+					ShowCallInNotice(data);
+				}
+				if (data.popURL != undefined && data.popURL != null && data.popURL != "") {
+					var url = data.popURL;
+					var title = data.popTitle && data.popTitle != '' ? data.popTitle : "弹屏";
+					var popTabId = data.popTabId && data.popTabId != '' ? data.popTabId : GetUUID();
+					/**
+					 * 打开页面选项卡
+					 * createMenuTab(dataIndex,dataUrl,menuName,isRefleshPage)
+					 * 
+					 * @param dataIndex 页面选项卡索引
+					 * @param dataUrl 页面URL
+					 * @param menuName 页面选项卡名称
+					 * @param isRefleshPage 选项卡存在时是否重新刷新页面
+					 * */
+					createMenuTab(popTabId, url, title, true);
+				}
+				/* }else
+				{
+					CCUI.DialogUtil.tipDialog(data.Message, 3, data.Code);
+				}
+			},true); */
+			});
+			//呼出通知(呼出弹屏)回调函数
+			OcxCore.Session.bind("onOutCalling", function (Caller, Called, CallId, CustomId, CallTime, OtherParams, PopTabId, callData) {
+				//Caller：主叫   Called：被叫    CallId：呼叫ID  CustomId：客户ID CallTime:去电时间  OtherParams:自定义参数   PopTabId:弹屏页面ID
+				OcxCore.Log.debug("调用了呼出通知(呼出弹屏)回调函数,呼叫ID：" + CallId + ",外呼时间：" + CallTime);
+				var postData = {
+					caller: Caller,
+					called: Called,
+					callGuid: CallId,
+					callType: 1,
+					customId: CustomId,
+					callDirection: 1,
+					callTime: CallTime,
+					popTabId: PopTabId,
+					otherParams: OtherParams
+				};
+				var Rand = Math.random();
+				/* OcxCore.AjaxJson("CallBusModule/Call/FindPopURL.do?r="+Rand, postData, function(data) {
+					if(data.Code ==1)
+					{ */
+				var popURL = "callingPopDemo.html?Caller=" + Caller + "&Called=" + Called + "&CallId=" + CallId + "&CustomId="
+					+ CustomId + "&CallTime=" + CallTime + "&PopTabId=" + PopTabId + "&OtherParams=" + OtherParams;
+				//模拟测试代码
+				var data = {
+					phoneType: 1,
+					customPhone: Called,
+					localProvince: "广东",
+					localCity: "深圳市",
+					popTitle: Called + "去电",
+					popURL: popURL,
+					popTabId: PopTabId
+				};
+				if (data.popURL != undefined && data.popURL != null && data.popURL != "") {
+					var url = data.popURL;
+					var title = data.popTitle && data.popTitle != '' ? data.popTitle : "弹屏";
+					var popTabId = data.popTabId && data.popTabId != '' ? data.popTabId : GetUUID();
+					createMenuTab(popTabId, url, title, true);
+				}
+				/* }else
+				{
+					CCUI.DialogUtil.tipDialog(data.Message, 3, data.Code);
+				}
+			},true); */
+			});
+			//通话通知回调函数
+			OcxCore.Session.bind("onTalking", function (Caller, Called, CallId, CustomId, GroupId, CallTime, ReceiveStartTime, AudioFile, PopTabId, callData) {
+				//Caller：主叫   Called：被叫    CallId：呼叫ID  CustomId：客户ID  GroupId:队列ID（技能组ID）  CallTime:来去电时间   ReceiveStartTime:接听时间    CallEndTime:挂机时间    CallType:（0呼入 1呼出）   OtherParams:自定义参数 PopTabId:弹屏页面ID
+				OcxCore.Log.debug("调用了通话通知回调函数,呼叫ID：" + CallId + ",呼叫时间：" + CallTime + ",接听时间：" + ReceiveStartTime + ",录音文件：" + AudioFile);
+			});
+			//挂机响应回调函数
+			OcxCore.Session.bind("onHangup", function (Caller, Called, CallId, CustomId, GroupId, CallTime, ReceiveStartTime, CallEndTime, CallType, OtherParams, AudioFile, PopTabId, callData) {
+				OcxCore.Log.debug("调用了挂机响应回调函数,呼叫ID：" + CallId + ",呼叫时间：" + CallTime + ",接听时间：" + ReceiveStartTime + ",挂机时间：" + CallEndTime + ",录音文件：" + AudioFile);
+				OperationInCallData = null;
+				//Caller：主叫   Called：被叫    CallId：呼叫ID  CustomId：客户ID  GroupId:队列ID（技能组ID）  CallTime:来去电时间   ReceiveStartTime:接听时间    CallEndTime:挂机时间    CallType:（0呼入 1呼出）   OtherParams:自定义参数 PopTabId:弹屏页面ID
+				/* var postData = {
+						caller : Caller,
+						called : Called,
+						callGuid : CallId,
+						callType : CallType,
+						customId : CustomId,
+						groupId : GroupId,
+						callTime:CallTime,
+						callEndTime:CallEndTime,
+						popTabId:PopTabId,
+						otherParams:OtherParams
+					};
+				var Rand = Math.random();
+				OcxCore.AjaxJson("CallBusModule/Call/HangupHandler.do?r="+Rand, postData, function(data) {
+					if(data.Code ==1)
+					{
+						
+					}else
+					{
+						tipDialog(data.Message, 3, data.Code);
+					}
+				},true); */
+			});
+			//客户端拨号之前回调函数
+			OcxCore.Session.bind("onBeforeMakeCall", function (data) {
+				OcxCore.Log.debug("调用了客户端拨号之前回调函数");
+				if (data == undefined || data == null || data == "") {
+					return null;
+				}
+ 			/* //在11位的手机号码前加0再呼叫
+	  		if(data.Called != undefined && data.Called != null && data.Called.length == 11  && OcxCore.validator.isMobile(data.Called))
+			{
+	  			data.Called = "0" + data.Called;
+			} */
+				/* var issuccess = false;
+				OcxCore.AjaxJson("CTI/GetDialNumber.do", {phone:data.Called}, function (data1) {
+					data.Called = data1.Code;
+					issuccess = true;
+				});
+				if(issuccess)
+					return data;
+				else
+					return null; */
+
+				return data;
+			});
+			//保存坐席操作动作回调函数
+			OcxCore.Session.bind("onSaveCtiOption", function (UserCode, ExtNumber, ExecutionState, ExecutionTime, EndTime, CompanyId, Remark, Channel) {
+ 			/* OcxCore.Log.debug("调用了保存坐席操作动作回调函数: "+OcxCore.Enums.GetName(OcxCore.Enums.CTIAgentOptionFlag,ExecutionState)
+ 					+"    开始时间："+ExecutionTime+" 结束时间："+EndTime +" 备注："+Remark); */
+ 			/* var postData = {
+ 				UserCode:UserCode,
+ 				ExtNumber:ExtNumber,
+ 				ExecutionState:ExecutionState,
+ 				CTIAgentSubStatus:OcxCore.Session.getCTIAgentSubStatus(),
+ 				CompanyId:CompanyId,
+ 				Remark:Remark,
+ 				Channel:Channel
+ 			};
+ 			if(OcxCore.Session.getConfig("WebConnectMode") == "socket")
+ 			{
+ 				try{
+	 				postData.Action = "CTIAction";
+	 				postData.SubAction = "SaveCtiOption";
+	 				
+					OcxCore.SendCommandWS(OcxCore.Utility.RenderJson(postData), "com.callcenter.CTIAgent.web WebApp_CH", true,null,null,"CTIAction");
+					OcxCore.Log.trace("websocket发送消息到Web服务器："+OcxCore.Utility.RenderJson(postData));
+				}
+				catch(e)
+				{
+					
+				}
+ 			}
+ 			else
+ 			{
+ 				OcxCore.AjaxJson("CTI/SaveCtiOption.do", postData, function (data1) {
+					
+		        },true);
+ 			} */
+			});
+
+			//来电时显示来电提醒回调函数
+			OcxCore.Session.bind("onShowCallInNotice", function (Caller, Called, CallId, CustomId, GroupId, CallTime, PopTabId, isShowNotice, callData) {
+				OcxCore.Log.debug("调用了来电时显示来电提醒回调函数");
+				//Caller：主叫   Called：被叫  CallId：呼叫ID  CustomId：外呼任务清单ID  GroupId:队列ID（技能组ID） CallTime:来电时间   PopTabId:弹屏页面ID isShowNotice:是否显示来电提醒
+
+				//模拟测试代码
+				/* var data = {
+					phoneType:1,
+					customPhone:Caller,
+					localProvince:"广东",
+					localCity:"深圳市"
+				};
+				ShowCallInNotice(data);//显示来电提醒 */
+			});
+			//隐藏来电提醒回调函数
+			OcxCore.Session.bind("onHideCallInNotice", function () {
+				OcxCore.Log.debug("调用了隐藏来电提醒回调函数");
+				HideCallInNotice();
+			});
+
+			//保存坐席配置信息回调函数
+			OcxCore.Session.bind("onSaveSeatSettings", function (data) {
+				OcxCore.Log.debug("调用了保存坐席配置信息回调函数");
+
+			});
+
+			//------------------操作响应事件start----------------------
+			//签入响应回调函数
+			OcxCore.Session.bind("onCheckIn", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了签入响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+
+			//签出响应后回调函数
+			OcxCore.Session.bind("onCheckOut", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了签出响应后回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//断开自动重新加载登录信息响应回调函数
+			OcxCore.Session.bind("onReloadInfoRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了断开自动重新加载登录信息响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//示闲响应回调函数
+			OcxCore.Session.bind("onSetIdleRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了示闲响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//示忙响应回调函数
+			OcxCore.Session.bind("onSetBusyRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了示忙响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//接听响应回调函数
+			OcxCore.Session.bind("onAnswerRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了接听响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//外呼响应回调函数
+			OcxCore.Session.bind("onMakeCallRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了外呼响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//挂机响应回调函数
+			OcxCore.Session.bind("onHangupRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了挂机响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//保持响应回调函数
+			OcxCore.Session.bind("onKeepRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了保持响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//找回响应回调函数
+			OcxCore.Session.bind("onGetBackRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了找回响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//咨询响应回调函数
+			OcxCore.Session.bind("onConsultRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了咨询响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//转移响应回调函数
+			OcxCore.Session.bind("onTransferRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了转移响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//会议响应回调函数
+			OcxCore.Session.bind("onConferenceRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了会议响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//监听响应回调函数
+			OcxCore.Session.bind("onListenRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了监听响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//停止监听响应回调函数
+			OcxCore.Session.bind("onStopListenRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了停止监听响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//强插响应回调函数
+			OcxCore.Session.bind("onForceEnterRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了强插响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//强拆响应回调函数
+			OcxCore.Session.bind("onForceRemoveRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了强拆响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//强制示闲响应回调函数
+			OcxCore.Session.bind("onForceSetIdleRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了强制示闲响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//强制示忙响应回调函数
+			OcxCore.Session.bind("onForceSetBusyRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了强制示忙响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//停止监控会议响应回调函数
+			OcxCore.Session.bind("onStopMonitorConfRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了停止监控会议响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//退出会议响应回调函数
+			OcxCore.Session.bind("onStopConferenceRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了退出会议响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//事后忙响应回调函数
+			OcxCore.Session.bind("onEndBusyRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了事后忙响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//事后闲响应回调函数
+			OcxCore.Session.bind("onEndIdleRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了事后闲响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//开始监控响应回调函数
+			OcxCore.Session.bind("onBeginMonitorRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了开始监控响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//停止监控响应回调函数
+			OcxCore.Session.bind("onStopMonitorRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了停止监控响应回调函数:Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+			//设置坐席配置信息响应回调函数 
+			OcxCore.Session.bind("onSetSeatInfoRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了设置坐席配置信息响应回调函数 :Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+
+			//转IVR响应 
+			OcxCore.Session.bind("onOperationInCallRes", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了转IVR响应回调函数 :Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+			});
+
+			//转IVR结果通知 
+			OcxCore.Session.bind("OnOperationInCallComplete", function (Result, ErrorCode, Message, data) {
+				OcxCore.Log.debug("调用了转IVR结果通知回调函数 :Result:" + Result + ",ErrorCode:" + ErrorCode + ",Message:" + Message);
+				if (data.Operation == "VerifyPassword" && data.RetCode != undefined) {
+					if (data.RetCode == 1) {
+						OcxCore.DialogUtil.tipDialog('验密失败-http调用失败！', 3, -1);
+					}
+					else if (data.RetCode == 2) {
+						OcxCore.DialogUtil.tipDialog('验密失败-按键超时！', 3, -1);
+					}
+					else if (data.RetCode == 3) {
+						OcxCore.DialogUtil.tipDialog('验密失败-放音失败！', 3, -1);
+					}
+					else if (data.Data == undefined) {
+						OcxCore.DialogUtil.tipDialog('验密失败-http响应内容错误！', 3, -1);
+					}
+					else {
+						if (data.Data.sys.erorcd == "0") {
+							if (data.Data.output.vfLevel == 0) {
+								OcxCore.DialogUtil.tipDialog('验密完成-用户未开户！', 3);
+							}
+							else if (data.Data.output.vfLevel == 1) {
+								OcxCore.DialogUtil.tipDialog('验密完成-用户开户未验密！', 3);
+							}
+							else if (data.Data.output.vfLevel == 2) {
+								OcxCore.DialogUtil.tipDialog('验密已通过', 3, 2);
+								window.frames["iframe_" + OcxCore.Session.LastCallId].OnOperationInCallComplete();
+							}
+						}
+						else {
+							OcxCore.DialogUtil.tipDialog('验密失败', 3, -1);
+						}
+					}
+				}
+				//window.frames["iframe_"+OcxCore.Session.LastCallId].OnOperationInCallComplete();
+			});
+			//------------------操作响应事件end----------------------
+
+			//示忙申请操作绑定
+			$("#ocxBtnSetBusyApply").click(function () {
+				var jqObj = $(this);//按钮jq对象
+				var ocxBtn = OcxCore.OcxButtonbar.GetButton("SetBusyApply");//按钮实体
+				if (!ocxBtn.GetVisible() || !ocxBtn.IsCanUsed()) {
+					return;
+				}
+
+				OcxCore.DialogUtil.confirmDialog("系统提示", "<div class='ui_alert'>是否允许当前坐席变更为忙碌状态？</div>", function (data) {
+					if (data) {
+						setTimeout(function () {
+
+							if (OcxCore.Session.getCTIAgentStatus() == OcxCore.Enums.CTIAgentStatusFlag.STATE_FREE.getIndex()) {
+								OcxCore.Session.getCTIAgentData().getBtnBusy().Reset(true,true);//示忙 可用可见
+					  			var ocxBtnSetBusy = OcxCore.OcxButtonbar.GetButton("SetBusy");//按钮实体
+					  			ocxBtnSetBusy.SetEnabled(true);//示忙 可用
+					  			ocxBtnSetBusy.SetVisible(true);//示忙 可见
+					  			
+					  			ocxBtnSetBusy.StateChange();//触发按钮状态改变事件
+					  			
+					  			OcxCore.Session.getCTIAgentData().getBtnSetBusyApply().Reset(false,false);//示忙申请 不可用不可见
+					  			var ocxBtnSetBusyApply = OcxCore.OcxButtonbar.GetButton("SetBusyApply");//按钮实体
+					  			ocxBtnSetBusyApply.SetEnabled(false);//示忙申请 可用
+					  			ocxBtnSetBusyApply.SetVisible(false);//示忙申请 可见
+					  			ocxBtnSetBusyApply.StateChange();//触发按钮状态改变事件
+
+							}
+							else {
+								OcxCore.Session.getCTIAgentData().setCanSetBusy(true);//配置为当前允许示忙
+			  					OcxCore.Session.getCTIAgentData().getBtnSetBusyApply().Reset(false,false);//示忙申请 不可用不可见
+			  					var ocxBtnSetBusyApply = OcxCore.OcxButtonbar.GetButton("SetBusyApply");//按钮实体
+					  			ocxBtnSetBusyApply.SetEnabled(false);//示忙申请 可用
+					  			ocxBtnSetBusyApply.SetVisible(false);//示忙申请 可见
+					  			ocxBtnSetBusyApply.StateChange();//触发按钮状态改变事件
+							}
+
+
+							window.noticeDialogIndex = layer.open({
+								title: '<span>系统提醒</span>',
+								content: "<a onclick='OcxCore.DialogUtil.closeDialog(window.noticeDialogIndex);'>您的示忙申请已审批通过了！</a>",
+								area: ['250px', '137px'],
+								offset: 'rb',
+								btn: ['忽略'],
+								btnAlign: 'l',
+								yes: function (index, layero) {
+									//关闭窗口
+									layer.close(index);
+								},
+								shade: 0,
+								anim: 2,
+								skin: 'layer_skin',
+								closeBtn: 0,
+								time: 4 * 60 * 1000
+							});
+
+						}, 10000);
+					}
+				});
+
+			});
+
+
+
+			//初始化
+			OcxCore.Session.InitService();
+
+  		/* OcxCore.AjaxJson("CTI/GetLoginUserInfo.do", {}, function (data) {
+  		  
+	  		
+       },true); */
+		}
+		//显示模拟登录窗口
+		function showLoginForm() {
+			OcxCore.DialogUtil.Dialog("login.html", "LoginForm", "登录", 830, 640);
+		}
+		//手动签入测试
+		function Checkin(loginInfo) {
+			if (loginInfo == undefined || loginInfo == null) {
+				OcxCore.Utility.ShowTip("参数无效！", 2);
+				return;
+			}
+			if (OcxCore.Session.IsCheckin()) {
+				OcxCore.Utility.ShowTip("请先签出当前分机再签入！", 2);
+				return;
+			}
+
+			OcxCore.Session.setCTIServerIP(loginInfo.CTIServerIP);//CTI服务器IP
+			OcxCore.Session.setCTIServerPort(loginInfo.CTIServerPort);//CTI服务器端口
+			OcxCore.Session.setCTIServerType(loginInfo.CTIServerType);//CTI服务器类型 cti CTI服务器真实环境   ctiAgent cti模拟器
+			//OcxCore.Session.setHideMiddlePhone(true);//是否加密显示主被叫号码
+			OcxCore.Session.setShowCallInPopOnTalking(false);//呼入时是否接通电话后才弹屏，默认fase  true 是 false 否
+			OcxCore.Session.setShowCallOutPopOnTalking(false);//呼出时是否接通电话后才弹屏，默认fase  true 是 false 否
+			OcxCore.Session.setLogLevel("TRACE");//显示日志级别TRACE,DEBUG,INFO,WARN,ERROR,FATAL
+			//OcxCore.Session.ResetConfig("EnableCallIdNotify",false);//是否启用CALLID_NOTIFY通知，默认启用
+			OcxCore.Session.ResetConfig("EnableConsultExtNum", true);//是否启用咨询分机功能，默认禁用    true启用 false禁用
+			//OcxCore.Session.ResetConfig("DialNumberVisible",true);//是否显示拨号框和拨号按钮，默认显示    true显示 false隐藏
+			OcxCore.Session.ResetConfig("HideMiddlePhoneMode", 1);//加密号码模式 1字母加密 2星号加密
+			OcxCore.Session.ResetConfig("MaxCTIReconnectCount", 5);//CTI断开自动重连最大次数，默认10次
+			//OcxCore.Session.ResetConfig("DialogZIndex",10000000);//弹框层zIndex值
+			//OcxCore.Session.setCTIDialPrefix("9");//拨号前缀，如号码前加9
+			OcxCore.Session.setAutoReCheckin(true);//断开连接后是否自动重新签入 true 是 false 否
+			OcxCore.Session.ResetConfig("MakeCallOnIdleState", loginInfo.MakeCallOnIdleState);//是否允许示闲状态下拨打电话，默认false不允许    true允许 false不允许
+			OcxCore.Session.ResetConfig("SetBusyApproval", loginInfo.SetBusyApproval);//坐席置忙状态是否需要审批，默认false不需要审批    true需要审批 false不需要审批
+			//OcxCore.Session.setNowDate(new Date());//同步服务器当前时间
+
+			//OcxCore.Session.RegisterGlobal("CtiMonitorWsUrl",loginInfo.CtiMonitorWsUrl);//队列监控WS地址(弃用)
+
+			OcxCore.Session.setSessionId(loginInfo.CTIAgentSessionID);//会话ID 可以使用会话Session的ID值
+			//OcxCore.Session.setUserId(UserId);//用户ID
+			OcxCore.Session.setUserName(loginInfo.UserName);//用户账号
+			if (loginInfo.UserCode != undefined) {
+				OcxCore.Session.setUserCode(loginInfo.UserCode);//用户工号 四到五位整型数字
+			}
+			else {
+				OcxCore.Session.setUserCode(loginInfo.UserName);//用户工号 四到五位整型数字
+			}
+			OcxCore.Session.setRealName(loginInfo.RealName);//用户姓名
+			OcxCore.Session.setNickName(loginInfo.RealName);//用户昵称
+			OcxCore.Session.setGender(loginInfo.Gender);//性别  男   女
+			OcxCore.Session.setCompanyId(loginInfo.CompanyId);//所在公司ID
+			OcxCore.Session.setCompanyCode("1001");//所在公司编号(数字)
+
+			OcxCore.Session.setExtNumber(loginInfo.ExtNumber);//分机号码
+			OcxCore.Session.setExtMode(2);//分机选择模式(1:固定分机 2：座席自选 3：自适应)
+			OcxCore.Session.setExtCallerNumber(loginInfo.ExtCallerNumber);//分机的主叫号码
+			OcxCore.Session.setExtCallerRelayGrpNo(loginInfo.ExtCallerRelayGrpNo);//分机的主叫号码对应中继组标识编码
+			OcxCore.Session.setContinuation(loginInfo.Continuation);//接续等级
+			OcxCore.Session.setCanSetBusyWaitCount(loginInfo.CanSetBusyWaitCount);//超过此队列排队数量不允许置忙，设置数量大于0才生效
+			OcxCore.Session.setLeavePhoneNumber(loginInfo.LeavePhoneNumber);//离开时转接手机号码
+			//OcxCore.Session.setButtonPermission(loginInfo.ButtonPermission);//电话工具条按钮权限配置
+			OcxCore.Session.setButtonPermission("Checkin,Checkout,SetIdle,SetBusy,Answer,Hangup,Return,SetEndidle,SetEndbusy,MakeCall,Consult,Transfer,Keep,Conference,Monitor1,Listen,ForceEnter,ForceRemove,ForceSetIdle,ForceSetBusy,MoniterConf,SendTipMsg,ForceCheckOut,LeaveMode,OperationInCall");//电话工具条按钮权限配置
+
+			//OcxCore.Session.setPhotograph(Photograph);//用户头像
+
+			OcxCore.Session.clearGroupList();//先清空原有的技能组列表
+			for (var i = 0; i < loginInfo.SeatGroupList.length; i++) {
+				var seatGroup = loginInfo.SeatGroupList[i];
+				var Level = seatGroup.Level != undefined ? seatGroup.Level : 1;
+				var Sort = seatGroup.Sort != undefined ? seatGroup.Sort : 1;
+				OcxCore.Session.addGroup(seatGroup.SeatGroupId, seatGroup.SeatGroupName, Level, Sort);
+			}
+
+			OcxCore.Session.clearBusySubStateList();//先清空置忙小状态列表
+			$("#ocxBtnBusySubState").html("");
+
+			var subStateStyleNode = document.createElement("style");
+			subStateStyleNode.type = "text/css";
+			var subStateStyleStr = "";
+			//添加置忙小状态列表
+			for (var i = 0; i < loginInfo.BusySubStateList.length; i++) {
+				var subStateIcon = loginInfo.BusySubStateList[i].Icon != undefined ? loginInfo.BusySubStateList[i].Icon : "manglu.png";
+				OcxCore.Session.addBusySubState(loginInfo.BusySubStateList[i].SubState, loginInfo.BusySubStateList[i].SubStateName, "", true, subStateIcon);
+
+				$("#ocxBtnBusySubState").append("<div id='ocxBtnBusySubState" + loginInfo.BusySubStateList[i].SubState + "' keyid='SetBusy' state='2' substate='" + loginInfo.BusySubStateList[i].SubState + "' class='ocxState-dropdownData-item ocxSubState state_" + loginInfo.BusySubStateList[i].SubState + "' style='display: block;'>" + loginInfo.BusySubStateList[i].SubStateName + "</div>");
+
+				subStateStyleStr += ".ocxState-dropdownData .state_" + loginInfo.BusySubStateList[i].SubState + "{background:url(CTIAgentSDK/images/substate/" + subStateIcon + ") 0px 0px no-repeat;}\r\n";
+			}
+			if (subStateStyleNode.styleSheet) {//ie下  
+				subStateStyleNode.styleSheet.cssText = subStateStyleStr;
+			} else {
+				subStateStyleNode.innerHTML = subStateStyleStr;
+			}
+			document.getElementsByTagName("head")[0].appendChild(subStateStyleNode);
+
+			//初始化分机号列表
+			OcxCore.Session.clearExtNumberList();//先清空原有的分机号列表
+			/* loginInfo.ExtNumberList = [];
+			loginInfo.ExtNumberList.push({
+				ExtNumber:8001,
+				ExtCaller:"28888888",
+				ExtCallerRelayGrpNo:1,
+				ExtUserRealName:"客服1",
+				ExtCallers:[
+							{Caller:"28888888",RelayGrpNo:1,IsDefault:1},
+							{Caller:"28888889",RelayGrpNo:1,IsDefault:0}
+						   ]
+			});
+			loginInfo.ExtNumberList.push({ExtNumber:8002,ExtCaller:"28888888",ExtCallerRelayGrpNo:1,ExtUserRealName:"客服2",
+				ExtCallers:[
+							{Caller:"28888888",RelayGrpNo:1,IsDefault:1},
+							{Caller:"28888889",RelayGrpNo:1,IsDefault:0}
+						   ]
+			});
+			loginInfo.ExtNumberList.push({ExtNumber:8003,ExtCaller:"28888888",ExtCallerRelayGrpNo:1,ExtUserRealName:"客服3",
+				ExtCallers:[
+							{Caller:"28888888",RelayGrpNo:1,IsDefault:1},
+							{Caller:"28888889",RelayGrpNo:1,IsDefault:0}
+						   ]
+			});
+			loginInfo.ExtNumberList.push({ExtNumber:8004,ExtCaller:"28888888",ExtCallerRelayGrpNo:1,ExtUserRealName:"客服4",
+				ExtCallers:[
+							{Caller:"28888888",RelayGrpNo:1,IsDefault:1},
+							{Caller:"28888889",RelayGrpNo:1,IsDefault:0}
+						   ]
+			});
+			loginInfo.ExtNumberList.push({ExtNumber:8005,ExtCaller:"28888888",ExtCallerRelayGrpNo:1,ExtUserRealName:"客服5",
+				ExtCallers:[
+							{Caller:"28888888",RelayGrpNo:1,IsDefault:1},
+							{Caller:"28888889",RelayGrpNo:1,IsDefault:0}
+						   ]
+			}); */
+			for (var i = 0; i < loginInfo.ExtNumberList.length; i++) {
+				var phonenumber = loginInfo.ExtNumberList[i].ExtCaller != undefined && loginInfo.ExtNumberList[i].ExtCaller != null ? loginInfo.ExtNumberList[i].ExtCaller : "";
+				var relaygroupno = loginInfo.ExtNumberList[i].ExtCallerRelayGrpNo != undefined && loginInfo.ExtNumberList[i].ExtCallerRelayGrpNo != null ? loginInfo.ExtNumberList[i].ExtCallerRelayGrpNo : 0;
+				var extCallers = loginInfo.ExtNumberList[i].ExtCallers != undefined && loginInfo.ExtNumberList[i].ExtCallers != null ? loginInfo.ExtNumberList[i].ExtCallers : new Array();
+				var newExtCallers = new Array();
+				for (var j = 0; j < extCallers.length; j++) {
+					newExtCallers.push({ Caller: extCallers[j].Caller, RelayGrpNo: extCallers[j].RelayGrpNo, IsDefault: extCallers[j].IsDefault });
+				}
+				OcxCore.Session.addExtNumber(loginInfo.ExtNumberList[i].ExtNumber, phonenumber, relaygroupno, loginInfo.ExtNumberList[i].ExtUserRealName, newExtCallers);
+			}
+
+			//设置当前分机的主叫号码列表
+			OcxCore.Session.clearCallerNumberList();//先清空原有的分机主叫号码列表
+			for (var i = 0; i < loginInfo.CallerNumberList.length; i++) {
+				OcxCore.Session.addCallerNumber(loginInfo.CallerNumberList[i].Caller, loginInfo.CallerNumberList[i].RelayGrpNo, loginInfo.CallerNumberList[i].IsDefault);
+			}
+
+
+			//----------坐席配置信息 start------------
+			OcxCore.Session.setEndProcMode(loginInfo.EndProcMode);//事后整理模式，0禁用 1呼入 2呼出 3呼入呼出，默认0
+			OcxCore.Session.setEndProcTime(loginInfo.EndProcTime);//事后整理时长(秒)
+			OcxCore.Session.setSatisfactionMode(loginInfo.SatisfactionMode);//满意度调查模式，0关闭 1手动开启 2自动开启，默认0
+			OcxCore.Session.setSatisfactionEndTime(loginInfo.SatisfactionEndTime);//满意度调查失效时间,如2018-12-31 23:59:59
+			//是否开启示忙审批，开启则默认不允许置忙并且签入时默认空闲状态
+			if (OcxCore.Session.getConfig("SetBusyApproval") != undefined && OcxCore.Session.getConfig("SetBusyApproval") == true) {
+				OcxCore.Session.setDefaultStatus(1);//签入时默认状态，1空闲 2置忙，默认2
+				OcxCore.Session.setDefaultEndFlag(0);//签入时默认事后忙闲状态：0事后闲  1事后忙，默认1 
+			}
+			else {
+				OcxCore.Session.setDefaultStatus(loginInfo.DefaultStatus);//签入时默认状态，1空闲 2置忙，默认2
+				OcxCore.Session.setDefaultEndFlag(loginInfo.DefaultEndFlag);//签入时默认事后忙闲状态：0事后闲  1事后忙，默认1
+			}
+
+			//----------坐席配置信息 end------------
+
+			//始始化
+			OcxCore.Session.InitService();
+
+			//固定分机或自适应的自动签入
+			/* if (loginInfo.ExtMode == 1 || loginInfo.ExtMode == 3) { */
+			setTimeout(function () {
+				//自动签入
+				OcxCore.Session.Checkin();
+			}, 200);
+			/* } */
+			if (loginInfo.CTIServerType == "ctiAgent") {
+				$("#ocxBtnAnswer1").show();
+			}
+		}
+		/**
+		 * 显示来电接听提醒
+		 * */
+		function ShowCallInNotice(data) {
+			//坐席互打
+			if (data.phoneType == 0 && data.callerUserName != undefined) {
+				$("#customerCallInTb").hide();
+				$("#seatCallInTb").show();
+				$("#ocxlblCallerUserName").text(data.callerUserName != undefined ? data.callerUserName : "");
+				$("#ocxlblCallerUserCode").text(data.callerUserCode != undefined ? data.callerUserCode : "");
+				$("#ocxlblCallerExtNumber").text(data.customPhone != undefined ? data.customPhone : "");
+				if (data.callerPhotoPath != undefined && data.callerPhotoPath != "")
+					$(".CallAlertPhoto img").attr("src", OcxCore.GetPageUrl(data.callerPhotoPath));
+				else
+					$(".CallAlertPhoto img").attr("src", "");
+			} else {
+				$("#customerCallInTb").show();
+				$("#seatCallInTb").hide();
+				$(".CallAlertPhoto img").attr("src", "");
+				$("#ocxlblCallinCaller").text(data.customPhone);
+				if (data.localProvince != undefined)
+					$("#ocxlblLocalInfo").text(data.localProvince + " " + data.localCity);
+				else
+					$("#ocxlblLocalInfo").text("未知");
+			}
+
+			$("#ocxDivCallAlerting").animate({ bottom: "30px" });
+			$("#ocxBtnAnswer1").unbind("click");
+			$("#ocxBtnHugeUp1").unbind("click");
+			$("#ocxBtnAnswer1").bind("click", function () {
+				OcxCore.OcxButtonbar.GetButton($("#ocxBtnAnswer1").attr("keyid")).Click();
+				$("#ocxDivCallAlerting").animate({ bottom: "-300px" });
+			});
+			$("#ocxBtnHugeUp1").bind("click", function () {
+				OcxCore.OcxButtonbar.GetButton($("#ocxBtnHugeUp1").attr("keyid")).Click();
+				$("#ocxDivCallAlerting").animate({ bottom: "-300px" });
+			});
+		}
+		function HideCallInNotice() {
+			$("#ocxDivCallAlerting").animate({ bottom: "-300px" });
+		}
+
+		var QueueListMonitorWindow = null;
+		function showQueueListMonitor() {
+			if (QueueListMonitorWindow != null && QueueListMonitorWindow.open && !QueueListMonitorWindow.closed) {
+				QueueListMonitorWindow.focus();
+				//OcxCore.Utility.ShowTip("所选队列监控已打开", 1);
+				return;
+			}
+			var url = "CTIAgentSDK/webmonitor/QueueListMonitor.html?CompanyId=" + OcxCore.Session.getCompanyId();
+
+
+			var iWidth = $(window).width() - 10;//弹出窗口的宽度; 
+			var iHeight = $(window).height() - 10;//弹出窗口的高度; 
+			//获得窗口的垂直位置 
+			var iTop = (window.screen.availHeight - 30 - iHeight) / 2;
+			//获得窗口的水平位置 
+			var iLeft = (window.screen.availWidth - 10 - iWidth) / 2;
+			QueueListMonitorWindow = window.open(url, "QueueListMonitor", "height=" + iHeight + ", width=" + iWidth + ", top=" + iTop + ", left=" + iLeft + ", toolbar=no, menubar=no, scrollbars=no, resizable=no, location=no, status=no");   //该句写成一行代码
+		}
+		/**
+		 * 队列监控窗口初始化时调用 
+		 */
+		function loadCtiMonitorUserInfo(callback) {
+			var loginInfo = {};
+			loginInfo.LogLevel = OcxCore.Session.getLogLevel();//显示日志级别TRACE,DEBUG,INFO,WARN,ERROR,FATAL
+			//loginInfo.SessionId = OcxCore.Session.getSessionId();//会话ID 可以使用会话Session的ID值
+			//loginInfo.UserId = OcxCore.Session.getUserId();//用户ID
+			loginInfo.UserName = OcxCore.Session.getUserName();//用户账号
+			loginInfo.UserCode = OcxCore.Session.getUserCode();//用户工号 四到五位整型数字
+			//loginInfo.RealName = OcxCore.Session.getRealName();//用户姓名
+			//loginInfo.Gender = OcxCore.Session.getGender();//性别  男   女
+			loginInfo.CompanyId = OcxCore.Session.getCompanyId();//所在公司ID
+
+			loginInfo.CtiMonitorWsUrl = OcxCore.Session.GetGlobal("CtiMonitorWsUrl");//队列监控WS地址
+
+			//加载小状态
+			loginInfo.BusySubStateList = [];
+
+			var BusySubStateList = OcxCore.Session.getBusySubStateList();
+			for (var i = 0; i < BusySubStateList.size(); i++) {
+				var subState = {
+					SubState: BusySubStateList.get(i).getSubState(),
+					SubStateName: BusySubStateList.get(i).getSubStateName(),
+					CompanyId: BusySubStateList.get(i).getCompanyId(),
+					Enabled: BusySubStateList.get(i).getEnabled()
+				};
+				loginInfo.BusySubStateList.push(subState);
+			}
+
+			loginInfo.ShowSeatMode = 2;//如何显示技能组下的坐席，1显示技能组下的坐席并集，2 显示交集
+
+			callback(loginInfo);
+		}
+
+		/**
+		*呼入弹屏
+		*/
+		function CallAlertingTest() {
+			var url = "CTIAgentSDK/web/CallInDemo.html";
+			OcxCore.DialogUtil.openArtDialog(url, "Form768768677565", "呼入弹屏测试", 520, 450);
+		}
+		/**
+		*重新弹屏
+		*/
+		function ReOpenPopScreen() {
+			OcxCore.Session.ReOpenCurrentCallPopScreen();
+		}
+		/**
+		*最后通话录音文件
+		*/
+		function GetLastCallAudioFileTest() {
+			if (OcxCore.Session.getLastCallAudioFile() != "") {
+				OcxCore.DialogUtil.alertDialog("最后通话录音文件：<br/>" + OcxCore.Session.getLastCallAudioFile());
+			}
+			else {
+				OcxCore.DialogUtil.tipDialog("暂无最后通话录音文件！", 2);
+			}
+		}
+
+		/**安全退出**/
+		function IndexOut() {
+			OcxCore.DialogUtil.confirmDialog("系统提示", "<div class='ui_alert'>确认要退出 呼叫中心系统？</div>", function (data) {
+				if (data) {
+					OcxCore.DialogUtil.Loading(true, "正在退出系统...");
+					window.setTimeout(function () {
+						window.location.href = window.location.href;
+
+					}, 200);
+				}
+			});
+		}
+	</script>
+
+	<!-- Ocx隐藏的HTML内容 -->
+	<!-- 来电接听提示 -->
+	<div id="ocxDivCallAlerting" class="CallAlertMain" style="display:block;">
+		<div class="mainbg">
+			<div class="headTitle">
+				<div class="headTitleImg"></div>
+			</div>
+			<div class="mainContent">
+				<div class="CallAlertPhoto"><img /></div>
+				<div class="rightInfoContent">
+					<table id="customerCallInTb">
+						<tr>
+							<th>来电号码：</th>
+							<td><span id="ocxlblCallinCaller"></span></td>
+						</tr>
+						<tr>
+							<th>归属地：</th>
+							<td><span id="ocxlblLocalInfo"></span></td>
+						</tr>
+					</table>
+					<table id="seatCallInTb" style="display:none;">
+						<tr>
+							<th>来电坐席：</th>
+							<td><span id="ocxlblCallerUserName"></span></td>
+						</tr>
+						<tr>
+							<th>工号：</th>
+							<td><span id="ocxlblCallerUserCode"></span></td>
+						</tr>
+						<tr>
+							<th>分机：</th>
+							<td><span id="ocxlblCallerExtNumber"></span></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+			<div class="btnbar">
+				<button id="ocxBtnAnswer1" keyid="Answer" class="btnAnswer1" type="button"
+					style="display:none;"></button>
+				<button id="ocxBtnHugeUp1" keyid="Hangup" class="btnHugeUp1" type="button"></button>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>

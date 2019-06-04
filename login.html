@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>登录页面</title>
+    <script src="CTIAgentSDK/plugins/jquery/jquery-1.8.2.min.js"></script>
+    <link href="CTIAgentSDK/skins/CallCenterui-framework.css" rel="stylesheet" />
+    <script src="CTIAgentSDK/plugins/CallCenterui-framework.js"></script>
+    <!--日期组件start-->
+    <script src="CTIAgentSDK/plugins/datepicker/WdatePicker.js"></script>
+    <!--日期组件start-->
+    <!--引入弹窗组件start-->
+    <link href="CTIAgentSDK/plugins/artDialog4/skins/default.css?4.1.7" rel="stylesheet" />
+    <script src="CTIAgentSDK/plugins/artDialog4/jquery.artDialog.source.js" type="text/javascript"></script>
+	<script src="CTIAgentSDK/plugins/artDialog4/plugins/iframeTools.source.js" type="text/javascript"></script> 
+	<!--引入弹窗组件end-->
+    <script type="text/javascript">
+    var artApi = art.dialog.open.api,openerW = parent;
+	$(function(){
+			//回车键
+        document.onkeydown = function (e) {
+            if (!e) e = window.event; //火狐中是 window.event
+            if ((e.keyCode || e.which) == 13) {
+                var btlogin = document.getElementById("btnLogin");
+                btlogin.focus();
+                btlogin.click();
+            }
+        }
+        
+   		$("#SeatGroupList li").click(function () {
+            if (!$(this).attr('disabled')) {
+                if (!!$(this).hasClass("selected")) {
+                    $(this).removeClass("selected");
+                    $(this).find('a').removeClass("a_selected");
+                } else {
+                    $(this).addClass("selected").siblings("li");
+                    $(this).find('a').addClass("a_selected");
+                }
+            }
+        });
+   		
+   		$("#BusySubStateList li").click(function () {
+            if (!$(this).attr('disabled')) {
+                if (!!$(this).hasClass("selected")) {
+                    $(this).removeClass("selected");
+                    $(this).find('a').removeClass("a_selected");
+                } else {
+                    $(this).addClass("selected").siblings("li");
+                    $(this).find('a').addClass("a_selected");
+                }
+            }
+        });
+   		
+   		$('#EndProcMode').change(function(){
+			if($(this).val() == "0")
+			{
+				$("#EndProcTime").attr("disabled","disabled").val("0");
+			}
+			else
+			{
+				$("#EndProcTime").removeAttr("disabled");
+			}
+		});
+		
+		$('#SatisfactionMode').change(function(){
+			if($(this).val() == "0")
+			{
+				$("#SatisfactionEndTime").attr("disabled","disabled").val("");
+			}
+			else
+			{
+				$("#SatisfactionEndTime").removeAttr("disabled");
+			}
+		});
+		
+		$('#SetBusyApproval').change(function(){
+			if($(this).val() == "1")
+			{
+				$("#DefaultEndFlag").attr("disabled","disabled").val("0");//坐席默认状态为示闲
+			}
+			else
+			{
+				$("#DefaultEndFlag").removeAttr("disabled");
+			}
+		});
+   		
+   		pIndex=4;
+   		addEvent();
+   	});
+   	
+   	
+   	
+   	//手动签入测试
+	function CheckinClick()
+	{
+		if($('#EndProcMode').val() != "0")
+		{
+			var reg = /^\d+$/;
+			if(isNaN($('#EndProcTime').val()) || !reg.test($('#EndProcTime').val()) || parseInt($('#EndProcTime').val()) < 0)
+			{
+				openerW.OcxCore.DialogUtil.tipDialog("事后整理时长必须为正整型数字", 3);
+				return false;
+			}
+		}
+		/* if($('#SatisfactionMode').val() != "0")
+		{
+			if($('#SatisfactionEndTime').val() == "")
+			{
+				openerW.OcxCore.DialogUtil.tipDialog("请设置满意度调查失效时间", 3);
+				return false;
+			}
+		} */
+   		
+   		
+		var loginInfo = {};
+		loginInfo.CTIServerIP = $("#CTIServerIP").val();//CTI服务器IP
+		loginInfo.CTIServerPort = parseInt($("#CTIServerPort").val());//CTI服务器端口
+		loginInfo.CTIServerType = $("#CTIServerType").val();//CTI服务器类型 cti CTI服务器  ctiAgent CTI模拟器
+		loginInfo.AutoCallServer = $("#AutoCallServer").val();//自动外呼地址
+		
+		loginInfo.UserName = $("#UserName").val();//用户账号
+		loginInfo.UserCode = $("#UserName").val();//用户工号
+		loginInfo.RealName = $("#RealName").val();//用户姓名
+		loginInfo.Gender = $("#Gender").val();//性别
+		loginInfo.CompanyId = $("#CompanyId").val();//公司主键ID
+		//loginInfo.UserId = $("#UserId").val();//用户主键ID
+		//loginInfo.Photograph = $("#Photograph").val();//用户头像
+		
+		loginInfo.ExtNumber = parseInt($("#ExtNumber").val());//坐席分机号
+		loginInfo.ExtCallerNumber = $("#ExtCallerNumber").val();//分机主叫号码
+		loginInfo.ExtCallerRelayGrpNo = $("#ExtCallerRelayGrpNo").val();//分机中继组编码
+		loginInfo.Continuation = parseInt($("#Continuation").val());//接续等级
+		loginInfo.CanSetBusyWaitCount = parseInt($("#CanSetBusyWaitCount").val());//允许置忙最大排队数
+		loginInfo.CTIAgentSessionID = $("#CTIAgentSessionID").val();//会话ID
+		loginInfo.ButtonPermission = $("#ButtonPermission").val();//电话权限
+		loginInfo.ExtMode = 1 ;//分机选择模式(1:固定分机 2：座席自选 3：自适应)
+		
+		loginInfo.MakeCallOnIdleState = $("#MakeCallOnIdleState").val() == "1";//是否允许示闲状态下拨打电话，默认不允许    true允许 false不允许
+		loginInfo.SetBusyApproval = $("#SetBusyApproval").val() == "1";//坐席置忙状态是否需要审批，默认不需要审批    true需要审批 false不需要审批
+		
+		loginInfo.LeavePhoneNumber = $("#LeavePhoneNumber").val();//离开时转接手机号码
+		
+		//----------坐席配置信息 start------------
+
+		loginInfo.EndProcMode = $("#EndProcMode").val();//事后整理模式，0禁用 1呼入 2呼出 3呼入呼出，默认0
+		loginInfo.EndProcTime = $("#EndProcTime").val();//事后整理时长(秒)
+		loginInfo.SatisfactionMode = $("#SatisfactionMode").val();//满意度调查模式，0关闭 1手动开启 2自动开启，默认0
+		loginInfo.SatisfactionEndTime = $("#SatisfactionEndTime").val();//满意度调查失效时间,如2018-12-31 23:59:59
+		loginInfo.DefaultStatus = $("#DefaultStatus").val();//签入时默认状态，1空闲 2置忙，默认2
+		loginInfo.DefaultEndFlag = $("#DefaultEndFlag").val();//签入时默认事后忙闲状态：0事后闲  1事后忙，默认1
+   		
+		//----------坐席配置信息 end------------
+		
+		loginInfo.CtiMonitorWsUrl = $("#CtiMonitorWsUrl").val();//队列监控WS地址
+		
+		loginInfo.SeatGroupList = new Array(); 
+        $("#SeatGroupList").find('.sys_spec_text .selected a').each(function () { 
+           	loginInfo.SeatGroupList.push({
+           	SeatGroupId:parseInt($(this).attr('grpId')),
+           	SeatGroupName:$(this).attr('grpName'),
+           	Level:isNaN($(this).attr('level')) ? 1 : parseInt($(this).attr('level')) || 1,
+	        Sort:isNaN($(this).attr('sort')) ? 1 : parseInt($(this).attr('sort')) || 1
+           	});
+        });
+        
+        loginInfo.BusySubStateList = new Array(); 
+        $("#BusySubStateList").find('.sys_spec_text .selected a').each(function () { 
+           	loginInfo.BusySubStateList.push({
+           	SubState:parseInt($(this).attr('subState')),
+           	SubStateName:$(this).attr('subStateName'),
+           	Icon:$(this).attr('icon')
+           	});
+        });
+        
+        //主叫号码列表
+        loginInfo.CallerNumberList = new Array();
+        loginInfo.CallerNumberList.push({
+        	Caller:$("#ExtCallerNumber").val(),
+        	RelayGrpNo: $("#ExtCallerRelayGrpNo").val() != "" && !isNaN($("#ExtCallerRelayGrpNo").val()) ? parseInt($("#ExtCallerRelayGrpNo").val()):0,
+        	IsDefault:1
+        });
+        loginInfo.CallerNumberList.push({
+        	Caller:$("#SpareExtCallerNumber").val(),
+        	RelayGrpNo:$("#SpareExtCallerRelayGrpNo").val() != "" && !isNaN($("#SpareExtCallerRelayGrpNo").val()) ? parseInt($("#SpareExtCallerRelayGrpNo").val()):0,
+        	IsDefault:0
+        });
+        
+		loginInfo.ExtNumberList = new Array();
+        $("#dropdown").find("input[name=ExtNumber]").each(function(){
+          	if($(this).val() != "")
+          	{
+          		var reVal = "";
+          		var CallerNumber=$(this).parent().parent().find("input[name=CallerNumber]").val();
+          		reVal+='"ExtNumber"'+' : "'+$(this).val()+'",';
+                reVal+='"ExtCaller"'+' : "'+CallerNumber+'",';
+                
+                var CallerRelayGrpNo=$(this).parent().parent().find("input[name=CallerRelayGrpNo]").val();
+                CallerRelayGrpNo = CallerRelayGrpNo != "" && !isNaN(CallerRelayGrpNo) ? parseInt(CallerRelayGrpNo):0;
+                reVal+='"ExtCallerRelayGrpNo"'+' : '+CallerRelayGrpNo+',';
+                
+                var ExtUserRealName=$(this).parent().parent().find("input[name=ExtUserRealName]").val();
+                reVal+='"ExtUserRealName"'+' : "'+ExtUserRealName+'",';
+                
+                var SpareCallerNumber=$(this).parent().parent().find("input[name=SpareCallerNumber]").val();
+                var SpareCallerRelayGrpNo=$(this).parent().parent().find("input[name=SpareCallerRelayGrpNo]").val();
+                SpareCallerRelayGrpNo = SpareCallerRelayGrpNo != "" && !isNaN(SpareCallerRelayGrpNo) ? parseInt(SpareCallerRelayGrpNo):0;
+                
+                reVal+='"ExtCallers"'+' :[{"Caller":"'+CallerNumber+'","RelayGrpNo":'+CallerRelayGrpNo+',"IsDefault":1},';
+                reVal+='{"Caller":"'+SpareCallerNumber+'","RelayGrpNo":'+SpareCallerRelayGrpNo+',"IsDefault":0}],';
+                  
+                reVal = reVal.substr(0, reVal.length - 1);
+                loginInfo.ExtNumberList.push(JSON.parse('{' + reVal + '}'));
+          	}
+          });
+		
+        
+        openerW.Checkin(loginInfo);//调用主页的登录函数
+        
+        closeThisWindow();//关闭窗口
+	}
+	
+	//关闭窗口
+	function closeThisWindow()
+	{
+		//如果是通过父页面Layer弹框插件弹出的窗口
+        if(openerW.layer != undefined)
+        {
+        	var index = openerW.layer.getFrameIndex(window.name); //获取窗口索引
+        	openerW.layer.close(index);
+        }
+        else //如果是通过父页面artDialog弹框插件弹出的窗口
+        {
+        	artApi.close();//关闭登录窗口
+        }
+	}	
+	
+	
+	var operObj="#dropdown tbody ";
+	var pIndex=1;//判断是否是第一条
+    var isData=false;//是否有数据
+	 /**
+     *obj 存放位置的相对点
+     *arr 添加的对象
+     **/
+    var createHtml=function(){
+                var html = '<tr>';
+                html += '<td><input type="text"   class="VAL required"  datacol="yes" err="选项" checkexpession="NotNull"   name="ExtNumber"/></td>';
+                html += '<td><input type="text"   class="VAL required"  datacol="yes" err="选项" checkexpession="NotNull"   name="CallerNumber"/></td>';
+                html += '<td><input type="text"   class="VAL required"  name="CallerRelayGrpNo" value=""/></td>';
+                html += '<td><input type="text"   class="VAL"  datacol="yes" err="选项" checkexpession="NotNull"   name="SpareCallerNumber"/></td>';
+                html += '<td><input type="text"   class="VAL"  name="SpareCallerRelayGrpNo" value="" /></td>';
+                html += '<td><input type="text"   class="VAL"  name="ExtUserRealName" value="" /></td>';
+				html += '<td><i class="icononly-add" title="添加一个新的选择项" ></i>';
+				if(pIndex != 1){
+					html += '<i class="icononly-del" title="删除改选择项" ></i>';
+				}
+				html += '</td></tr>';
+				++pIndex;
+				$(operObj).append(html);
+	};
+ 	
+    /**
+	 * 功能: 添加事件
+	 * 参数: 无
+	 * 返回: 无
+	*/
+	var addEvent = function(){
+			$(operObj+" tr").find(".icononly-add").die("click").live("click", function(e){
+				createHtml(this);
+			});
+			$(operObj+" tr").find(".icononly-del").die("click").live("click", function(e){
+				self.delOption(e, this);
+			});
+	};
+	
+	 var delOption=function(e, eThis){
+			$(eThis).parent().parent().remove();
+    }
+	 
+    </script>
+    <style type="text/css">
+       #dropdown i{
+           /* position: absolute;
+    		 margin-top: 5px; */
+    		width: 18px;
+		 	height: 18px;
+		    color: #666;
+        	display: inline-block;
+        	cursor: pointer;
+        	background-image: url(Content/Images/iconbg-blackykt.png);
+        	background-repeat:  no-repeat;
+       }
+       .icononly-del{
+           background-position: -10px -190px;`
+       }
+       .icononly-add{
+		  background-position: -10px -226px;	
+		  margin-left: 26px;	    
+       }
+       .VAL{
+         width: 100px;
+         height: 24px;
+         display:inline-block;
+         border-color: #7c7c7c #C3C3C3 #ddd;
+         border-style: solid;
+   		 border-width: 1px;
+       }
+    </style>
+  </head>
+  
+  <body>
+    <div id="message" style="display: none; padding: 1px; padding-bottom: 0px;"></div>
+    <div>
+    <table id="form1" class="form formBorder">
+    	<tr>
+    		<th class="formTitle">CTI服务器IP：</th>
+    		<td  class="formValue">
+    			<input id="CTIServerIP" type="text" class="txt required" value="127.0.0.1" />
+    		</td>
+    		<th class="formTitle">端口：</th>
+    		<td  class="formValue">
+    			<input id="CTIServerPort" type="text" class="txt required" value="8080" />
+    		</td>
+    	</tr>
+    	<tr>
+    		<th class="formTitle">用户工号：</th>
+    		<td  class="formValue">
+    			<input id="UserName" type="text" class="txt required" value="1001" />
+    		</td>
+    		<th class="formTitle">用户姓名：</th>
+    		<td  class="formValue">
+    			<input id="RealName" type="text" class="txt required" value="客服1" />
+    		</td>
+    	</tr>
+    	<tr>
+    		<th class="formTitle">性别：</th>
+    		<td  class="formValue">
+    			<select id="Gender" class="txtselect">
+                	<option value="男">男</option>
+                     <option value="女">女</option>
+               </select>
+    		</td>
+    		<th class="formTitle">公司主键ID：</th>
+    		<td  class="formValue">
+    			<input id="CompanyId" type="text" class="txt required" value="31b05701-60ef-405c-87ba-af47049e3f48" />
+    		</td>
+    	</tr>
+    	<!-- <tr>
+    		<th class="formTitle">用户主键ID：</th>
+    		<td  class="formValue">
+    			<input id="UserId" type="text" class="txt" value="1" />
+    		</td>
+    		<th class="formTitle">用户头像地址：</th>
+    		<td  class="formValue">
+    			<input id="Photograph" type="text" class="txt" value="" />
+    		</td>
+    	</tr> -->
+    	<tr>
+    		<th class="formTitle">坐席分机号：</th>
+    		<td  class="formValue"><input id="ExtNumber" type="text" class="txt required" value="8001" /></td>
+    		<th class="formTitle">接续等级</th>
+    		<td  class="formValue">
+    			<select  id='Continuation'  name='Continuation'  datacol='yes'  err='接续等级'  class='txtselect' >
+						<option selected="selected" value='1' >1级</option>
+						<option value='2' >2级</option>
+						<option value='3' >3级</option>
+						<option value='4' >4级</option>
+						<option value='5' >5级</option>
+						<option value='6' >6级</option>
+						<option value='7' >7级</option>
+						<option value='8' >8级</option>
+						<option value='9' >9级</option>
+					</select>
+    		</td>
+    	</tr>
+    	<tr>
+    		<th class="formTitle">分机主叫号码：</th>
+    		<td  class="formValue">
+    			<input id="ExtCallerNumber" type="text" class="txt required" value="28888888" />
+    		</td>
+    		<th class="formTitle">分机中继组号：</th>
+    		<td  class="formValue">
+    			<input id="ExtCallerRelayGrpNo" type="text required" class="txt required" value="0" />
+    		</td>
+    	</tr>
+    	<tr>
+    		<th class="formTitle">备用主叫号码：</th>
+    		<td  class="formValue">
+    			<input id="SpareExtCallerNumber" type="text" class="txt" value="28888889" />
+    		</td>
+    		<th class="formTitle">备用中继组号：</th>
+    		<td  class="formValue">
+    			<input id="SpareExtCallerRelayGrpNo" type="text" class="txt" value="0" />
+    		</td>
+    	</tr>
+    	<tr>
+    		<th class="formTitle">允许置忙最大排队数：</th>
+    		<td  class="formValue">
+    			<input id="CanSetBusyWaitCount" type="text" class="txt" value="0" />
+    		</td>
+    		<th class="formTitle">自动外呼地址</th>
+    		<td  class="formValue">
+    			<input id="AutoCallServer" type="text" class="txt" value="" />
+    		</td>
+    	</tr>
+    	<tr>
+    		<th class="formTitle">电话权限：</th>
+    		<td  class="formValue" colspan="3">
+    			<input id="ButtonPermission" type="text" class="txt" value="Checkin,Checkout,SetIdle,SetBusy,Answer,Hangup,StartEndProc,Satisfaction,Return,SetEndidle,SetEndbusy,MakeCall,Consult,Transfer,Keep,Conference,Monitor,Listen,ForceEnter,ForceRemove,ForceSetIdle,ForceSetBusy,MoniterConf,SendTipMsg,ForceCheckOut,LeaveMode,OperationInCall" />
+    		</td>
+    	</tr>
+    	<tr>
+    		<th class="formTitle">会话ID：</th>
+    		<td  class="formValue">
+    			<input id="CTIAgentSessionID" type="text" class="txt" value="" />
+    		</td>
+    		<th class="formTitle">CTI服务器类型</th>
+    		<td  class="formValue">
+    			<select  id='CTIServerType'  name='CTIServerType'  datacol='yes'  class='txtselect' >
+						<option selected="selected" value='cti' >CTI服务器</option>
+						<option value='ctiAgent' >CTI模拟器</option>
+				</select>
+    		</td>
+    	</tr>
+    	<tr>
+    		<th class="formTitle">示忙申请：</th>
+    		<td  class="formValue">
+    			<select  id='SetBusyApproval'  name='SetBusyApproval'  datacol='yes'  class='txtselect' >
+						<option value='1' >启用</option>
+						<option selected="selected" value='0' >禁用</option>
+				</select>
+    		</td>
+    		<th class="formTitle">空闲时允许外呼：</th>
+    		<td  class="formValue">
+    			<select  id='MakeCallOnIdleState'  name='MakeCallOnIdleState'  datacol='yes'  class='txtselect' >
+						<option value='1' >启用</option>
+						<option selected="selected" value='0' >禁用</option>
+				</select>
+    		</td>
+    	</tr>
+    	<tr>
+    		<th class="formTitle">离开时转接号码：</th>
+    		<td  class="formValue">
+    			<input id="LeavePhoneNumber" type="text" class="txt" value="" />
+    		</td>
+    		<th class="formTitle"></th>
+    		<td  class="formValue">
+    			
+    		</td>
+    	</tr>
+    	<tr>
+    		<th class="formTitle"></th>
+    		<td  class="formValue">
+    			
+    		</td>
+    		<th class="formTitle"></th>
+    		<td  class="formValue">
+    			
+    		</td>
+    	</tr>
+    	
+    	<tr>
+    		<th class="formTitle">事后整理模式：</th>
+    		<td  class="formValue">
+    			<select id="EndProcMode" class="txtselect" >
+    				<option value="0">禁用</option>
+    				<option value="1">呼入</option>
+    				<option value="2" selected="selected">呼出</option>
+    				<option value="3">呼入呼出</option>
+        		</select>
+    		</td>
+    		<th class="formTitle">事后整理时长：</th>
+    		<td  class="formValue">
+    			<input id="EndProcTime" type="text" class="txt" value="5" style="width:120px;" />&nbsp;秒
+    		</td>
+    	</tr>
+    	<tr>
+    		<th class="formTitle">满意度调查模式：</th>
+    		<td  class="formValue">
+    			<select id="SatisfactionMode" class="txtselect" >
+    				<option value="0">关闭</option>
+    				<option value="1" selected="selected">手动开启</option>
+    				<option value="2">自动开启</option>
+        		</select>
+    		</td>
+    		<th class="formTitle">满意度调查失效时间：</th>
+    		<td  class="formValue">
+    			<input type="text" id="SatisfactionEndTime" value="" onfocus="WdatePicker({dateFmt:'yyyy-MM-dd HH:mm:ss'})"
+					class="txt Wdate" style="width:99%;" />
+    		</td>
+    	</tr>
+    	<tr>
+    		<th class="formTitle">签入时默认状态：</th>
+    		<td  class="formValue">
+    			<select id="DefaultStatus" class="txtselect" >
+    				<option value="1">空闲</option>
+    				<option value="2" selected="selected">示忙</option>
+        		</select>
+    		</td>
+    		<th class="formTitle">默认事后状态：</th>
+    		<td  class="formValue">
+    			<select id="DefaultEndFlag" class="txtselect" >
+    				<option value="0">事后闲</option>
+    				<option value="1" selected="selected">事后忙</option>
+        		</select>
+    		</td>
+    	</tr>
+    	
+    	
+    	<tr style="display:none;">
+    		<th class="formTitle">队列监控WS地址：</th>
+    		<td  class="formValue" colspan="3">
+    			<input id="CtiMonitorWsUrl" type="text" class="txt" value="ws://192.168.5.129:8080/cctyky/ctiMonitorWsSrv" />
+    		</td>
+    	</tr>
+    	<tr id="tr_5">
+     		<th class="formTitle">分机号列表配置：</th>
+     		<td colspan="3">
+     	  	  <div style="min-height: 150px;margin-top: 10px;" id="dropMsg">
+     	  	      <table  id="dropdown">
+						<thead>
+						<tr>
+							<th>分机号</th>
+							<th>主要主号叫码</th>
+							<th>主中继组号</th>
+							<th>备用主号叫码</th>
+							<th>备用中继组号</th>
+							<th>分机使用者</th>
+							<th></th>
+						</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td><input type="text"   class="VAL required"  datacol="yes" err="选项" checkexpession="NotNull"   name="ExtNumber" value="8001" /></td>
+				                <td><input type="text"   class="VAL required"  datacol="yes" err="选项" checkexpession="NotNull"   name="CallerNumber" value="28888888"/></td>
+				                <td><input type="text"   class="VAL required"  name="CallerRelayGrpNo" value="0" /></td>
+				                <td><input type="text"   class="VAL"  datacol="yes" err="选项" checkexpession="NotNull"   name="SpareCallerNumber" value="28888889"/></td>
+				                <td><input type="text"   class="VAL"  name="SpareCallerRelayGrpNo" value="0" /></td>
+				                <td><input type="text"   class="VAL"  name="ExtUserRealName" value="客服1" /></td>
+								<td><i class="icononly-add" title="添加一个新的选择项" ></i>
+								</td>
+							</tr>
+							<tr>
+								<td><input type="text"   class="VAL required"  datacol="yes" err="选项" checkexpession="NotNull"   name="ExtNumber" value="8002" /></td>
+				                <td><input type="text"   class="VAL required"  datacol="yes" err="选项" checkexpession="NotNull"   name="CallerNumber" value="28888888"/></td>
+				                <td><input type="text"   class="VAL required"  name="CallerRelayGrpNo" value="0" /></td>
+				                <td><input type="text"   class="VAL"  datacol="yes" err="选项" checkexpession="NotNull"   name="SpareCallerNumber" value="28888889"/></td>
+				                <td><input type="text"   class="VAL"  name="SpareCallerRelayGrpNo" value="0" /></td>
+				                <td><input type="text"   class="VAL"  name="ExtUserRealName" value="客服2" /></td>
+								<td><i class="icononly-add" title="添加一个新的选择项" ></i>
+									<i class="icononly-del" title="删除改选择项" ></i>
+								</td>
+							</tr>
+							<tr>
+								<td><input type="text"   class="VAL required"  datacol="yes" err="选项" checkexpession="NotNull"   name="ExtNumber" value="8003" /></td>
+				                <td><input type="text"   class="VAL required"  datacol="yes" err="选项" checkexpession="NotNull"   name="CallerNumber" value="28888888"/></td>
+				                <td><input type="text"   class="VAL required"  name="CallerRelayGrpNo" value="0" /></td>
+				                <td><input type="text"   class="VAL"  datacol="yes" err="选项" checkexpession="NotNull"   name="SpareCallerNumber" value="28888889"/></td>
+				                <td><input type="text"   class="VAL"  name="SpareCallerRelayGrpNo" value="0" /></td>
+				                <td><input type="text"   class="VAL"  name="ExtUserRealName" value="客服3" /></td>
+								<td><i class="icononly-add" title="添加一个新的选择项" ></i>
+									<i class="icononly-del" title="删除改选择项" ></i>
+								</td>
+							</tr>
+							<tr>
+								<td><input type="text"   class="VAL required"  datacol="yes" err="选项" checkexpession="NotNull"   name="ExtNumber" value="8004" /></td>
+				                <td><input type="text"   class="VAL required"  datacol="yes" err="选项" checkexpession="NotNull"   name="CallerNumber" value="28888888"/></td>
+				                <td><input type="text"   class="VAL required"  name="CallerRelayGrpNo" value="0" /></td>
+				                <td><input type="text"   class="VAL"  datacol="yes" err="选项" checkexpession="NotNull"   name="SpareCallerNumber" value="28888889"/></td>
+				                <td><input type="text"   class="VAL"  name="SpareCallerRelayGrpNo" value="0" /></td>
+				                <td><input type="text"   class="VAL"  name="ExtUserRealName" value="客服4" /></td>
+								<td><i class="icononly-add" title="添加一个新的选择项" ></i>
+									<i class="icononly-del" title="删除改选择项" ></i>
+								</td>
+							</tr>
+						</tbody>
+					</table> 
+     	  	  </div>
+     		</td> 
+     	</tr>
+    </table>
+    <div class="note-prompt" style="margin: 1px;display:none;">
+	    温馨提示：选中复选框即可签入相应技能组。
+	</div>
+	<div class="border" style="margin: 1px;">
+	    <div class="btnbartitle">
+	        <div style="float: left">
+	            归属技能组：
+	        </div>
+	        <!-- <div style="float: right">
+	            <label id="CheckButton" class="checkAllOff" title="全选">全选</label>
+	        </div> -->
+	    </div>
+	    <div id="SeatGroupList" style="height: 108px;overflow: auto;">
+	        <ul class="sys_spec_text">
+	        	<li class="selected"><a class="a_selected" grpId="1" grpName="技能组1" level="1" sort="1" ><img src="Content/Images/group_gear.png">技能组1</a><i></i></li>
+	        	<li class="selected"><a class="a_selected" grpId="2" grpName="技能组2" level="1" sort="1" ><img src="Content/Images/group_gear.png">技能组2</a><i></i></li>
+	        	<li class=""><a class="" grpId="3" grpName="技能组3" level="1" sort="1" ><img src="Content/Images/group_gear.png">技能组3</a><i></i></li>
+	        	<li class=""><a class="" grpId="4" grpName="技能组4" level="1" sort="1" ><img src="Content/Images/group_gear.png">技能组4</a><i></i></li>
+	        	<li class=""><a class="" grpId="5" grpName="技能组5" level="1" sort="1" ><img src="Content/Images/group_gear.png">技能组5</a><i></i></li>
+	        	<li class=""><a class="" grpId="6" grpName="技能组6" level="1" sort="1" ><img src="Content/Images/group_gear.png">技能组6</a><i></i></li>
+	        	<li class=""><a class="" grpId="7" grpName="技能组7" level="1" sort="1" ><img src="Content/Images/group_gear.png">技能组7</a><i></i></li>
+	        	<li class=""><a class="" grpId="8" grpName="技能组8" level="1" sort="1" ><img src="Content/Images/group_gear.png">技能组8</a><i></i></li>
+	        	<li class=""><a class="" grpId="9" grpName="技能组9" level="1" sort="1" ><img src="Content/Images/group_gear.png">技能组9</a><i></i></li>
+	        	<li class=""><a class="" grpId="10" grpName="技能组10" level="1" sort="1" ><img src="Content/Images/group_gear.png">技能组10</a><i></i></li>
+	        	<li class=""><a class="" grpId="11" grpName="技能组11" level="1" sort="1" ><img src="Content/Images/group_gear.png">技能组11</a><i></i></li>
+	        	<li class=""><a class="" grpId="12" grpName="技能组12" level="1" sort="1" ><img src="Content/Images/group_gear.png">技能组12</a><i></i></li>
+	        </ul>
+	    </div>
+	    
+	</div>
+	<div class="border" style="margin: 1px;">
+	    <div class="btnbartitle">
+	        <div style="float: left">
+	            置忙小状态：
+	        </div>
+	        <!-- <div style="float: right">
+	            <label id="CheckButton" class="checkAllOff" title="全选">全选</label>
+	        </div> -->
+	    </div>
+	    <div id="BusySubStateList" style="height: 108px;overflow: auto;">
+	        <ul class="sys_spec_text">
+	        	<li class="selected"><a class="a_selected" subState="201" subStateName="事后处理" icon="shihou.png" ><img src="CTIAgentSDK/images/substate/shihou.png">事后处理</a><i></i></li>
+	        	<li class="selected"><a class="a_selected" subState="202" subStateName="小休" icon="xiaoxiu.png" ><img src="CTIAgentSDK/images/substate/xiaoxiu.png">小休</a><i></i></li>
+	        	<li class="selected"><a class="a_selected" subState="203" subStateName="开会" icon="huiyi.png" ><img src="CTIAgentSDK/images/substate/huiyi.png">开会</a><i></i></li>
+	        	<li class="selected"><a class="a_selected" subState="204" subStateName="培训" icon="peixun.png" ><img src="CTIAgentSDK/images/substate/peixun.png">培训</a><i></i></li>
+	        	<li class="selected"><a class="a_selected" subState="205" subStateName="督导" icon="dudao.png" ><img src="CTIAgentSDK/images/substate/dudao.png">督导</a><i></i></li>
+	        	<li class="selected"><a class="a_selected" subState="206" subStateName="外呼营销" icon="yingxiao.png" ><img src="CTIAgentSDK/images/substate/yingxiao.png">外呼营销</a><i></i></li>
+	        	<li class="selected"><a class="a_selected" subState="207" subStateName="联系客户" icon="lianxi.png" ><img src="CTIAgentSDK/images/substate/lianxi.png">联系客户</a><i></i></li>
+	        	<li class="selected"><a class="a_selected" subState="208" subStateName="其它" icon="qita.png" ><img src="CTIAgentSDK/images/substate/qita.png">其它</a><i></i></li>
+	        </ul>
+	    </div>
+	    
+	</div>
+	<div class="nui_buttons" style="text-align:center;margin-top:5px;">
+   		<button id="btnLogin" class="nui_state_highlight" type="button"  onclick="CheckinClick();">登录</button>
+	</div>
+    </div>
+  </body>
+</html>

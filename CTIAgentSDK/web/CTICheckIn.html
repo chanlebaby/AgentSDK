@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>签入信息</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width" />
+    <!--框架必需start-->
+    <link href="../skins/CallCenterui-framework.css" rel="stylesheet" />
+    <script src="../plugins/jquery/jquery-1.8.2.min.js"></script>
+    <script src="../plugins/CallCenterui-framework.js"></script>
+    <!--框架必需end-->
+    <!--引入弹窗组件start-->
+    <link href="../plugins/artDialog4/skins/default.css?4.1.7" rel="stylesheet" />
+    <script src="../plugins/artDialog4/artDialog.source.js" type="text/javascript"></script>
+	<script src="../plugins/artDialog4/plugins/iframeTools.source.js" type="text/javascript"></script>  
+	<!--引入弹窗组件end-->
+    <script type="text/javascript">
+    	var api = art.dialog.open.api,openerW = parent;
+	    	$(function(){
+	    		
+	    	$("#btnChangeExtNum").click(function(){
+    			var artApi = art.dialog({
+			        id: "dialog_ChangeExtNum",
+			        width: 330,
+			        height: 90,
+			        max: false,
+			        lock: true,
+			        opacity: 0.3,
+			        title: "修改新分机号",
+			        extendDrag: true,
+			        content:$("#SelExtForm")[0],
+			        ok: function () {
+			            if($('#ExtNumberList').val() == '')
+						{
+							openerW.OcxCore.DialogUtil.tipDialog("请选择新分机号", 3);
+							return false;
+						}
+			            $("#ExtNumber").val($("#ExtNumberList").val());
+    					$("#lblExtNumber").text($("#ExtNumberList").val());
+    					$("#ExtCallerNumber").val($("#ExtNumberList").find("option:selected").attr("ExtCaller"));
+    					$("#ExtCallerRelayGrpNo").val($("#ExtNumberList").find("option:selected").attr("ExtCallerRelayGrpNo"));
+			            return true;
+			        },
+			        cancel: true
+			    });
+    		});
+    		
+    		$("#btnCancel").click(function(){
+    			closeThisWindow();
+    		});
+    		$("#btnCheckIn").click(function(){
+    		
+	    		if($('#ExtNumber').val() == '')
+				{
+					openerW.OcxCore.DialogUtil.tipDialog("分机号无效", 3);
+					return false;
+				}
+				if($('.sys_spec_text .selected a').size() == 0)
+				{
+					openerW.OcxCore.DialogUtil.tipDialog("请选择要签入的技能", 3);
+					return false;
+				}
+				/* else if ($("#SeatType").val() == "1" && $('.sys_spec_text .selected a').size() >1)
+				{
+					openerW.OcxCore.DialogUtil.tipDialog("班长坐席只能签入一个技能", 3);
+					return false;
+				} */
+				if(openerW.OcxCore.cti.CTIServerImpl.getConnectState() == 2)
+				{
+					openerW.OcxCore.DialogUtil.tipDialog("正在重新连接CTI服务器，请稍后再操作！", 3);
+					return false;
+				}
+				openerW.OcxCore.Utility.ShowLoading(true, "正在签入...",20);
+		        window.setTimeout(function () {
+		            var postData = GetWebControls("#form1");
+		            //postData["ExtNumber"] = $("#ExtNumber").text();
+		            var SeatGroups = new Array(); 
+		            
+		            $('.sys_spec_text .selected a').each(function () { 
+		            	SeatGroups.push({
+		            	GroupId:$(this).attr('grpId'),
+		            	GroupName:$(this).attr('grpName'),
+		            	Level:isNaN($(this).attr('grpLevel')) ? 1 : parseInt($(this).attr('grpLevel')) || 1,
+		            	Sort:isNaN($(this).attr('grpSort')) ? 1 : parseInt($(this).attr('grpSort')) || 1		
+		            	});
+		            });
+		            postData["Groups"] = SeatGroups;
+		            var extNumber = $("#ExtNumber").val();
+		            var ExtNumberList = openerW.OcxCore.Session.getExtNumberList();
+	           		for(var i=0;i<ExtNumberList.size();i++)
+	           		{
+	           			var ExtNumberObj = ExtNumberList.get(i);
+	           			if(ExtNumberObj.ExtNumber == extNumber)
+	           			{
+	           				postData["Callers"] = ExtNumberObj.ExtCallers != undefined ? ExtNumberObj.ExtCallers : new Array();
+	           				break;
+	           			}
+	           		}
+	           		postData["ForceLogin"] = 0;//是否强制签入 1是 0否
+	           		
+		           	openerW.OcxCommandFun.CTIAgentLogin("Checkin",postData,function(ret){
+		           		if(ret.Result == true)
+		           		{
+		           			openerW.OcxCore.Utility.ShowLoading(true, "正在签入...",30);
+		           			closeThisWindow();
+		           		}else
+		           		{
+		           			openerW.OcxCore.Utility.ShowLoading(false);
+							if(ret.Message != undefined && ret.Message != "") openerW.OcxCore.DialogUtil.tipDialog(ret.Message, 3);
+							var errMsg = ret.Message != undefined && ret.Message != "" ? ret.Message : "签入失败!";
+							var errCode = ret.ErrorCode != undefined && ret.ErrorCode != "" ? ret.ErrorCode : 999;
+							openerW.OcxCore.Session.GetGlobal("onCheckIn").Call(false,errCode,errMsg,null);//签入响应回调函数
+		           		}
+					},function(ret){
+						openerW.OcxCore.Utility.ShowLoading(false);
+						if(ret.Message != undefined && ret.Message != "") openerW.OcxCore.DialogUtil.tipDialog(ret.Message, 3);
+						var errMsg = ret.Message != undefined && ret.Message != "" ? ret.Message : "签入失败!";
+						var errCode = ret.ErrorCode != undefined && ret.ErrorCode != "" ? ret.ErrorCode : 999;
+						openerW.OcxCore.Session.GetGlobal("onCheckIn").Call(false,errCode,errMsg,null);//签入响应回调函数
+					});
+		        }, 200);
+	        
+           	});
+           	
+           	var session = openerW.OcxCore.Session;
+           	if(session != undefined && session != null)
+           	{
+           		$("#UserName").val(session.getUserCode());
+           		$("#lblUserName").text(session.getUserCode());
+           		$("#ExtCallerNumber").val(session.getExtCallerNumber());
+           		$("#ExtCallerRelayGrpNo").val(session.getExtCallerRelayGrpNo());
+           		//$("#SeatType").val(session.getSeatType());
+           		//$("#SeatTypeName").text(session.getSeatType() == 1 ? "班长坐席":"普通坐席");
+           		$("#ExtMode").val(session.getExtMode());
+           		if(session.getExtMode() == 1)//分机选择模式(1:固定分机 2：座席自选 3：自适应)
+           		{
+           			$("#ExtModeName").text("固定分机");
+           		}
+           		else if(session.getExtMode() == 2)
+           		{
+           			$("#btnChangeExtNum").show();
+           			$("#ExtModeName").text("坐席自选");
+           		}
+           		else if(session.getExtMode() == 3)
+           			$("#ExtModeName").text("自适应");
+           		
+           		if(session.getExtNumber() != null && session.getExtNumber() != "")
+           		{
+           			$("#ExtNumber").val(session.getExtNumber());
+               		$("#lblExtNumber").text(session.getExtNumber());
+           		}
+           		$("#Continuation").val(session.getContinuation());
+           		$("#ContinuationName").val(session.getContinuation());
+           		
+           		var SeatGroupList = openerW.OcxCore.Session.getGroupList();
+				for (var i=0;i<SeatGroupList.size();i++)
+				{
+					var grp = SeatGroupList.get(i);
+					var tipTitle = "接续等级："+grp.Level+ "  序号：" + grp.Sort;
+       				var grpHtml = "<li class='selected'><a class='a_selected' title='"+tipTitle+"' grpId='"+grp.GroupId+"' grpName='"+grp.GroupName+"' grpLevel='"+grp.Level+"' grpSort='"+grp.Sort+"' ><img src='../images/Icon16/group_gear.png'>"+grp.GroupName+"</a><i></i></li>";
+       				$(".sys_spec_text").append(grpHtml);
+				}
+				
+				var ExtNumberList = openerW.OcxCore.Session.getExtNumberList();
+           		$("#ExtNumberList").append("<option value=''>==请选择==</option>");
+           		for(var i=0;i<ExtNumberList.size();i++)
+           		{
+           			var ExtNumber = ExtNumberList.get(i);
+           			$("#ExtNumberList").append($("<option ExtCaller=\""+ExtNumber.ExtCaller+"\" ExtCallerRelayGrpNo=\""+ExtNumber.ExtCallerRelayGrpNo+"\"></option>").val(ExtNumber.ExtNumber).html(ExtNumber.ExtNumber));
+           		}
+           	}
+           	
+           	
+           	BindSeatGroup();
+    	});
+    	
+    	//技能下拉框
+	    function BindSeatGroup() {
+	        $("#SeatGroupList li").click(function () {
+	            if (!$(this).attr('disabled')) {
+	                if (!!$(this).hasClass("selected")) {
+	                    $(this).removeClass("selected");
+	                    $(this).find('a').removeClass("a_selected");
+	                } else {
+	                    $(this).addClass("selected").siblings("li");
+	                    $(this).find('a').addClass("a_selected");
+	                }
+	            }
+	        });
+ 	        //自定义复选框 全选/反选
+	        $("#CheckButton").click(function () {
+	            if (!!$(this).hasClass("checkAllOff")) {
+	                $(this).attr('title', '反选');
+	                $(this).text('反选');
+	                $(this).attr('class', 'checkAllOn');
+	                $('.sys_spec_text li').addClass('selected');
+	            } else {
+	                $(this).attr('title', '全选');
+	                $(this).text('全选');
+	                $(this).attr('class', 'checkAllOff');
+	                $('.sys_spec_text li').removeClass('selected');
+	            }
+	        });
+	    }
+    	
+    	function setExtNumber(extnum,extCaller,extCallerRelayGrpNo)
+    	{
+    		$("#ExtNumber").val(extnum);
+    		$("#lblExtNumber").text(extnum);
+    		$("#ExtCallerNumber").val(extCaller);
+    		$("#ExtCallerRelayGrpNo").val(extCallerRelayGrpNo);
+    	}
+    	function getOcxSession()
+    	{
+    		return openerW.OcxCore.Session;
+    	}
+    	
+    	//关闭窗口
+		function closeThisWindow()
+		{
+			//如果是通过父页面Layer弹框插件弹出的窗口
+	        if(openerW.layer != undefined)
+	        {
+	        	var index = openerW.layer.getFrameIndex(window.name); //获取窗口索引
+	        	openerW.layer.close(index);
+	        }
+	        else //如果是通过父页面artDialog弹框插件弹出的窗口
+	        {
+	        	api.close();//关闭登录窗口
+	        }
+		}
+    </script>
+  </head>
+  
+  <body>
+   <div id="ocxCheckIn" >
+    <div id="message" style="display: none; padding: 1px; padding-bottom: 0px;"></div>
+    <div>
+    <table id="form1" class="form formBorder">
+    	<tr>
+    		<th class="formTitle">坐席工号：</th>
+    		<td  class="formValue">
+    			<label id="lblUserName"></label>
+    			<input id="UserName" type="hidden" value="" />
+    			<!-- 主要的主叫号码 -->
+    			<input id="ExtCallerNumber" type="hidden" value="" />
+    			<!-- 主要的中继组号 -->
+    			<input id="ExtCallerRelayGrpNo" type="hidden" value="" />
+    		</td>
+    		<th class="formTitle">坐席分机号：</th>
+    		<td  class="formValue">
+    			<label id="lblExtNumber"></label>
+    			<input id="ExtNumber" type="hidden" value="" />
+    		</td>
+    	</tr>
+    	<tr>
+    		<th class="formTitle">坐席分机模式：</th>
+    		<td  class="formValue">
+    			<label id="ExtModeName">固定分机</label>
+    			<input id="ExtMode" type="hidden" value="1" />
+    		</td>
+    		<th class="formTitle"><!-- 接续等级 --></th>
+    		<td  class="formValue"><label id="ContinuationName" style="display:none;">1</label><input id="Continuation" type="hidden" value="1" /></td>
+    	</tr>
+    </table>
+    </div>
+    <div class="note-prompt" style="margin: 1px;">
+	    温馨提示：选中复选框即可签入相应技能。
+	</div>
+	<div class="border" style="margin: 1px;">
+	    <div class="btnbartitle">
+	        <div style="float: left">
+	            归属技能：
+	        </div>
+	        <div style="float: right">
+	            <label id="CheckButton" class="" title="反选">反选</label>
+	        </div>
+	    </div>
+	    <div id="SeatGroupList" style="height: 165px;overflow: auto;">
+	        <ul class="sys_spec_text">
+	        	<!-- <li class="selected"><a class="a_selected" id="1" grpName="客服组" ><img src="../images/Icon16/group_gear.png">客服组</a><i></i></li>
+	        	<li><a class="" id="2" grpName="外呼组" ><img src="../images/Icon16/group_gear.png">外呼组</a><i></i></li> -->
+	        </ul>
+	    </div>
+	    
+	</div>
+	<div id="divToolBtn" class="nui_buttons" style="text-align:center;">
+	    <button id="btnCheckIn" class="nui_state_highlight" type="button" >继续签入</button>
+	    <button id="btnCancel" type="button">取消签入</button>
+	    <button id="btnChangeExtNum" type="button" style="display:none;">修改分机</button>
+	</div>
+    </div>
+    
+    <div style="display:none;">
+    	<div id="SelExtForm" style="width:330px;height:30px;">
+	    	<table class="form">
+		    <tr>
+		   		<th class="formTitle">设置新分机号：</th>
+		        <td class="formValue">
+		        	<select id="ExtNumberList" class="txtselect" >
+		        	</select>
+		        </td>
+		   	</tr>
+		   	</table>
+	   	</div>
+    </div>
+  </body>
+</html>

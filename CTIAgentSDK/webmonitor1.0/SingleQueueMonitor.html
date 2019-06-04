@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  	<title>单队列监控</title>
+    <META HTTP-EQUIV="Pragma" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Expires" CONTENT="0"> 
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+	<meta name="viewport" content="width=device-width" />
+	<link href="../images/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <!--框架必需start-->
+    <link href="../skins/CallCenterui-framework.css" rel="stylesheet" />
+    <script src="../plugins/jquery/jquery-1.8.2.min.js"></script>
+    <script src="../plugins/CallCenterui-framework.js"></script>
+    <!--框架必需end-->
+    <!--jqgrid表格组件start-->
+    <script src="../plugins/jqgrid/jquery-ui-custom.min.js"></script>
+    <script src="../plugins/jqgrid/grid.locale-cn.js"></script>
+    <link href="../plugins/jqgrid/css/jqgrid.css" rel="stylesheet" />
+    <script src="../plugins/jqgrid/jqGrid.js"></script>
+    <script src="../plugins/jqgrid/grid.setcolumns.js"></script>
+    <!--表格组件end-->
+    <!--树形组件start-->
+    <link href="../plugins/tree/tree.css" rel="stylesheet" />
+    <!--树形组件end-->
+    <!--框架工具JS组件start-->
+    <script src="../plugins/CallCenterui-utils.js"></script>
+    <!--框架工具JS组件end-->
+    <!--引入弹窗组件start-->
+    <link href="../plugins/artDialog4/skins/default.css?4.1.7" rel="stylesheet" />
+    <script src="../plugins/artDialog4/jquery.artDialog.source.js" type="text/javascript"></script>
+	<script src="../plugins/artDialog4/plugins/iframeTools.source.js" type="text/javascript"></script> 
+	<!--引入弹窗组件end-->
+    <!--右键菜单组件start-->
+    <script src="../plugins/jquery/jquery.contextmenu.r2.js"></script>
+    <!--右键菜单组件end-->
+    <!--布局组件start-->
+    <!-- <script src="../plugins/layout/splitter.js"></script> -->
+    <link href="../plugins/splitter/jquery.splitter.css" rel="stylesheet" />
+    <script src="../plugins/splitter/jquery.splitter.js" type="text/javascript"></script>
+    <!--布局组件end-->
+    <!-- CTI相关组件 start -->
+    <script type="text/javascript">
+    	window['_OcxCore_rootPath'] = (function() {
+    	    //var strFullPath = window.document.location.href;
+    	    var strPath = window.document.location.pathname;
+    	    /* var pos = strFullPath.indexOf(strPath);
+    	    var prePath = strFullPath.substring(0, pos);
+    	    var postPath = strPath.substring(0, strPath.substr(1).indexOf('/') + 1);
+    	    if(postPath != undefined && postPath != null && postPath.indexOf('/demoweb')>-1)
+    	    	return (prePath + postPath); //如果发布IIS，有虚假目录用用这句
+    	    else
+    	    	return (prePath);
+    	     */
+    	    strPath = strPath.replace(/\\/g, '/');
+    	    strPath = strPath.lastIndexOf('/') < 0 ? '.' : strPath.substring(0, strPath.lastIndexOf('/'));
+    	    strPath = strPath.lastIndexOf('/CTIAgentSDK') < 0 ? strPath : strPath.substring(0, strPath.lastIndexOf('/CTIAgentSDK'));
+    	    
+    	    return strPath;
+    	})();
+    	window['_OcxCore_path'] = window['_OcxCore_rootPath'];
+    </script>
+    <script src="../core/Common.js?version=2.0.0" type="text/javascript"></script>
+	<script src="../core/DialogUtil_artDialog4.js?version=2.0.0" type="text/javascript"></script>
+	
+	<script src="../core/model/CTIAgentModel.js?version=2.0.0" type="text/javascript"></script>
+	<script src="../core/ctimonitor/CtiMonitorMain.js?version=2.0.0" type="text/javascript"></script>
+	
+	<script type="text/javascript">
+		var artApi = art.dialog.open.api,openerW = window.opener;
+		var _QueueDatas = new OcxCore.Map();//队列列表
+		var _SeatDatas = new OcxCore.Map();//坐席列表
+		var _CallDatas = new OcxCore.Map();//呼叫数据列表
+		var _QueueHistoryDatas = new OcxCore.Map();//队列历史列表
+		var GroupId = OcxCore.GetQuery("queueId");//当前选中的技能组ID
+    	var GroupName = "";  //当前选中的技能组名称
+	    $(document).ready(function () {
+	    	resizeU();
+	    	$(window).resize(resizeU);
+	        function resizeU() {
+	        	 var divkuangW = $(window).width();
+	        	 var divkuangH = $(window).height();
+	             
+	        	 var divLeftW = 370;
+	             var divCenterW = divkuangW - divLeftW-1;//8
+	             
+	             $(".mainPanel").height(divkuangH - 28);
+	             $(".leftPanel").width(divLeftW);
+	             $(".centerPanel").width(divCenterW);
+	             $(".centerPanel").height(divkuangH - 28);
+	             $(".leftPanel").height(divkuangH - 28);
+	             
+	        }
+	       //加载坐席监控表格
+		   GetSeatMonitorGrid();
+	         //加载队列监控表格
+		   GetQueueMonitorGrid();
+		 	//加载呼叫明细表格
+		   GetCallDataGrid();
+	        var divkuangW = $(window).width();
+	        var divLeftW = 370;
+	        var divCenterW = divkuangW - divLeftW -1;//8
+	        $(".centerPanel").width(divCenterW);
+		    
+	        $("#queueGridTable").setGridHeight($(window).height() - 239);//233
+            $("#callDataGridTable").setGridHeight($(window).height() - 239);//233
+            $("#seatGridTable").setGridHeight($(window).height() - 84);
+            
+            $("#queueGridTable").setGridWidth($('.centerPanel').width()); 
+            $("#callDataGridTable").setGridWidth($('.centerPanel').width()); 
+            $("#seatGridTable").setGridWidth(($('.leftPanel').width()));
+	         
+		  	//自应高度
+            $(window).resize(function () {
+                $("#queueGridTable").setGridHeight($(window).height() - 239);//233
+                $("#callDataGridTable").setGridHeight($(window).height() - 239);//233
+                $("#seatGridTable").setGridHeight($(window).height() - 84);
+                
+                $("#queueGridTable").setGridWidth($('.centerPanel').width()); 
+                $("#callDataGridTable").setGridWidth($('.centerPanel').width()); 
+                $("#seatGridTable").setGridWidth(($('.leftPanel').width()));
+            });
+			
+          //初始化OcxCore.Session会话事件绑定
+			InitCTISessionBind();
+	    });
+	    //切换面板
+    	function chanceTab(id)
+    	{
+    		if(id=="QueueHistory")
+    		{
+    			Tabchange2('QueueHistory','divQueueInfo');
+    			$('#lblHistoryTitle').text('15分钟话务量');
+    		}
+    		else if(id=="CallDataList")
+    		{
+    			Tabchange2('CallDataList','divQueueInfo');
+    			$('#lblHistoryTitle').text('排队明细');
+    			$("#callDataGridTable").setGridHeight($(window).height() - 239);//233
+    			$("#callDataGridTable").setGridWidth($('.centerPanel').width()); 
+    		}
+    	}
+	    /**
+		*初始化OcxCore.Session会话事件绑定
+		*/
+		function InitCTISessionBind()
+		{
+	    	//debugger;
+			//添加置忙小状态标签
+	    	$("#divBusySubState").html("");
+			var BusySubStateList = openerW.OcxCore.Session.getBusySubStateList();
+			for(var i=0;i<BusySubStateList.size();i++)
+			{
+				$("#divBusySubState").append(BusySubStateList.get(i).getSubStateName()+"：<span id='lblState"+BusySubStateList.get(i).getSubState()+"' state='2' substate='"+BusySubStateList.get(i).getSubState()+"' style='color:blue;'>0</span>&nbsp;&nbsp;");
+			}
+			//加载队列列表和坐席列表
+    		windowload();
+		}
+		//加载效果
+		function Loading(bool, text,time)
+        {
+			OcxCore.DialogUtil.Loading(bool, text,time);
+        }
+	    //加载队列监控表格
+	    function GetQueueMonitorGrid() {
+	    	/* var queueData = [
+  	  	    	   {"pointInTime":"17:15","groupId":3,"groupName":"VIP组","callInCount":33,"answerCount":22,"lostCallCount":11,"throughRate":"66.66%","maxWaitTime":180,"avgTalkTime":180},
+  	  	    	   {"pointInTime":"17:00","groupId":3,"groupName":"VIP组","callInCount":33,"answerCount":22,"lostCallCount":11,"throughRate":"66.66%","maxWaitTime":180,"avgTalkTime":180},
+  	  	           {"pointInTime":"16:45","groupId":3,"groupName":"VIP组","callInCount":33,"answerCount":22,"lostCallCount":11,"throughRate":"66.66%","maxWaitTime":180,"avgTalkTime":180},
+  	  	    	]; */
+	        $("#queueGridTable").jqGrid({
+	        	datatype:"local",
+	        	/* data:queueData, */
+	            height: $(window).height() - 239,
+	            autowidth: true,
+	            colModel: [
+	                { label: "时间", name: "pointInTime",index: "pointInTime", width: 80,key:true},
+	                { label: "进线量", name: "callInCount",index: "callInCount", width: 70},
+	                { label: "接听量", name: "answerCount",index: "answerCount", width: 70},
+	                { label: "呼损量", name: "lostCallCount",index: "lostCallCount", width: 80},
+	                { label: "接通率", name: "answerRate",index: "answerRate", width: 100},
+	                { label: "呼损率", name: "lostRate",index: "lostRate", width: 100},
+	                { label: "最长等待时间", name: "maxWaitTime",index: "maxWaitTime", width: 100,
+						formatter : function(cellvalue,options, rowObject) {
+							return CCUI.utils.timeTransfer(cellvalue);
+						}
+	                },
+	                { label: "平均通话时长", name: "avgTalkTime",index: "avgTalkTime", width: 100,
+						formatter : function(cellvalue,options, rowObject) {
+							return CCUI.utils.timeTransfer(cellvalue);
+						}
+	                }
+	            ],
+	            viewrecords: true,
+	            rowNum: 1000,
+	            rowList: [30, 50, 100, 500],
+	            pager: false,
+	            sortname: 'CreateDate',
+	            sortorder: 'asc',
+	            rownumbers: false,
+	            shrinkToFit: false,
+	            gridview: true
+	        });
+	        
+	        //$("#gview_queueGridTable .jqgridNotdata").width($(".centerPanel").width() - 19);
+	        
+	        $("#gview_queueGridTable .jqgridNotdata").hide();
+	    }
+	    
+	    //加载坐席监控表格
+	    function GetSeatMonitorGrid() {
+	    	/* var seatData = [
+ 	    	   {"JobNum":1001,"Name":"张三","ExtNum":8001,"State":0,"AtentState":2,"ChangeStateDuration":900},
+ 	    	   {"JobNum":1002,"Name":"李四","ExtNum":8002,"State":1,"AtentState":2,"ChangeStateDuration":600},
+ 	    	   {"JobNum":1003,"Name":"王五","ExtNum":8003,"State":2,"AtentState":2,"ChangeStateDuration":180}
+ 	    	]; */
+	        $("#seatGridTable").jqGrid({
+	        	datatype:"local",
+	        	/* data:seatData, */
+	            height: $(window).height() - 84,
+	            autowidth: true,
+	            colModel: [
+					{ label: "主键", name: "JobNum", index: "JobNum", hidden: true,key:true},
+					{ label: "坐席", name: "Name",index: "Name", width: 100,
+						formatter : function(cellvalue,options, rowObject) {
+							return cellvalue+"("+rowObject.JobNum+")";
+						}
+					},
+					{ label: "分机号", name: "ExtNum",index: "ExtNum", width: 60},
+					{ label: "状态", name: "State",index: "State", width: 70,
+						formatter : function(cellvalue,options, rowObject) {
+							var stateName = OcxCore.Enums.GetName(OcxCore.Enums.CTIAgentStatusFlag,rowObject.State);
+		        			if(rowObject.SubState != undefined && rowObject.SubState > 200)
+		        			{
+				            	var subStatusObj = openerW.OcxCore.Session.getBusySubStateById(rowObject.SubState);
+		        				stateName = subStatusObj != undefined && subStatusObj != null ? subStatusObj.getSubStateName() : stateName;
+		        			}
+							return stateName;
+						}
+	                },
+	                { label: "持续时长", name: "ChangeStateDuration",index: "ChangeStateDuration", width: 82,align:"center",
+						formatter : function(cellvalue,options, rowObject) {
+							var sStr = "";
+							if(rowObject.ChangeStateDuration == 0 || rowObject.ChangeStateDuration != "")
+				            {
+								sStr += "<span class='label ChangeStateDuration label-normal' duration='"+rowObject.ChangeStateDuration+"' title='状态持续时长'  style='width:55px;'>" + CCUI.utils.timeTransfer(rowObject.ChangeStateDuration) + "</span>";
+				            }else
+				            {
+				            	sStr += "<span class='label ChangeStateDuration label-normal' duration='' title='状态持续时长'  style='width:55px;'>" + "--:--:--" + "</span>";
+				            }
+							return sStr;
+						}
+	                }
+	            ],
+	            viewrecords: true,
+	            rowNum: 500,
+	            rowList: [30, 50, 100, 500],
+	            pager: false,
+	            sortname: 'CreateDate',
+	            sortorder: 'asc',
+	            rownumbers: true,
+	            shrinkToFit: false,
+	            gridview: true
+	        });
+	        
+            //$("#gview_seatGridTable .jqgridNotdata").width($(".rightPanel").width() - 19);
+            $("#gview_seatGridTable .jqgridNotdata").hide();
+	    }
+	    
+	   //加载呼叫明细表格
+	    function GetCallDataGrid() {
+	        $("#callDataGridTable").jqGrid({
+	        	datatype:"local",
+	            height: $(window).height() - 239,
+	            autowidth: true,
+	            colModel: [
+	                { label: "呼叫ID", name: "CallId", index: "CallId", hidden: true,key:true},
+	                { label: "来电时间", name: "StartTime", index: "StartTime", width: 130, hidden: true,formatter: CCUI.utils.dateTransfer},
+	                { label: "进队列时间", name: "EnQueueTime", index: "EnQueueTime", width: 120,formatter: CCUI.utils.dateTransfer},
+	                { label: "主叫号码", name: "Caller",index: "Caller", width: 100},
+	                { label: "被叫号码", name: "Called",index: "Called", width: 100},
+	                { label: "通道号", name: "Channel",index: "Channel", width: 70},
+	                { label: "排队时长", name: "ChangeStateDuration",index: "ChangeStateDuration", width: 100,align:"center",
+						formatter : function(cellvalue,options, rowObject) {
+							var sStr = "";
+							if(rowObject.ChangeStateDuration == 0 || rowObject.ChangeStateDuration != "")
+				            {
+								sStr += "<span class='label ChangeStateDuration label-normal' duration='"+rowObject.ChangeStateDuration+"' title='状态持续时长'  style='width:55px;'>" + CCUI.utils.timeTransfer(rowObject.ChangeStateDuration) + "</span>";
+				            }else
+				            {
+				            	sStr += "<span class='label ChangeStateDuration label-normal' duration='' title='排队时长'  style='width:55px;'>" + "--:--:--" + "</span>";
+				            }
+							return sStr;
+						}
+	                }
+	            ],
+	            viewrecords: true,
+	            rowNum: 1000,
+	            rowList: [30, 50, 100, 500],
+	            pager: false,
+	            sortname: 'StartTime',
+	            sortorder: 'asc',
+	            rownumbers: false,
+	            shrinkToFit: false,
+	            gridview: true
+	        });
+	        
+	        //$("#gview_queueGridTable .jqgridNotdata").width($(".centerPanel").width() - 19);
+	        
+	        $("#gview_callDataGridTable .jqgridNotdata").hide();
+	    }
+	    
+	    //搜索
+	    function btn_Search() {
+	        var keywords = $("#keywords").val();
+	        var seatState = $("#SeatState").val();
+	        if (keywords != "" || seatState != "") {
+	        	var showSeats = null;
+	        	if(keywords != "")
+	        	{
+	        		showSeats = $(".UserCard")
+                     .hide()
+                     .filter(":contains('" + (keywords) + "')");
+                     if(seatState != "")
+                     {
+                     	var stateName = openerW.OcxCore.Enums.GetName(openerW.OcxCore.Enums.CTIAgentStatusFlag,seatState);
+		        		showSeats = showSeats.filter(":contains('" + (stateName) + "')");
+                     }
+                     showSeats.show();
+	        	}else
+	        	{
+	        		var stateName = openerW.OcxCore.Enums.GetName(openerW.OcxCore.Enums.CTIAgentStatusFlag,seatState);
+	        		showSeats = $(".UserCard")
+                     .hide()
+                     .filter(":contains('" + (stateName) + "')")
+                     .show();
+	        	}
+                    
+            } else {
+                $(".UserCard").show();
+            }
+            
+            $("#grid_View .selected").removeClass("selected");
+	    }
+	       
+	    //刷新
+	    function windowload() {
+	    	if(GroupId == null || GroupId ==0)
+			{
+				return;
+			}
+	    	if(openerW.OcxCore.Session.getCompanyId() == null || openerW.OcxCore.Session.getCompanyId() == "")
+			{
+				return;
+			}
+	    	window.setTimeout(function () {
+	    		//临时代码，默认监控第一个技能组
+	    		var postData = {};
+	    		postData.GroupId = GroupId;
+	    		postData.CompanyId = OcxCore.Session.getCompanyId();
+	    		_QueueDatas.clear();//队列列表
+	    		_SeatDatas.clear();//坐席列表
+	    		_CallDatas.clear();//呼叫数据列表
+	    		_QueueHistoryDatas.clear();//队列历史列表
+	    		
+        		$("#lblSeatCount").text("0");
+		        $("#lblState0").text("0");
+		        $("#lblState1").text("0");
+		        $("#lblState2").text("0");
+		        $("#lblState3").text("0");
+		        $("#lblState4").text("0");
+		        $("#lblState5").text("0");
+		        $("#lblState6").text("0");
+		        $("#lblState7").text("0");
+		        $("#lblState8").text("0");
+				$("#lblState10").text("0");
+		        $("#lblWaitCount").text("0");
+		        
+		        $("#queueGridTable").jqGrid('clearGridData');//清空队列列表
+        		$("#seatGridTable").jqGrid('clearGridData');//清空坐席列表
+        		$("#callDataGridTable").jqGrid('clearGridData');//清空呼叫列表
+        		//监控窗口加载完成后发送开始监控命令
+	   			openerW.CtiMonitorCommandFun.CommonActionWS("CommonAction","SingleQueueMonitor", postData,function(data){
+		    		OcxCore.Utility.ShowLoading(false);
+		    		if(data.Result == true)
+		    		{
+		    			//重新加载数据
+		    			//单队列信息
+		    			LoadSingleGroupViewList(data.QueueData);
+		    			//坐席列表
+		                LoadSeatViewList(data.SeatData);
+		               //呼叫明细
+		               LoadCallDataViewList(data.CallData);
+		    		}
+		    	},function(ex){
+		    		OcxCore.Utility.ShowLoading(false);
+		    		if(ex.Message != undefined && ex.Message != "") OcxCore.Utility.ShowTip(ex.Message, 1);
+		    	}); 
+	        }, 200);
+	        
+	    	if(changeDurationInterval !=null) clearInterval(changeDurationInterval);
+        	changeDurationInterval = setInterval("changeDuration()", 1000);//1秒更新一次
+	    }
+	    var changeDurationInterval = null;
+	    function changeDuration()
+	    {
+	    	var showSeats = $("#seatGrid_Panel").find(".ChangeStateDuration");
+	    	showSeats.each(function(){
+	    		if($(this).attr("duration") != "")
+	            {
+	            	var dseconds = parseInt($(this).attr("duration"))+1;
+	            	$(this).attr("duration",dseconds).html(CCUI.utils.timeTransfer(dseconds));
+	            	
+	            	if(dseconds > 600)
+					{
+	            		$(this).attr("class","label ChangeStateDuration label-red");
+					}
+					else if(dseconds > 400)
+					{
+						$(this).attr("class","label ChangeStateDuration label-yellow");
+					}
+					else if(dseconds > 200)
+					{
+						$(this).attr("class","label ChangeStateDuration label-green");
+					}
+					else
+					{
+						$(this).attr("class","label ChangeStateDuration label-normal");
+					}
+	            }else
+	            {
+	            	$(this).attr("class","label ChangeStateDuration label-normal").html('--:--:--');
+	            }
+	    	});
+	    	
+	    	var showCallDatas = $("#CallDataList").find(".ChangeStateDuration");
+	    	showCallDatas.each(function(){
+	    		if($(this).attr("duration") != "")
+	            {
+	            	var dseconds = parseInt($(this).attr("duration"))+1;
+	            	$(this).attr("duration",dseconds).html(CCUI.utils.timeTransfer(dseconds));
+	            	
+	            	if(dseconds > 90)
+					{
+	            		$(this).attr("class","label ChangeStateDuration label-red");
+					}
+					else if(dseconds > 60)
+					{
+						$(this).attr("class","label ChangeStateDuration label-yellow");
+					}
+					else if(dseconds > 30)
+					{
+						$(this).attr("class","label ChangeStateDuration label-green");
+					}
+					else
+					{
+						$(this).attr("class","label ChangeStateDuration label-normal");
+					}
+	            }else
+	            {
+	            	$(this).attr("class","label ChangeStateDuration label-normal").html('--:--:--');
+	            }
+	    	});
+	    }
+	    /*视图begin=========================================================================*/
+	    //加载坐席视图
+	    function LoadSeatViewList(data) {
+	    	if(GroupId == null || GroupId ==0)
+			{
+				return;
+			}
+	        for (var i = 0; i < data.length; i++) {
+	        	var isContainSeat = false;
+	        	var isHasGroupId = false;
+        		if(data[i].GroupIds != undefined && data[i].GroupIds.length>0)
+        		{
+        			var groupIds = data[i].GroupIds;
+        			for(var j=0;j<groupIds.length;j++)
+        			{
+        				if(groupIds[j] == GroupId)
+        				{
+        					isHasGroupId = true;
+        					break;
+        				}
+        			}
+        		}
+	        	if(_SeatDatas.containsKey(data[i].JobNum+""))
+	        	{
+	        		isContainSeat = true;
+	        		if(!isHasGroupId || data[i].State == OcxCore.Enums.CTIAgentStatusFlag.STATE_OFFLINE.getIndex())
+	        		{
+	        			_SeatDatas.remove(data[i].JobNum+"");
+	        			$("#seatGridTable").jqGrid("delRowData", data[i].JobNum+"");
+	        		}
+	        		else
+	        		{
+	        			_SeatDatas.put(data[i].JobNum+"", data[i]);
+		        		
+		        		$("#seatGridTable").jqGrid("setRowData", data[i].JobNum+"", data[i]);
+	        		}
+	        	}else
+	        	{
+	        		if(!isHasGroupId) continue;
+	        		if(data[i].State != OcxCore.Enums.CTIAgentStatusFlag.STATE_OFFLINE.getIndex() && data[i].JobNum != null)
+	        		{
+						_SeatDatas.put(data[i].JobNum+"", data[i]);
+		        		
+	        			$("#seatGridTable").jqGrid("addRowData", data[i].JobNum+"", data[i], "last");
+	        		}
+	        	}
+	        }
+	        $("#lblSeatCount").text(_SeatDatas.size());
+	        
+	        var StateCount1 = 0;
+	        _SeatDatas.each(function(key,value,index){
+	        	if(value.State == 1) StateCount1++;
+	        });
+	        $("#lblState1").text(StateCount1);
+	        var StateCount2 = 0;
+	        _SeatDatas.each(function(key,value,index){
+	        	if(value.State == 2 && value.SubState < 200) StateCount2++;
+	        });
+	        $("#lblState2").text(StateCount2);
+	        var StateCount7 = 0;
+	        _SeatDatas.each(function(key,value,index){
+	        	if(value.State == 7) StateCount7++;
+	        });
+	        $("#lblState7").text(StateCount7);
+	        var StateCount5 = 0;
+	        _SeatDatas.each(function(key,value,index){
+	        	if(value.State == 5) StateCount5++;
+	        });
+	        $("#lblState5").text(StateCount5);
+	        
+	        var BusySubStateList = openerW.OcxCore.Session.getBusySubStateList();
+	    	for(var i=0;i<BusySubStateList.size();i++)
+	    	{
+	    		var subStateCount = 0;
+	    		var subState = BusySubStateList.get(i).getSubState();
+		        _SeatDatas.each(function(key,value,index){
+		        	if(value.State == 2 && value.SubState == subState) subStateCount++;
+		        });
+		        $("#lblState"+subState).text(subStateCount);
+	    	}
+	        
+	        //btn_Search();
+	    }
+	    
+	    //加载单队列视图
+	    function LoadSingleGroupViewList(data) {
+	    	if(GroupId == null || GroupId ==0)
+			{
+				return;
+			}
+	        for (var i = 0; i < data.length; i++) {
+	        	if(data[i].groupId != GroupId) continue;
+	        	_QueueDatas.put(data[i].groupId+"", data[i]);
+	        	
+	        	document.title = data[i].groupName+'--单队列监控';
+	        	$("#lblQueueName1").text(data[i].groupName);
+	        	$("#lblQueueName2").text(data[i].groupName);
+	        	$("#lbl_idleCount").text(data[i].idleCount);
+	        	$("#lbl_enqueueCount").text(data[i].enqueueCount);
+	        	$("#lbl_maxWaitTime").html(OcxCore.FormatSeconds(data[i].maxWaitTime));
+	        	$("#lbl_avgTalkTime").html(OcxCore.FormatSeconds(data[i].avgTalkTime));
+	        	$("#lbl_callInCount").text(data[i].callInCount);
+	        	$("#lbl_answerCount").text(data[i].answerCount);
+	        	$("#lbl_lostCallCount").text(data[i].lostCallCount);
+	        	$("#lbl_answerRate").text(data[i].answerRate);
+	        	
+	        	break;
+	        }
+			
+			//$("#lblQueueCount").text(_QueueDatas.size());
+	        //$("#CenterTitle").html(GroupName);
+	        //$("#lblTotal").text($("#grid_View .UserCard").size());
+	        
+	        //btn_Search();
+	    }
+	    //加载队列历史视图
+	    function LoadGroupHistoryViewList(data) {
+	        for (var i = 0; i < data.length; i++) {
+	        	var isContainQueue = false;
+	        	if(_QueueHistoryDatas.containsKey(data[i].pointInTime+""))
+	        	{
+	        		isContainQueue = true;
+	        		_QueueHistoryDatas.put(data[i].pointInTime+"", data[i]);
+	        		
+	        		$("#queueGridTable").jqGrid("setRowData", data[i].pointInTime+"", data[i]);
+	        	}else
+	        	{
+	        		_QueueHistoryDatas.put(data[i].pointInTime+"", data[i]);
+	        		
+	        		$("#queueGridTable").jqGrid("addRowData", data[i].pointInTime+"", data[i], "first");
+	        	}
+	        }
+			
+			//$("#lblQueueCount").text(_QueueDatas.size());
+	        //$("#CenterTitle").html(GroupName);
+	        //$("#lblTotal").text($("#grid_View .UserCard").size());
+	        
+	        //btn_Search();
+	    }
+	    
+	    //加载呼叫明细视图
+	    function LoadCallDataViewList(data) {
+	        for (var i = 0; i < data.length; i++) {
+	        	if(data[i].GroupId != GroupId) continue;
+	        	if(_CallDatas.containsKey(data[i].CallId))
+	        	{
+	        		if(data[i].State == 1)
+	        		{
+	        			_CallDatas.remove(data[i].CallId);
+	        			$("#callDataGridTable").jqGrid("delRowData", data[i].CallId);
+	        		}
+	        		else
+	        		{
+	        			_CallDatas.put(data[i].CallId, data[i]);
+		        		$("#callDataGridTable").jqGrid("setRowData", data[i].CallId, data[i]);
+	        		}
+	        	}else
+	        	{
+	        		if(data[i].State == 0)
+	        		{
+	        			_CallDatas.put(data[i].CallId, data[i]);
+		        		$("#callDataGridTable").jqGrid("addRowData", data[i].CallId, data[i], "first");
+	        		}
+	        	}
+	        }
+			
+			//$("#lblQueueCount").text(_CallDatas.size());
+	        //$("#CenterTitle").html(GroupName);
+	        //$("#lblTotal").text($("#grid_View .UserCard").size());
+	        
+	        //btn_Search();
+	    }
+	    
+	    /*视图end=========================================================================*/
+	    //通知
+    function Notify(cmd, data)
+	{
+    	if (cmd == "SEATSTATE_NOTIFY")//监控坐席状态通知
+        {
+            var seats = data.Data;//
+            LoadSeatViewList(seats);
+        }
+    	else if (cmd == "GROUPSTATE_NOTIFY")//监控技能组状态通知
+        {
+            var groups = data.Data;
+            LoadSingleGroupViewList(groups);
+        }
+    	else if (cmd == "QUEUESTATE_NOTIFY")//呼叫明细状态通知
+        {
+            var callDatas = data.Data;
+            LoadCallDataViewList(callDatas);
+        }
+	}
+
+	
+	
+	//关闭监控窗口
+	function closeThisWindow()
+	{
+		//如果是通过父页面Layer弹框插件弹出的窗口
+        if(openerW.layer != undefined)
+        {
+        	var index = openerW.layer.getFrameIndex(window.name); //获取窗口索引
+        	openerW.layer.close(index);
+        }
+        else //如果是通过父页面artDialog弹框插件弹出的窗口
+        {
+        	artApi.close();//关闭登录窗口
+        }
+	}
+	</script>
+	<style type="text/css">
+	.bbit-tree-node-el{height:32px;line-height:32px;}
+	.bbit-tree-node-el a span{font-size:14px;}
+	
+	.nui_buttons button{margin-left:10px;}
+	.UserCard{width:160px}
+	.UserCard span{color:#0000ff;}
+	
+	#grid_View .state0{background-color:#cccccc;color:#338100;}/*离线*/
+	#grid_View .state1{background-color:#99cc33;color:#338100;}/*空闲*/
+	#grid_View .state2{background-color:#ea8585;color:#338100;}/*示忙*/
+	#grid_View .state3{background-color:#ff99cc;color:#338100;}/*呼入*/
+	#grid_View .state4{background-color:#ffcc00;color:#338100;}/*呼出*/
+	#grid_View .state5{background-color:#99c7ff;color:#338100;}/*通话*/
+	#grid_View .state6{background-color:#ff9900;color:#338100;}/*咨询*/
+	#grid_View .state7{background-color:#ffff99;color:#338100;}/*会议*/
+	#grid_View .state8{background-color:#ccccff;color:#338100;}/*其他*/
+	#grid_View .state10{background-color:#99c7ff;color:#338100;}/*保持*/
+	
+	#grid_View .selected{color:#338100;border:solid 4px red;padding:3px;}
+	
+	.contextMenu{display:none;}
+	</style>
+	
+	
+	<style type="text/css">
+		.form .formValue{ padding-left:3px;}
+		.ui-widget-content-altclass{background:#fff;}
+		.ui-jqgrid .ui-jqgrid-btable {border-right: 1px solid #ccc;}
+		.ui-jqgrid tr.jqgrow td {height: 32px;border-bottom:1px solid #ccc;border-right:none;}
+		.ui-state-highlight, .ui-widget-content .ui-state-highlight, .ui-widget-header .ui-state-highlight  {background: #e4e4e4;color: #000000;}
+		
+		.mainPanel{}
+		.centerPanel{float:left;overflow:hidden;border-left:1px #ccc solid;}
+		.leftPanel{float:left;overflow:hidden;}
+		
+		.label {
+		    display: block;
+		    padding: .2em .6em .3em;
+		    font-size: 75%;
+		    font-weight: 700;
+		    line-height: 1;
+		    /* color: #fff; */
+		    text-align: center;
+		    white-space: nowrap;
+		    vertical-align: baseline;
+		    border-radius: .25em;
+		}
+		.label-red {
+		    background: red;
+		    color: #fff;
+		}
+		.label-yellow {
+		    background: yellow;
+		    color: #000;
+		}
+		.label-green {
+		    background: #0aa699;
+		    color: #fff;
+		}
+		.label-normal {
+		    color: #000;
+		}
+	</style>
+  </head>
+  <body>
+  	<div class="contextMenu" id="monitorMenu">
+        <ul>
+            <li id="btnListen" cmd="Listen"><img src="../images/Icon16/monitor_window_flow.png" width="16" height="16" />监听</li>
+            <li id="btnStopListen" cmd="StopListen"><img src="../images/Icon16/monitor_window_flow.png" width="16" height="16" />停止监听</li>
+            <li id="btnForceEnter" cmd="ForceEnter"><img src="../images/Icon16/table_insert.png" width="16" height="16" />强插</li>
+            <li id="btnForceRemove" cmd="ForceRemove"><img src="../images/Icon16/delete.png" width="16" height="16" />强拆</li>
+            <li id="btnForceSetIdle" cmd="ForceSetIdle"><img src="../images/Icon16/monitor_window_flow.png" width="16" height="16" />强制示闲</li>
+            <li id="btnForceSetBusy" cmd="ForceSetBusy"><img src="../images/Icon16/monitor_window_flow.png" width="16" height="16" />强制示忙</li>
+            <li id="btnMoniterConf" cmd="MoniterConf"><img src="../images/Icon16/outlook_new_meeting.png" width="16" height="16" />监控会议</li>
+            <li id="btnStopMonitorConf" cmd="StopMonitorConf"><img src="../images/Icon16/outlook_new_meeting.png" width="16" height="16" />停止监控会议</li>
+            <li id="btnSendTipMsg" cmd="SendTipMsg"><img src="../images/Icon16/comments.png" width="16" height="16" />消息</li>
+            <li id="btnForceCheckOut" cmd="ForceCheckOut"><img src="../images/Icon16/broom.png" width="16" height="16" />强制注销</li>
+        </ul>
+    </div>
+<div>
+     <div class="btnbartitle">
+          <div>
+             	<span id="lblQueueName1"></span>--总共<span id="lblSeatCount" style="color:blue;">0</span>人&nbsp;&nbsp;&nbsp;
+             	空闲：<span id="lblState1" state="1" substate="0" style="color:blue;">0</span>&nbsp;&nbsp;
+             	忙碌：<span id="lblState2" state="2" substate="2" style="color:blue;">0</span>&nbsp;&nbsp;
+             	<div id="divBusySubState" style="display:inline;">
+             		<!-- 事后处理：<span id="lblState201" style="color:blue;">0</span>&nbsp;&nbsp;
+             		小休：<span id="lblState202" style="color:blue;">0</span>&nbsp;&nbsp;
+	             	开会：<span id="lblState203" style="color:blue;">0</span>&nbsp;&nbsp;
+	             	培训：<span id="lblState204" style="color:blue;">0</span>&nbsp;&nbsp;
+	             	督导：<span id="lblState205" style="color:blue;">0</span>&nbsp;&nbsp;
+					外呼营销：<span id="lblState206" style="color:blue;">0</span>&nbsp;&nbsp;
+	             	联系客户：<span id="lblState207" style="color:blue;">0</span>&nbsp;&nbsp;
+	             	其它：<span id="lblState208" style="color:blue;">0</span>&nbsp;&nbsp; -->
+             	</div>
+             	三方会议：<span id="lblState7" state="7" substate="0" style="color:blue;">0</span>&nbsp;&nbsp;
+             	通话：<span id="lblState5" state="5" substate="0" style="color:blue;">0</span>
+             	
+          </div>
+      </div>
+     <div class="mainPanel">
+     		<div class="leftPanel">
+     			<div class="btnbartitle">
+		            <div>
+		            	坐席监控
+		            </div>
+		        </div>
+		        <div id="seatGrid_Panel">
+			        <table id="seatGridTable"></table>
+		        </div>
+     		</div>
+     		<div class="centerPanel">
+     			<div class="btnbartitle">
+		            <div>
+		            	<label id="lblQueueName2" style="" ></label>--监控
+		            </div>
+		        </div>
+		        <div id="queueTb_Panel">
+			        <table id="queueTb" class="form">
+				        <tr>
+				            <th class="formTitle">空闲坐席数：</th>
+				            <td class="formValue">
+				                <label id="lbl_idleCount">0</label>
+				            </td>
+				            <th class="formTitle">排队人数：</th>
+				            <td class="formValue">
+				                <label id="lbl_enqueueCount">0</label>
+				            </td>
+				        </tr>
+				        <tr>
+				            <th class="formTitle">最长等待时间：
+				            </th>
+				            <td class="formValue">
+				                <label id="lbl_maxWaitTime"></label>
+				            </td>
+				            <th class="formTitle">平均通话时长：
+				            </th>
+				            <td class="formValue">
+				                <label id="lbl_avgTalkTime"></label>
+				            </td>
+				        </tr>
+				        <tr>
+				            <th class="formTitle">进线量：</th>
+				            <td class="formValue">
+				                <label id="lbl_callInCount">0</label>
+				            </td>
+				            <th class="formTitle">接听量：</th>
+				            <td class="formValue">
+				                <label id="lbl_answerCount">0</label>
+				            </td>
+				        </tr>
+				        <tr>
+				            <th class="formTitle">呼损量：</th>
+				            <td class="formValue">
+				                <label id="lbl_lostCallCount">0</label>
+				            </td>
+				            <th class="formTitle">接通率：</th>
+				            <td class="formValue">
+				                <label id="lbl_answerRate"></label>
+				            </td>
+				        </tr>
+				    </table>
+		        </div>
+		        <div id="divQueueInfo">
+			        <div class="bd" style="border-bottom: none; margin-top: 0px; margin-bottom: 0px;">
+			        	<div style="float:left;line-height:32px;">
+			            	队列监控--<span id="lblHistoryTitle">15分钟话务量</span>
+			            </div>
+					   <div class="tipstitle_title settingtable bold bd todayInfoPanelTab rightPanelTitle_normal">
+					       <div id="rightTabManu" class="tab_list_top" style="float:right;">
+					       		<div id="TabQueueHistory" class="tab_list bd actived"  onclick="Tabchange2('QueueHistory','divQueueInfo');$('#lblHistoryTitle').text('15分钟话务量');">15分钟话务量</div>
+						       	<div id="TabCallDataList" class="tab_list bd"  onclick="Tabchange2('CallDataList','divQueueInfo');$('#lblHistoryTitle').text('排队明细');">排队明细</div>
+					       </div>
+					   </div>
+					</div>
+					<div class="ScrollBar" id="QueueInfoPanels">
+						<div id="QueueHistory"  class="tabPanel" style="height:100%;">
+					        <table id="queueGridTable"></table>
+				        </div>
+			        	<div id="CallDataList" class="tabPanel" style="height:100%;display:none;">
+			        		<table id="callDataGridTable"></table>
+					    </div>
+			        </div>
+		        </div>
+     		</div>
+     </div>
+</div>
+  </body>
+</html>

@@ -1,0 +1,70 @@
+body{margin:0px;padding:0px;}
+.ocxcore_loading_background{cursor:progress; width: 100%; height: 100%; opacity: 0.0; filter: alpha(opacity=00); background:#fff; position: absolute; top: 0; left: 0; z-index: 3000;}
+#ocxcore_loading{color:#000;font-size:12pt;position:absolute;z-index:3001;left:42%;top:40%;border:2px solid #4A5B79;width:auto;padding:10px;background:#fff;cursor:pointer;-moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px; box-shadow:0 0 10px #ccc;}
+#ocxcore_loading span{font-size:12pt;padding:8px 5px 8px 35px;background:url(../../images/loading.gif) no-repeat;}
+
+.ocxDialToolBar{height:61px;}
+.ocxDialToolBar ul{margin-bottom:0px;}
+.ocxDialTool{list-style:none; padding:0px; margin-top:1px; height:30px; border:none;}
+.ocxDialTool li{display:block; float:left;height:30px;margin-right:5px;font-size:14px;color:#666666;}
+.ocxDialTool li span{font-size:14px;}
+.ocxDialTool .spancolor{color:#0a43ca;font-weight:bold;line-height:25px;font-size:15px;}
+.ocxDialTool a{color: #ffffff;}
+.ocxDialTool a:hover{color: #ffffff;text-decoration:underline;}
+.CallInfoContent{min-width: 160px;margin-right: 8px;border: solid 1px #7cf3db;border-radius:  5px;padding: 1px 5px;background: #efedeb;}
+.ocxDialToolBar .ocxLoginInfo .SetSeatInfoBtn{padding-left: 16px;margin-left: 2px;background:url(../../images/Icon16/cog.png) no-repeat;text-decoration:none;}
+
+/*电话条操作按钮样式*/
+.ocxDialTool button {margin-left:7px;margin-right:7px; padding: 6px 8px;float:left; cursor: pointer; display: inline-block; text-align: center; line-height: 1; *padding:4px 10px; *height:2em; letter-spacing:2px; font-family: Tahoma, Arial/9!important; width:auto; overflow:visible; *width:1; color: #333; border: solid 1px #7cf3db; border-radius: 5px; background: #DDD;  }
+.ocxDialTool button::-moz-focus-inner{ border:0; padding:0; margin:0; }
+.ocxDialTool button img {vertical-align: middle;}
+.ocxDialTool button:focus { outline:none 0; border-color:#426DC9; box-shadow:0 0 8px rgba(66, 109, 201, .9); }
+.ocxDialTool button:hover { border-color:#666; }
+.ocxDialTool button:active { border-color:#666; box-shadow:inset 0 1px 5px rgba(66, 109, 201, .9), inset 0 1px 1em rgba(0, 0, 0, .3); }
+.ocxDialTool button[disabled] { cursor:default; color:#666; background:#DDD; border: solid 1px #999; filter:alpha(opacity=50); opacity:.5; box-shadow:none; }
+.ocxDialTool button.ocxbtn_highlight { color: #FFF; border: solid 1px #f9f9f9; background: #65a3e3;}
+.ocxDialTool button.ocxbtn_red { color: #FFF; border: solid 1px #ED5464; background: #ED5464; }
+.ocxDialTool button.btnHover {background: #95b9de; }
+
+/*电话条忙碌小状态样式*/
+.ocxStateInfo{cursor:pointer;float:left;height:27px;margin-right:5px;font-size:14px;font-wight:bold;color:#013a64;border-radius:5px;background:#65a3e3;}
+.ocxStateInfo .ocxLblClientStateDropdown{/* margin-top:5px; */border-radius:5px;border:1px #f9f9f9 solid;padding-left:5px;}
+.ocxStateInfo .ocxLblClientState{padding-left:20px;line-height:27px;color:#ffffff;}
+.ocxStateInfo span i{background:url(images/bullet_arrow_down.png) no-repeat;padding-left:20px;}
+.ocxStateInfo .state_0{background:url(images/state_offline.png) 0px 0px no-repeat;}
+.ocxStateInfo .state_1{background:url(images/state_free.png) 0px 0px no-repeat;}
+.ocxStateInfo .state_2{background:url(../../images/substate/manglu.png) 0px 0px no-repeat;}
+.ocxStateInfo .state_8{background:url(images/state_away.png) 0px 0px no-repeat;}
+.ocxStateInfo .state_99{background:url(images/state_free.png) 0px 0px no-repeat;}
+
+.ocxState-dropdownData{position:fixed; z-index:4000; text-align:left; border:1px solid #999; background:#fff; display:none;}
+.ocxState-dropdownData-item{height:25px; line-height:22px;cursor:pointer;padding:0 18px;font-size:14px;}
+.ocxState-dropdownData-item:hover{background-color:#4A5B79; color:#fff;}
+
+.ocxDialTool .DialNumberTxt {width:160px;height:28px;padding:0px 2px;border:1px #ccc solid;line-height:19px;font-size:15px;font-weight:bold;-moz-border-radius:5px; -webkit-border-radius:5px;border-radius:5px;}
+
+/*电话条信息栏样式*/
+.ocxLoginInfo{list-style:none; padding:0px; height:25px; line-height:25px; border:none;}
+.ocxLoginInfo li{display:block; float:left;height:25px;margin-right:5px;font-size:14px;color:#ffffff;}
+.ocxLoginInfo li span{font-size:14px;}
+.ocxLoginInfo .spancolor{color:#f9ff00;}
+.ocxLoginInfo a{color: #ffffff;}
+.ocxLoginInfo a:hover{color: #ffffff;text-decoration:underline;}
+ 
+ /*电话条来电提醒框样式*/
+.CallAlertMain{width:387px;right: 10px; bottom: -300px; position: fixed; z-index: 99999;background-color:rgba(128, 128, 128, 0.62);}
+.CallAlertMain .mainbg{background: url(../default/images/bg02_275px.png) repeat-x;margin:8px;}
+.CallAlertMain .headTitle{width:367px;height: 50px;padding-top:10px;}
+.CallAlertMain .headTitle .headTitleImg{width:105px;height: 29px;margin-left:3px;background: url(../default/images/02_wenzi_10.png) no-repeat;}
+.CallAlertMain .mainContent{width:367px;height: 150px;}
+.CallAlertPhoto {width: 110px;height: 132px;float: left;margin-left: 10px;margin-top: 3px;}
+.CallAlertPhoto img{width: 110px;height: 132px;background: url(../default/images/02_img.png) no-repeat;}
+
+.CallAlertMain .rightInfoContent{width: 230px;height: 85px; padding:0px 0px 0px 15px;margin-top: 22px;float: left;}
+.CallAlertMain .rightInfoContent th{height: 32px; font-size:14px;text-align:right;}
+.CallAlertMain .rightInfoContent td span{font-size:14px;}
+.CallAlertMain .btnbar {text-align:center;margin-top:10px;padding-bottom:5px;}
+.CallAlertMain .btnbar .btnAnswer1{background: url(../default/images/01_answer_01.png) no-repeat;width: 132px;height: 40px;border:none;}
+.CallAlertMain .btnbar .btnAnswer1:hover{background: url(../default/images/01_answer_02.png) no-repeat;}
+.CallAlertMain .btnbar .btnHugeUp1{background: url(../default/images/01_res_01.png) no-repeat;width: 132px;height: 40px;margin-left:20px;border:none;}
+.CallAlertMain .btnbar .btnHugeUp1:hover{background: url(../default/images/01_res_02.png) no-repeat;}

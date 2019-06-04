@@ -1,0 +1,340 @@
+body{margin:0px;padding:0px;}
+.ocxcore_loading_background{cursor:progress; width: 100%; height: 100%; opacity: 0.0; filter: alpha(opacity=00); background:#fff; position: absolute; top: 0; left: 0; z-index: 3000;}
+#ocxcore_loading{color:#000;font-size:12pt;position:absolute;z-index:3001;left:42%;top:40%;border:2px solid #4A5B79;width:auto;padding:10px;background:#fff;cursor:pointer;-moz-border-radius:8px; -webkit-border-radius:8px; border-radius:8px; box-shadow:0 0 10px #ccc;}
+#ocxcore_loading span{font-size:12pt;padding:8px 5px 8px 35px;background:url(../../images/loading.gif) no-repeat;}
+	
+.ocxHeader{height:63px;min-width:900px;}
+.ocxHeadTop{position: relative;height:26px;font-size: 12px;color: #ffffff;}
+.ocxHeadTop .leftInfo{padding-top:3px;float:left;}
+.ocxHeadTop .leftInfo ul{list-style:none; padding:0px; margin:0px; height:21px; line-height:19px; border:none; font-size:12px;}
+.ocxHeadTop .leftInfo ul li{display:block; float:left;height:21px;}
+.ocxHeadTop .leftInfo ul li span{}
+.ocxHeadTop .leftInfo .spancolor{color:#ffff00;}
+.ocxHeadTop .leftInfo a{color: #ffffff;}
+.ocxHeadTop .leftInfo a:hover{color: #ffffff;text-decoration:underline;}
+.ocxHeadTop .DialNumberTxt {width:150px;height:18px;border:none;padding-left:3px;padding-right:1px;background:url(../../images/headerimg/ring-up.png) no-repeat;}
+.ocxHeaderMainContent {position: relative;width: 100%;height: 36px; margin: 0;padding: 0;}
+
+.ocxMainRightContent {width: 750px;height: 36px; padding:0px 0px 0px 5px;margin-top: 0px;float: left;}
+  	
+#ocxHeadermenu{float:right;/* position: relative; */}
+#ocxTopnav li.list{float:left;display:inline;margin:0px 2px 0px 0px;}/*margin:3px 12px 0px 0px;*/
+#ocxTopnav li a{cursor:pointer;display:inline;float:left;text-align:left;width:25px;height:25px;padding:1px 3px 0px 5px;text-decoration:none;color:#fff;text-shadow:0px -1px rgba(0,0,0,0.2);-webkit-border-radius:3px;border-radius:3px;overflow:hidden;-moz-border-radius:5px;/* Gecko browsers */ -webkit-border-radius:5px;/* Webkit browsers */ border-radius:5px;/* W3C syntax */}
+#ocxTopnav li a span{display:block;margin:0px auto 3px;padding:3px 1px 0px 15px;width:5px;height:25px;overflow:hidden;}
+#ocxTopnav li a span.c4{background:url(../../images/n4_min.png) no-repeat;padding-left: 23px;}
+
+.CallAlertMain{width:387px;right: 10px; bottom: -300px; position: fixed; z-index: 99999;background-color:rgba(128, 128, 128, 0.62);}
+.CallAlertMain .mainbg{background: url(images/bg02_275px.png) repeat-x;margin:8px;}
+.CallAlertMain .headTitle{width:367px;height: 50px;padding-top:10px;}
+.CallAlertMain .headTitle .headTitleImg{width:105px;height: 29px;margin-left:3px;background: url(images/02_wenzi_10.png) no-repeat;}
+.CallAlertMain .mainContent{width:367px;height: 150px;}
+.CallAlertPhoto {width: 110px;height: 132px;float: left;margin-left: 10px;margin-top: 3px;}
+.CallAlertPhoto img{width: 110px;height: 132px;background: url(images/02_img.png) no-repeat;}
+
+.CallAlertMain .rightInfoContent{width: 230px;height: 85px; padding:0px 0px 0px 15px;margin-top: 22px;float: left;}
+.CallAlertMain .rightInfoContent th{height: 32px; font-size:14px;text-align:right;}
+.CallAlertMain .rightInfoContent td span{font-size:14px;}
+.CallAlertMain .btnbar {text-align:center;margin-top:10px;padding-bottom:5px;}
+.CallAlertMain .btnbar .btnAnswer1{background: url(images/01_answer_01.png) no-repeat;width: 132px;height: 40px;border:none;}
+.CallAlertMain .btnbar .btnAnswer1:hover{background: url(images/01_answer_02.png) no-repeat;}
+.CallAlertMain .btnbar .btnHugeUp1{background: url(images/01_res_01.png) no-repeat;width: 132px;height: 40px;margin-left:20px;border:none;}
+.CallAlertMain .btnbar .btnHugeUp1:hover{background: url(images/01_res_02.png) no-repeat;}
+
+.ocxBtnContent {
+    width: 739px;height: 30px;padding-top: 3px; padding-left: 0px; float: left
+}
+.ocxBtn {
+    width: 74px;height: 30px;border: none;padding: 0px 2px 0px 2px;margin: 0;margin-right: 5px;
+    /* text-shadow:0px -1px rgba(0,0,0,0.2); */-webkit-border-radius:3px;border-radius:3px;overflow:hidden;-moz-border-radius:5px;/* Gecko browsers */ -webkit-border-radius:5px;/* Webkit browsers */ border-radius:5px;/* W3C syntax */
+}
+.ocxBtn1 {
+    height: 30px;border: none; float: left;padding: 0;margin: 0;
+}
+/* 示闲 */
+#ocxBtnFree {
+    
+}
+.ocxBtnFree .btnEnable{
+    background: url(btnimg/idle.png) no-repeat; cursor:pointer;
+}
+.ocxBtnFree .btnDisable{
+    background: url(btnimg/idle_disable.png) no-repeat;
+}
+.ocxBtnFree .btnHover{
+    background: url(btnimg/idle_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 示忙 */
+#ocxBtnBusy {
+    
+}
+.ocxBtnBusy .btnEnable{
+    background: url(btnimg/busy.png) no-repeat; cursor:pointer;
+}
+.ocxBtnBusy .btnDisable{
+    background: url(btnimg/busy_disable.png) no-repeat;
+}
+.ocxBtnBusy .btnHover{
+    background: url(btnimg/busy_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 停止整理 */
+#ocxBtnStopEndProc {
+    
+}
+.ocxBtnStopEndProc .btnEnable{
+    background: url(btnimg/stopEndProc.png) no-repeat; cursor:pointer;
+}
+.ocxBtnStopEndProc .btnDisable{
+    background: url(btnimg/stopEndProc_disable.png) no-repeat;
+}
+.ocxBtnStopEndProc .btnHover{
+    background: url(btnimg/stopEndProc_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 接听 */
+#ocxBtnAnswer {
+    
+}
+.ocxBtnAnswer .btnEnable{
+    background: url(btnimg/answer.png) no-repeat; cursor:pointer;
+}
+.ocxBtnAnswer .btnDisable{
+    background: url(btnimg/answer_disable.png) no-repeat;
+}
+.ocxBtnAnswer .btnHover{
+    background: url(btnimg/answer_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 外呼 */
+#ocxBtnOutCall {
+    
+}
+.ocxBtnOutCall .btnEnable{
+    background: url(btnimg/makecall.png) no-repeat; cursor:pointer;
+}
+.ocxBtnOutCall .btnDisable{
+    background: url(btnimg/makecall_disable.png) no-repeat;
+}
+.ocxBtnOutCall .btnHover{
+    background: url(btnimg/makecall_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 外呼1 */
+.DialNumberContent .ocxBtn {
+    width: 30px;height: 18px;border: none;padding: 0px;margin: 0;margin-left: 2px;
+}
+.DialNumberContent .ocxBtn1 {
+    height: 18px;border: none; float: left;padding: 0;margin: 0;
+}
+#ocxBtnOutCall1 {
+    
+}
+.ocxBtnOutCall1 .btnEnable{
+    background: url(btnimg/makecall1.png) no-repeat; cursor:pointer;
+}
+.ocxBtnOutCall1 .btnDisable{
+    background: url(btnimg/makecall1_disable.png) no-repeat;
+}
+.ocxBtnOutCall1 .btnHover{
+    background: url(btnimg/makecall1_select.png) no-repeat;
+}
+/* 挂机 */
+#ocxBtnHugeUp {
+    
+}
+.ocxBtnHugeUp .btnEnable{
+    background: url(btnimg/hugeup.png) no-repeat; cursor:pointer;
+}
+.ocxBtnHugeUp .btnDisable{
+    background: url(btnimg/hugeup_disable.png) no-repeat;
+}
+.ocxBtnHugeUp .btnHover{
+    background: url(btnimg/hugeup_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 咨询 */
+#ocxBtnConsult {
+    
+}
+.ocxBtnConsult .btnEnable{
+    background: url(btnimg/consult.png) no-repeat; cursor:pointer;
+}
+.ocxBtnConsult .btnDisable{
+    background: url(btnimg/consult_disable.png) no-repeat;
+}
+.ocxBtnConsult .btnHover{
+    background: url(btnimg/consult_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 转移 */
+#ocxBtnTransfer {
+    
+}
+.ocxBtnTransfer .btnEnable{
+    background: url(btnimg/transfer.png) no-repeat; cursor:pointer;
+}
+.ocxBtnTransfer .btnDisable{
+    background: url(btnimg/transfer_disable.png) no-repeat;
+}
+.ocxBtnTransfer .btnHover{
+    background: url(btnimg/transfer_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 找回 */
+#ocxBtnGetBack {
+    
+}
+.ocxBtnGetBack .btnEnable{
+    background: url(btnimg/received.png) no-repeat; cursor:pointer;
+}
+.ocxBtnGetBack .btnDisable{
+    background: url(btnimg/received_disable.png) no-repeat;
+}
+.ocxBtnGetBack .btnHover{
+    background: url(btnimg/received_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 保持 */
+#ocxBtnHold {
+    
+}
+.ocxBtnHold .btnEnable{
+    background: url(btnimg/hold.png) no-repeat; cursor:pointer;
+}
+.ocxBtnHold .btnDisable{
+    background: url(btnimg/hold_disable.png) no-repeat;
+}
+.ocxBtnHold .btnHover{
+    background: url(btnimg/hold_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 三方会议 */
+#ocxBtnConf {
+    
+}
+.ocxBtnConf .btnEnable{
+    background: url(btnimg/conf.png) no-repeat; cursor:pointer;
+}
+.ocxBtnConf .btnDisable{
+    background: url(btnimg/conf_disable.png) no-repeat;
+}
+.ocxBtnConf .btnHover{
+    background: url(btnimg/conf_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 事后闲 */
+#ocxBtnFreeAfter {
+    
+}
+.ocxBtnFreeAfter .btnEnable{
+    background: url(btnimg/freeafter.png) no-repeat; cursor:pointer;
+}
+.ocxBtnFreeAfter .btnDisable{
+    background: url(btnimg/freeafter_disable.png) no-repeat;
+}
+.ocxBtnFreeAfter .btnHover{
+    background: url(btnimg/freeafter_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 事后忙 */
+#ocxBtnBusyAfter {
+    
+}
+.ocxBtnBusyAfter .btnEnable{
+    background: url(btnimg/busyafter.png) no-repeat; cursor:pointer;
+}
+.ocxBtnBusyAfter .btnDisable{
+    background: url(btnimg/busyafter_disable.png) no-repeat;
+}
+.ocxBtnBusyAfter .btnHover{
+    background: url(btnimg/busyafter_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 拦截 */
+#ocxBtnIntercept {
+    
+}
+.ocxBtnIntercept .btnEnable{
+    background: url(btnimg/qiangjie.png) no-repeat; cursor:pointer;
+}
+.ocxBtnIntercept .btnDisable{
+    background: url(btnimg/qiangjie_disable.png) no-repeat;
+}
+.ocxBtnIntercept .btnHover{
+    background: url(btnimg/qiangjie_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 监控 */
+#ocxBtnMonitor {
+    
+}
+.ocxBtnMonitor .btnEnable{
+    background: url(btnimg/monitor.png) no-repeat; cursor:pointer;
+}
+.ocxBtnMonitor .btnDisable{
+    background: url(btnimg/monitor_disable.png) no-repeat;
+}
+.ocxBtnMonitor .btnHover{
+    background: url(btnimg/monitor_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+
+/* 签入 */
+#ocxBtnCheckin {
+    
+}
+.ocxBtnCheckin .btnEnable{
+    background: url(btnimg/qianin.png) no-repeat; cursor:pointer;
+}
+.ocxBtnCheckin .btnDisable{
+    background: url(btnimg/qianin_disable.png) no-repeat;
+}
+.ocxBtnCheckin .btnHover{
+    background: url(btnimg/qianin_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+/* 签出 */
+#ocxBtnCheckout {
+    
+}
+.ocxBtnCheckout .btnEnable{
+    background: url(btnimg/qianout.png) no-repeat; cursor:pointer;
+}
+.ocxBtnCheckout .btnDisable{
+    background: url(btnimg/qianout_disable.png) no-repeat;
+}
+.ocxBtnCheckout .btnHover{
+    background: url(btnimg/qianout_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+
+/* 事后整理 */
+#ocxBtnStartEndProc {
+    
+}
+.ocxBtnStartEndProc .btnEnable{
+    background: url(btnimg/startEndProc.png) no-repeat; cursor:pointer;
+}
+.ocxBtnStartEndProc .btnDisable{
+    background: url(btnimg/startEndProc_disable.png) no-repeat;
+}
+.ocxBtnStartEndProc .btnHover{
+    background: url(btnimg/startEndProc_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
+
+/* 满意度调查 */
+#ocxBtnSatisfaction {
+    
+}
+.ocxBtnSatisfaction .btnEnable{
+    background: url(btnimg/satisfaction.png) no-repeat; cursor:pointer;
+}
+.ocxBtnSatisfaction .btnDisable{
+    background: url(btnimg/satisfaction_disable.png) no-repeat;
+}
+.ocxBtnSatisfaction .btnHover{
+    background: url(btnimg/satisfaction_select.png) no-repeat;
+    /*background-color:rgba(16, 63, 86, 0.53);*/
+}
