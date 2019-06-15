@@ -6,55 +6,419 @@
     <script src="https://cdn.bootcss.com/popper.js/1.12.9/umd/popper.min.js"></script>
     <script src="https://cdn.bootcss.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 
+    <!-- 座席电话工具条相关基础脚本 start -->
+    <script src="CTIAgentSDK/plugins/layer/layer.js?version=3.1.1" type="text/javascript"></script>
+    <script src="CTIAgentSDK/core/Common.js?version=2.1.2" type="text/javascript"></script>
+    <script src="CTIAgentSDK/core/DialogUtil_layer3.js?version=2.1.2" type="text/javascript"></script>
+
     <script>
         var ws;
-        if ("WebSocket" in window) {
-            // 打开一个 web socket
-            ws = new WebSocket("ws://125.71.214.70:9033");
+        var AgentSDK = {
+            AgentStatus: {
+                IDLE: "IDLE",
+                BUSY: "BUSY",
+                TALKING: "TALKING",
+                CONFERENCE: "CONFERENCE",
+                CONSULT: "CONSULT",
+                MAKECALL: "MAKECALL",
+                HOLD: "HOLD"
+            },
+            Init: function () {
+                if ("WebSocket" in window) {
 
-            ws.onopen = function () {
-                console.log("WebSocket连接成功...");
-            };
+                    OcxCore.Log.debug("正在连接CTI服务器...");
 
-            ws.onmessage = function (evt) {
-                var received_msg = evt.data;
-                console.log("WebSocket接收到数据:" + received_msg);
-            };
+                    // 打开一个 web socket
+                    ws = new WebSocket("ws://" + $("#txtServer").val() + ":" + $("#txtPort").val() + "");
 
-            ws.onclose = function () {
-                // 关闭 websocket
-                console.log("WebSocket连接已关闭...");
-            };
-        }
-        else {
-            // 浏览器不支持 WebSocket
-            console.error("您的浏览器不支持 WebSocket!");
-        }
+                    ws.onopen = function () {
+                        OcxCore.Log.debug("连接CTI服务器成功...");
+                        AgentSDK.ChangeStatus.OnConnected();
+                    };
+
+                    ws.onmessage = function (evt) {
+                        let received_msg = JSON.parse(evt.data);
+                        OcxCore.Log.debug("接收到CTI数据:" + evt.data);
+                        if (received_msg.Action != undefined) {
+                            let Action = received_msg.Action;
+                            switch (Action) {
+                                case "ResAgentLogin":
+
+                                    if (received_msg.Param.Result == 0)
+                                        AgentSDK.ChangeStatus.OnCheckIn();
+                                    else if (received_msg.Param.Result == 3) {
+                                        OcxCore.DialogUtil.tipDialog('分机错误', 3, -1);
+                                        OcxCore.Log.error("分机错误");
+                                    }
+                                    else if (received_msg.Param.Result == 7) {
+                                        OcxCore.DialogUtil.tipDialog('此分机已登录', 3, -1);
+                                        OcxCore.Log.error("此分机已登录");
+                                    }
+                                    break;
+                                case "ResAgentIdle":
+                                    if (received_msg.Param.Result == 0) {
+                                        AgentSDK.ChangeStatus.OnStateChange(AgentSDK.AgentStatus.IDLE);
+                                    }
+                                    else {
+                                        OcxCore.DialogUtil.tipDialog('示闲失败', 3, -1);
+                                        OcxCore.Log.error("示闲失败");
+                                    }
+                                    break;
+                                case "ResAgentBusy":
+                                    if (received_msg.Param.Result == 0) {
+                                        AgentSDK.ChangeStatus.OnStateChange(AgentSDK.AgentStatus.BUSY);
+                                    }
+                                    else {
+                                        OcxCore.DialogUtil.tipDialog('示忙失败', 3, -1);
+                                        OcxCore.Log.error("示忙失败");
+                                    }
+                                    break;
+                                case "ResMakeCall":
+                                    if (received_msg.Param.Result == 0) {
+                                        AgentSDK.ChangeStatus.OnOutbounding();
+                                    }
+                                    else {
+                                        OcxCore.DialogUtil.tipDialog('呼叫失败', 3, -1);
+                                        OcxCore.Log.error("呼叫失败");
+                                    }
+                                    break;
+                                case "ResHoldCall":
+                                    if (received_msg.Param.Result == 0) {
+                                        AgentSDK.ChangeStatus.OnStateChange(AgentSDK.AgentStatus.HOLD);
+                                    }
+                                    else {
+                                        OcxCore.DialogUtil.tipDialog('保持失败', 3, -1);
+                                        OcxCore.Log.error("保持失败");
+                                    }
+                                    break;
+                                case "ResRetrieve":
+                                    if (received_msg.Param.Result == 0) {
+                                        AgentSDK.ChangeStatus.OnStateChange(AgentSDK.AgentStatus.TALKING);
+                                    }
+                                    else {
+                                        OcxCore.DialogUtil.tipDialog('找回失败', 3, -1);
+                                        OcxCore.Log.error("找回失败");
+                                    }
+                                    break;
+                                case "ResTransfer":
+                                    if (received_msg.Param.Result == 0) {
+                                        AgentSDK.ChangeStatus.OnStateChange(AgentSDK.AgentStatus.IDLE);//默认事后闲
+                                    }
+                                    else {
+                                        OcxCore.DialogUtil.tipDialog('转移失败', 3, -1);
+                                        OcxCore.Log.error("转移失败");
+                                    }
+                                    break;
+                                case "ReqConference":
+                                    if (received_msg.Param.Result == 0) {
+                                        AgentSDK.ChangeStatus.OnStateChange(AgentSDK.AgentStatus.CONFERENCE);
+                                    }
+                                    else {
+                                        OcxCore.DialogUtil.tipDialog('建立三方会议失败', 3, -1);
+                                        OcxCore.Log.error("建立三方会议失败");
+                                    }
+                                    break;
+                            }
+
+                        }
+                        if (received_msg.Event != undefined) {
+                            let Event = received_msg.Event;
+                            switch (Event) {
+                                case "EvtLogout":
+                                    AgentSDK.ChangeStatus.OnCheckOut();
+                                    break;
+                                case "EvtHangup":
+                                    AgentSDK.ChangeStatus.OnHangup();
+                                    break;
+                                case "EvtCallAlerting":
+                                    AgentSDK.ChangeStatus.OnIncommingCall(received_msg);
+                                    break;
+                                case "EvtOutCalling":
+                                    AgentSDK.ChangeStatus.OnOutbounding(received_msg);
+                                    break;
+                                case "EvtCallAnswer":
+                                    AgentSDK.ChangeStatus.OnAnswered(received_msg);
+                                    break;
+                                case "EvtSeatState":
+                                    AgentSDK.ChangeStatus.OnStateChangeMonitor(received_msg);
+                                    break;
+
+                            }
+                        }
+
+                    };
+
+                    ws.onclose = function () {
+                        AgentSDK.ChangeStatus.OnCheckOut();
+                        // 关闭 websocket
+                        OcxCore.Log.debug("与CTI连接已关闭...");
+                    };
+                }
+                else {
+                    // 浏览器不支持 WebSocket
+                    OcxCore.Log.error("您的浏览器不支持 WebSocket!");
+                }
+            },
+            Send: function (data) {
+                OcxCore.Log.debug("发送给CTI：" + JSON.stringify(data));
+                ws.send(JSON.stringify(data));
+            },
+            CheckIn: function (data) {
+                AgentSDK.Send(data);
+            },
+            CheckOut: function (data) {
+                AgentSDK.Send(data);
+            },
+            SetIdle: function (data) {
+                AgentSDK.Send(data);
+            },
+            SetBusy: function (data) {
+                AgentSDK.Send(data);
+            },
+            Hangup: function (data) {
+                AgentSDK.Send(data);
+            },
+            Hold: function (data) {
+                AgentSDK.Send(data);
+            },
+            Retrieve: function (data) {
+                AgentSDK.Send(data);
+            },
+            Transfer: function (data) {
+                AgentSDK.Send(data);
+            },
+            Conference: function (data) {
+                AgentSDK.Send(data);
+            },
+            Consult: function (data) {
+                AgentSDK.Send(data);
+            },
+            MakeCall: function (data) {
+                AgentSDK.ChangeStatus.OnBeforeOutbound(data);
+                AgentSDK.Send(data);
+            },
+            ChangeStatus: {
+                /*
+                    ocxBtnHugeUp
+                    ocxBtnBusy
+                    ocxBtnFree
+                    ocxBtnConsult
+                    ocxBtnTransfer
+                    ocxBtnGetBack
+                    ocxBtnHold
+                    ocxBtnConf
+                    ocxBtnMonitor
+                    ocxBtnCheckin
+                    ocxBtnCheckout
+                    ocxBtnInit
+                    ocxBtnMakeCall
+                    */
+                OnConnected: function () {
+                    $("#ocxBtnInit").attr("disabled", "disabled");
+                    $("#ocxBtnCheckin").removeAttr("disabled");
+                },
+                OnCheckIn: function () {
+                    $("#ocxBtnCheckin").attr("disabled", "disabled");
+                    $("#ocxBtnFree").removeAttr("disabled");
+                    $("#ocxBtnFreeAfter").removeAttr("disabled");
+                    $("#ocxBtnMonitor").removeAttr("disabled");
+                    $("#ocxBtnCheckout").removeAttr("disabled");
+                    $("#ocxBtnMakeCall").removeAttr("disabled");
+                },
+                OnCheckOut: function () {
+                    $("#ocxBtnHugeUp").attr("disabled", "disabled");
+                    $("#ocxBtnBusy").attr("disabled", "disabled");
+                    $("#ocxBtnFree").attr("disabled", "disabled");
+                    $("#ocxBtnConsult").attr("disabled", "disabled");
+                    $("#ocxBtnTransfer").attr("disabled", "disabled");
+                    $("#ocxBtnGetBack").attr("disabled", "disabled");
+                    $("#ocxBtnHold").attr("disabled", "disabled");
+                    $("#ocxBtnConf").attr("disabled", "disabled");
+                    $("#ocxBtnMonitor").attr("disabled", "disabled");
+                    $("#ocxBtnCheckin").removeAttr("disabled");
+                    $("#ocxBtnCheckout").attr("disabled", "disabled");
+                    $("#ocxBtnMakeCall").attr("disabled", "disabled");
+                },
+                OnIncommingCall: function () {
+                    $("#ocxBtnBusy").attr("disabled", "disabled");
+                    $("#ocxBtnMonitor").attr("disabled", "disabled");
+                    $("#ocxBtnCheckout").attr("disabled", "disabled");
+                    $("#ocxBtnHugeUp").removeAttr("disabled");
+                },
+                OnBeforeOutbound: function () {
+
+                },
+                OnOutbounding: function () {
+                    $("#ocxBtnFree").attr("disabled", "disabled");
+                    $("#ocxBtnMonitor").attr("disabled", "disabled");
+                    $("#ocxBtnCheckout").attr("disabled", "disabled");
+                    $("#ocxBtnMakeCall").attr("disabled", "disabled");
+                    $("#ocxBtnHugeUp").removeAttr("disabled");
+                },
+                OnAnswered: function () {
+                    $("#ocxBtnConsult").removeAttr("disabled");
+                    $("#ocxBtnHold").removeAttr("disabled");
+                },
+                OnHangup: function () {
+                    $("#ocxBtnHugeUp").attr("disabled", "disabled");
+                    $("#ocxBtnFree").removeAttr("disabled");
+                    $("#ocxBtnConsult").attr("disabled", "disabled");
+                    $("#ocxBtnTransfer").attr("disabled", "disabled");
+                    $("#ocxBtnGetBack").attr("disabled", "disabled");
+                    $("#ocxBtnHold").attr("disabled", "disabled");
+                    $("#ocxBtnConf").attr("disabled", "disabled");
+                    $("#ocxBtnMonitor").removeAttr("disabled");
+                    $("#ocxBtnCheckout").removeAttr("disabled");
+                    $("#ocxBtnMakeCall").removeAttr("disabled");
+                },
+                OnStateChange: function (status) {
+                    /*
+                    AgentStatus: {
+                        IDLE: "IDLE",
+                        BUSY: "BUSY",
+                        TALKING: "TALKING",
+                        CONFERENCE: "CONFERENCE",
+                        CONSULT: "CONSULT",
+                        MAKECALL: "MAKECALL",
+                        HOLD: "HOLD"
+                    },
+                    */
+                    switch (status) {
+                        case AgentSDK.AgentStatus.IDLE:
+                            $("#ocxBtnMakeCall").attr("disabled", "disabled");
+                            $("#ocxBtnFree").attr("disabled", "disabled");
+                            $("#ocxBtnBusy").removeAttr("disabled");
+                            break;
+                        case AgentSDK.AgentStatus.BUSY:
+                            $("#ocxBtnMakeCall").removeAttr("disabled");
+                            $("#ocxBtnFree").removeAttr("disabled");
+                            $("#ocxBtnBusy").attr("disabled", "disabled");
+                        break;
+                        case AgentSDK.AgentStatus.CONFERENCE:
+                            
+                        break;
+                        case AgentSDK.AgentStatus.CONSULT:
+                            $("#ocxBtnConsult").attr("disabled", "disabled");
+                            $("#ocxBtnHold").attr("disabled", "disabled");
+                            $("#ocxBtnTransfer").removeAttr("disabled");
+                            $("#ocxBtnGetBack").removeAttr("disabled");
+                            $("#ocxBtnConf").removeAttr("disabled");
+                        break;
+                        case AgentSDK.AgentStatus.HOLD:
+                            $("#ocxBtnGetBack").removeAttr("disabled");
+                        break;
+                        case AgentSDK.AgentStatus.TALKING:
+                            $("#ocxBtnHold").removeAttr("disabled");
+                            $("#ocxBtnGetBack").attr("disabled", "disabled");
+                        break;
+                    }
+                },
+                OnStateChangeMonitor: function (status) {
+
+                }
+            }
+
+        };
 
         $(function () {
+            $("#ocxBtnInit").click(function () {
+                AgentSDK.Init();
+            });
             $("#ocxBtnCheckin").click(function () {
-                var msg = {};
-                msg.Action = "ReqAgentLogin";
-                msg.Param = new Object();
-                msg.Param.JobNum = $("#txtJobNum").val();
-                msg.Param.Name = $("#txtName").val();
-                msg.Param.Extension = $("#txtExtension").val();
-                msg.Param.SkillId = $("#txtSkillId").val();
-                msg.Param.Level = $("#txtLevel").val();
-                msg.Param.Role = "1";
-                msg.Param.GroupName = $("#txtSkillId option:selected").text();
-                msg.Param.OrgId = $("#txtOrgId").val();
-                console.log(JSON.stringify(msg));
-                ws.send(JSON.stringify(msg));
+                let data = {};
+                data.Action = "ReqAgentLogin";
+                data.Param = new Object();
+                data.Param.JobNum = $("#txtJobNum").val();
+                data.Param.Name = $("#txtName").val();
+                data.Param.Extension = $("#txtExtension").val();
+                data.Param.SkillId = $("#txtSkillId").val();
+                data.Param.Level = $("#txtLevel").val();
+                data.Param.Role = "1";
+                data.Param.GroupName = $("#txtSkillId option:selected").text();
+                data.Param.OrgId = $("#txtOrgId").val();
+                AgentSDK.CheckIn(data);
             });
 
             $("#ocxBtnCheckout").click(function () {
-                var msg = {};
-                msg.Action = "ReqAgentLogout";
-                msg.Param = new Object();
-                msg.Param.Extension = $("#txtExtension").val();
-                console.log(JSON.stringify(msg));
-                ws.send(JSON.stringify(msg));
+                let data = {};
+                data.Action = "ReqAgentLogout";
+                data.Param = new Object();
+                data.Param.Extension = $("#txtExtension").val();
+                AgentSDK.CheckOut(data);
+            });
+
+            $("#ocxBtnMakeCall").click(function () {
+                let data = {};
+                data.Action = "ReqMakeCall";
+                data.Param = new Object();
+                data.Param.Extension = $("#txtExtension").val();
+                data.Param.Called = $("#txtPhone").val();
+                data.Param.CustomerId = "";
+                AgentSDK.MakeCall(data);
+            });
+
+            $("#ocxBtnHugeUp").click(function () {
+                let data = {};
+                data.Action = "ReqHangup";
+                data.Param = new Object();
+                data.Param.Extension = $("#txtExtension").val();
+                AgentSDK.Hangup(data);
+            });
+
+            $("#ocxBtnBusy").click(function () {
+                let data = {};
+                data.Action = "ReqAgentBusy";
+                data.Param = new Object();
+                data.Param.Extension = $("#txtExtension").val();
+                AgentSDK.SetBusy(data);
+            });
+
+            $("#ocxBtnFree").click(function () {
+                let data = {};
+                data.Action = "ReqAgentIdle";
+                data.Param = new Object();
+                data.Param.Extension = $("#txtExtension").val();
+                AgentSDK.SetIdle(data);
+            });
+
+            $("#ocxBtnConsult").click(function () {
+
+            });
+
+            $("#ocxBtnTransfer").click(function () {
+                let data = {};
+                data.Action = "ReqTransfer";
+                data.Param = new Object();
+                data.Param.Extension = $("#txtExtension").val();
+                AgentSDK.Transfer(data);
+            });
+
+            $("#ocxBtnGetBack").click(function () {
+                let data = {};
+                data.Action = "ReqRetrieve";
+                data.Param = new Object();
+                data.Param.Extension = $("#txtExtension").val();
+                AgentSDK.Retrieve(data);
+            });
+
+            $("#ocxBtnHold").click(function () {
+                let data = {};
+                data.Action = "ReqHoldCall";
+                data.Param = new Object();
+                data.Param.Extension = $("#txtExtension").val();
+                AgentSDK.Hold(data);
+            });
+
+            $("#ocxBtnConf").click(function () {
+                let data = {};
+                data.Action = "ReqConference";
+                data.Param = new Object();
+                data.Param.Extension = $("#txtExtension").val();
+                AgentSDK.Conference(data);
+            });
+
+            $("#ocxBtnMonitor").click(function () {
+
             });
         });
     </script>
@@ -68,7 +432,8 @@
                 <div class="row">
                     <div class="col-md-4 mb-3">
                         <label for="txtServer">服务器IP</label>
-                        <input id="txtServer" type="text" class="form-control" placeholder="" value="125.71.214.70" required="">
+                        <input id="txtServer" type="text" class="form-control" placeholder="" value="125.71.214.70"
+                            required="">
                     </div>
                     <div class="col-md-4 mb-3">
                         <label for="txtPort">端口</label>
@@ -120,34 +485,33 @@
 
         </div>
         <div class="row">
-            <button id="ocxBtnAnswer" keyid="Answer" title="接听" type="button" onclick="" disabled="disabled">接听</button>
-            <button id="ocxBtnHugeUp" keyid="Hangup" title="挂机" type="button" onclick="" disabled="disabled">挂机</button>
-            <!-- <button id="ocxBtnStopEndProc" keyid="StopEndProc" title="停止事后整理" type="button"  onclick="" disabled="disabled">停止整理</button> -->
-            <button id="ocxBtnBusy1" keyid="SetBusy1" title="示忙" type="button" onclick=""
-                disabled="disabled">示忙</button>
-            <button id="ocxBtnFree" keyid="SetIdle" title="示闲" type="button" onclick="" onclick=""
-                disabled="disabled">示闲</button>
-            <button id="ocxBtnConsult" keyid="Consult" title="咨询" type="button" onclick=""
-                disabled="disabled">咨询</button>
-            <button id="ocxBtnTransfer" keyid="Transfer" title="转移" type="button" onclick=""
-                disabled="disabled">转移</button>
-            <button id="ocxBtnGetBack" keyid="Return" title="找回" type="button" onclick=""
-                disabled="disabled">找回</button>
-            <button id="ocxBtnHold" keyid="Keep" title="保持" type="button" onclick="" disabled="disabled">保持</button>
-            <button id="ocxBtnConf" keyid="Conference" title="三方会议" type="button" onclick=""
-                disabled="disabled">三方会议</button>
-            <!-- <button id="ocxBtnSatisfaction" keyid="Satisfaction" title="开始满意度调查" type="button"  onclick="" disabled="disabled">满意度调查</button> -->
-            <button id="ocxBtnFreeAfter" keyid="SetEndidle" title="事后闲" type="button" onclick=""
-                disabled="disabled">事后闲</button>
-            <button id="ocxBtnBusyAfter" keyid="SetEndbusy" title="事后忙" type="button" onclick=""
-                disabled="disabled">事后忙</button>
-            <!-- <button id="ocxBtnIntercept" keyid="Intercept" title="拦截" type="button"  onclick="" disabled="disabled" style="display:none;">拦截</button> -->
-            <button id="ocxBtnMonitor" keyid="Monitor" title="监控" type="button" onclick=""
-                disabled="disabled">监控</button>
-            <!-- <button id="ocxBtnLeaveMode" keyid="LeaveMode" title="离开" type="button"  onclick="" disabled="disabled">离开</button>
-            <button id="ocxBtnNormalMode" keyid="NormalMode" title="恢复" type="button"  onclick="" disabled="disabled">恢复</button> -->
-            <button id="ocxBtnCheckin" keyid="Checkin" title="签入" type="button" onclick="">签入</button>
-            <button id="ocxBtnCheckout" keyid="Checkout" title="签出" type="button" onclick="">签出</button>
+            <div class="container">
+                <input type="text" id="txtPhone" width="100" placeholder="" value="">
+                <button id="ocxBtnMakeCall" keyid="MakeCall" title="外呼" type="button" onclick=""
+                    disabled="disabled">外呼</button>
+                <button id="ocxBtnHugeUp" keyid="Hangup" title="挂机" type="button" onclick=""
+                    disabled="disabled">挂机</button>
+                <button id="ocxBtnBusy" keyid="SetBusy" title="示忙" type="button" onclick=""
+                    disabled="disabled">示忙</button>
+                <button id="ocxBtnFree" keyid="SetIdle" title="示闲" type="button" onclick="" onclick=""
+                    disabled="disabled">示闲</button>
+                <button id="ocxBtnConsult" keyid="Consult" title="咨询" type="button" onclick=""
+                    disabled="disabled">咨询</button>
+                <button id="ocxBtnTransfer" keyid="Transfer" title="转移" type="button" onclick=""
+                    disabled="disabled">转移</button>
+                <button id="ocxBtnGetBack" keyid="Return" title="找回" type="button" onclick=""
+                    disabled="disabled">找回</button>
+                <button id="ocxBtnHold" keyid="Keep" title="保持" type="button" onclick="" disabled="disabled">保持</button>
+                <button id="ocxBtnConf" keyid="Conference" title="三方会议" type="button" onclick=""
+                    disabled="disabled">三方会议</button>
+                <button id="ocxBtnMonitor" keyid="Monitor" title="监控" type="button" onclick=""
+                    disabled="disabled">监控</button>
+                <button id="ocxBtnCheckin" keyid="Checkin" title="签入" type="button" onclick=""
+                    disabled="disabled">签入</button>
+                <button id="ocxBtnCheckout" keyid="Checkout" title="签出" type="button" onclick=""
+                    disabled="disabled">签出</button>
+                <button id="ocxBtnInit" keyid="Init" title="初始化" type="button" onclick="">初始化</button>
+            </div>
         </div>
     </div>
 </body>
